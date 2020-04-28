@@ -41,10 +41,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
+import Formatters from '@/mixins/Formatters';
 
 @Component
-export default class HelloWorld extends Vue {
+export default class HelloWorld extends Formatters {
   @Prop() private msg!: string;
 }
 </script>
