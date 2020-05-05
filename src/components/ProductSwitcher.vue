@@ -1,8 +1,15 @@
 <template>
   <div>
-    <ProductCategoryOverview
-      :products="sodas"
-    />
+    <b-tabs>
+      <b-tab
+      v-for="category in productCategories"
+      :key="category.id"
+      :products="category.products"
+      :title="category.name"
+      >
+        <ProductCategoryOverview :products="category.products"></ProductCategoryOverview>
+      </b-tab>
+    </b-tabs>
   </div>
 </template>
 
@@ -12,6 +19,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import HelloWorld from '@/components/HelloWorld.vue';
 import ProductCategoryOverview from '@/components/ProductCategoryOverview.vue';
 import { Product } from '@/entities/Product';
+import { ProductCategory } from '@/entities/ProductCategory';
 
 @Component({
   components: {
@@ -108,14 +116,32 @@ export default class ProductSwitcher extends Vue {
     updatedAt: new Date(),
   };
 
+  beers: Product[] = [this.beugel, this.tripel, this.radler];
+
+  sodas: Product[] = [this.cola, this.cassis, this.fristi];
+
+  beerProducts: ProductCategory = {
+    id: '1',
+    name: 'zuiphulp',
+    products: this.beers,
+  };
+
+  sodaProducts: ProductCategory = {
+    id: '2',
+    name: 'laf',
+    products: this.sodas,
+  };
+
+  productCategories: ProductCategory[] = [this.beerProducts, this.sodaProducts];
 
   // *************************************************
   //
   //               End test data
   //
   // *************************************************
-  beers: Product[] = [this.beugel, this.tripel, this.radler];
-
-  sodas: Product[] = [this.cola, this.cassis, this.fristi];
 }
 </script>
+
+<style scoped lang="scss">
+
+</style>
