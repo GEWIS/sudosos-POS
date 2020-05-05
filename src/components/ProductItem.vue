@@ -14,7 +14,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Product } from '@/entities/Product';
 
 @Component
-export default class ProductComponent extends Vue {
+export default class ProductItem extends Vue {
   @Prop() product!: Product;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-row class="mx-0">
-      <ProductComponent v-for="item in products"
+      <ProductItem v-for="item in products"
                         :product="item"
                         :key="item.id"
       />
@@ -12,14 +12,14 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Product } from '@/entities/Product';
-import ProductComponent from '@/components/ProductComponent.vue';
+import ProductItem from '@/components/ProductItem.vue';
 
   @Component({
     components: {
-      ProductComponent,
+      ProductItem,
     },
   })
-export default class ProductListComponent extends Vue {
+export default class ProductOverview extends Vue {
     // *************************************************
     //
     //               Begin test data
