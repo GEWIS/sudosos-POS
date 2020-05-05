@@ -2,9 +2,9 @@
   <b-col class="text-center product-card px-2"
          cols="4" sm="4" md="3" lg="2">
     <div class="product">
-      <img alt="Placeholder for Beugel" />
-      <p class="w-100 product-name mb-0">{{ productProp.name }}</p>
-      <p>&euro;Prijs</p>
+      <img :src="product.picture" alt="Placeholder for Beugel" />
+      <p class="w-100 product-name mb-0">{{ product.name }}</p>
+      <p class="w-100 product-price mb-0">(&euro;{{ product.price }})</p>
     </div>
   </b-col>
 </template>
@@ -15,7 +15,7 @@ import { Product } from '@/entities/Product';
 
 @Component
 export default class ProductComponent extends Vue {
-  @Prop() productProp!: Product;
+  @Prop() product!: Product;
 }
 
 </script>
@@ -37,6 +37,11 @@ export default class ProductComponent extends Vue {
   }
 
   .product-name {
+    background: $gewis-grey-accent;
+    font-weight: bold;
+  }
+
+  .product-price {
     background: $gewis-grey-accent;
   }
 </style>

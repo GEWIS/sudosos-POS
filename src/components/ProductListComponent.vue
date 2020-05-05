@@ -2,7 +2,7 @@
   <div>
     <b-row class="mx-0">
       <ProductComponent v-for="item in products"
-                        :productProp="item"
+                        :product="item"
                         :key="item.id"
       />
     </b-row>
