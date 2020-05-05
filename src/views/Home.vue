@@ -1,6 +1,7 @@
 <template>
   <div class="home">
-    <ProductListComponent />
+    <CheckoutListComponent />
+    <ProductListComponent hidden></ProductListComponent>
   </div>
 </template>
 
@@ -8,10 +9,12 @@
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue';
 import ProductListComponent from '@/components/ProductListComponent.vue';
+import CheckoutListComponent from '@/components/CheckoutListComponent.vue';
 
 export default {
   name: 'home',
   components: {
+    CheckoutListComponent,
     ProductListComponent,
   },
 };
