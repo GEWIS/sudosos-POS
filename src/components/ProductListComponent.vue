@@ -1,20 +1,21 @@
-<template>
+<template scope="{product}">
   <div>
     <b-row class="mx-0">
       <b-col v-for="item in products"
              :key="item.id"
+             product="item"
              class="text-center product-card px-2"
              cols="4" sm="4" md="3" lg="2">
-        <ProductComponent v-bind:key="item.id" :product="item" />
+        <ProductComponent :product="item"></ProductComponent>
       </b-col>
     </b-row>
   </div>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { Product } from '@/entities/Product';
-  import ProductComponent from '@/components/ProductComponent.vue';
+import { Component, Vue } from 'vue-property-decorator';
+import { Product } from '@/entities/Product';
+import ProductComponent from '@/components/ProductComponent.vue';
 
   @Component({
     components: {
@@ -22,7 +23,7 @@
     },
   })
 
-  export default class ProductListComponent extends Vue {
+export default class ProductListComponent extends Vue {
     // *************************************************
     //
     //               Begin test data
@@ -90,7 +91,7 @@
     //
     // *************************************************
     products = [this.beugel, this.tripel, this.alcoholFree, this.cocktail];
-  }
+}
 </script>
 
 <style scoped lang="scss">

@@ -1,21 +1,19 @@
 <template>
-  <div>
     <div class="product">
       <img alt="Placeholder for Beugel" />
-      <p class="w-100 product-name mb-0">TO FIX databinding</p>
+      <p class="w-100 product-name mb-0">{{product.name}}</p>
       <p>&euro;Prijs</p>
     </div>
-  </div>
 </template>
 
 <script lang="ts">
-  import { Prop, Vue } from 'vue-property-decorator';
-  import { Product } from '@/entities/Product';
+import { Prop, Vue } from 'vue-property-decorator';
+import { Product } from '@/entities/Product';
 
-  export default class ProductComponent extends Vue {
-    @Prop()
-    product: Product | undefined;
-  }
+export default class ProductComponent extends Vue {
+  @Prop()
+  product: Product | undefined;
+}
 
 </script>
 
