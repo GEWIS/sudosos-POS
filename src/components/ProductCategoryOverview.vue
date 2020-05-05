@@ -20,7 +20,7 @@ import ProductItem from '@/components/ProductItem.vue';
     },
   })
 
-export default class ProductOverview extends Vue {
+export default class ProductCategoryOverview extends Vue {
     @Prop()
     products!: Product[];
 }
