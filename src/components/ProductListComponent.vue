@@ -1,13 +1,10 @@
-<template scope="{product}">
+<template>
   <div>
     <b-row class="mx-0">
-      <b-col v-for="item in products"
-             :key="item.id"
-             product="item"
-             class="text-center product-card px-2"
-             cols="4" sm="4" md="3" lg="2">
-        <ProductComponent :product="item"></ProductComponent>
-      </b-col>
+      <ProductComponent v-for="item in products"
+                        :productProp="item"
+                        :key="item.id"
+      />
     </b-row>
   </div>
 </template>
@@ -22,7 +19,6 @@ import ProductComponent from '@/components/ProductComponent.vue';
       ProductComponent,
     },
   })
-
 export default class ProductListComponent extends Vue {
     // *************************************************
     //
@@ -90,7 +86,7 @@ export default class ProductListComponent extends Vue {
     //               End test data
     //
     // *************************************************
-    products = [this.beugel, this.tripel, this.alcoholFree, this.cocktail];
+    products: Product[] = [this.beugel, this.tripel, this.alcoholFree, this.cocktail];
 }
 </script>
 

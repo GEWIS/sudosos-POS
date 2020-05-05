@@ -1,18 +1,21 @@
 <template>
+  <b-col class="text-center product-card px-2"
+         cols="4" sm="4" md="3" lg="2">
     <div class="product">
       <img alt="Placeholder for Beugel" />
-      <p class="w-100 product-name mb-0">{{product.name}}</p>
+      <p class="w-100 product-name mb-0">{{ productProp.name }}</p>
       <p>&euro;Prijs</p>
     </div>
+  </b-col>
 </template>
 
 <script lang="ts">
-import { Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Product } from '@/entities/Product';
 
+@Component
 export default class ProductComponent extends Vue {
-  @Prop()
-  product: Product | undefined;
+  @Prop() productProp!: Product;
 }
 
 </script>
