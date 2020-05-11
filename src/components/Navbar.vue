@@ -12,12 +12,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
+import Formatters from '@/mixins/Formatters';
 
 import '@/styles/Nav.scss';
 
-export default class App extends Vue {
-    public vertical: boolean = window.innerWidth > 768;
+@Component
+export default class Navbar extends Formatters {
+  public vertical: boolean = window.innerWidth > 768;
+
+  mounted() {
+    window.addEventListener('resize', () => {
+      this.checkWindowSize();
+    });
+  }
+
+  checkWindowSize() {
+    this.vertical = window.innerWidth > 768;
+  }
 }
 </script>
 

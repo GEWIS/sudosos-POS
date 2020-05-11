@@ -4,7 +4,9 @@ import BootstrapVue from 'bootstrap-vue';
 import dinero, { Currency } from 'dinero.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
-import {} from '@fortawesome/free-solid-svg-icons';
+import {
+  faBeer, faCoffee, faCookieBite, faTicketAlt, faEllipsisH,
+} from '@fortawesome/free-solid-svg-icons';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -14,7 +16,7 @@ import 'bootstrap';
 
 import './styles/global/_main.scss';
 
-library.add();
+library.add(faBeer, faCoffee, faCookieBite, faTicketAlt, faEllipsisH);
 
 // Default settings for Dinero
 dinero.defaultCurrency = 'EUR' as Currency;
