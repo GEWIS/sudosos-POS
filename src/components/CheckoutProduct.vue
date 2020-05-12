@@ -9,8 +9,8 @@
         x{{subTransaction.amount}}
         <a><font-awesome-icon icon="plus" class="ml-2"></font-awesome-icon></a>
       </b-col>
-      <b-col class="price text-right">
-        {{ dinero({amount: subTransactionPrice}).toFormat() }}
+      <b-col class="text-right">
+        <span class="price">{{ dinero({amount: subTransactionPrice}).toFormat() }}</span>
         <a><font-awesome-icon icon="trash" class="ml-2"></font-awesome-icon></a>
       </b-col>
     </b-row>
@@ -122,7 +122,7 @@ export default class CheckoutProduce extends Formatters {
       }
 
       .price {
-        font-weight: bold;
+        color: $gewis-red;
       }
     }
 </style>
