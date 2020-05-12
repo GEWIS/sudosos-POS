@@ -4,17 +4,18 @@
     <div class="product">
       <img :src="product.picture" alt="Placeholder for Beugel" />
       <p class="w-100 product-name mb-0">{{ product.name }}</p>
-      <p class="w-100 product-price mb-0">(&euro;{{ product.price }})</p>
+      <p class="w-100 product-price mb-0">({{ dinero({amount: product.price}).toFormat() }})</p>
     </div>
   </b-col>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { Product } from '@/entities/Product';
+import Formatters from '@/mixins/Formatters';
 
 @Component
-export default class ProductComponent extends Vue {
+export default class ProductComponent extends Formatters {
   @Prop() product!: Product;
 }
 
