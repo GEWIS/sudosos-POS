@@ -88,6 +88,7 @@ export default class ProductListComponent extends Vue {
     // *************************************************
     products: Product[] = [this.beugel, this.tripel, this.alcoholFree, this.cocktail];
 }
+
 </script>
 
 <style scoped lang="scss">
