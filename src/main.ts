@@ -8,6 +8,9 @@ import {
   faPlus,
   faMinus,
   faTrash,
+  faSignOutAlt,
+  faUser,
+  faWallet,
 } from '@fortawesome/free-solid-svg-icons';
 import App from './App.vue';
 import router from './router';
@@ -22,6 +25,9 @@ library.add(
   faPlus,
   faMinus,
   faTrash,
+  faSignOutAlt,
+  faUser,
+  faWallet,
 );
 
 // Default settings for Dinero
