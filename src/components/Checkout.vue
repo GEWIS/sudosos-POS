@@ -1,12 +1,14 @@
 <template>
   <b-container fluid>
+
+    <!-- Checkout header -->
     <b-row class="head" align-v="center">
-      <b-col cols="9">
+      <b-col cols="10">
         <b-row align-h="start" align-v="center" class="pb-2 pt-2">
           <b-col cols="3">
             <font-awesome-icon icon="user"></font-awesome-icon>
           </b-col>
-          <b-col cols="9" class="text-left username">Marcin</b-col>
+          <b-col cols="9" class="text-left username">Marcin van de Ven (1234)</b-col>
         </b-row>
         <b-row align-h="start" align-v="center" class="pt-2">
           <b-col cols="3">
@@ -17,19 +19,49 @@
           </b-col>
         </b-row>
       </b-col>
-      <b-col cols="3" class="text-left pl-1">
+      <b-col cols="2" class="text-left pl-1">
         <font-awesome-icon icon="sign-out-alt" size="2x"></font-awesome-icon>
       </b-col>
     </b-row>
-        <b-row><b-col>
-          <CheckoutList></CheckoutList>
-        </b-col></b-row>
-      <b-row class="summary"><b-col>
-        CALC
-      </b-col></b-row>
-        <b-row><b-col>
-          FOOT
-         </b-col></b-row>
+
+    <!-- Checkout list -->
+    <b-row><b-col>
+      <CheckoutList></CheckoutList>
+    </b-col></b-row>
+
+    <!-- TODO: Should be attached to the bottom instead of top -->
+    <!-- TODO: Consider removing one row-colum, i.g. create row in root for each elem -->
+    <!-- Checkout calculation -->
+    <b-row class="summary ml-2 mr-2">
+        <b-col class="text-left ml-n2">Total</b-col>
+        <b-col class="text-right mr-n2 price">
+          {{ dinero({amount: 337}).toFormat() }}
+        </b-col>
+      </b-row>
+      <b-row class="summary ml-2 mr-2">
+        <b-col class="text-left ml-n2">Balance after</b-col>
+        <b-col class="text-right mr-n2 balance">
+          {{ dinero({amount: 1337}).toFormat() }}
+        </b-col>
+      </b-row>
+
+    <!-- Checkout button -->
+    <b-row align-v="center" class="checkout-button p-4 mt-3">
+      <b-col class="text-left">
+        <font-awesome-icon icon="check" ></font-awesome-icon>
+      </b-col>
+      <b-col class="text-right">Checkout</b-col>
+    </b-row>
+
+    <!-- Checkout options -->
+    <b-row align-v="center" class="checkout-options">
+      <b-col cols="6">
+        Checkout &amp; Continue
+      </b-col>
+      <b-col cols="6">
+        Charge someone
+      </b-col>
+    </b-row>
   </b-container>
 </template>
 
@@ -38,32 +70,43 @@ import { Component, Vue } from 'vue-property-decorator';
 import CheckoutList from '@/components/CheckoutList.vue';
 import Formatters from '@/mixins/Formatters';
 
-  @Component({
-    components: { CheckoutList },
-  })
+@Component({
+  components: { CheckoutList },
+})
 export default class Checkout extends Formatters {
 
 }
 </script>
 
 <style scoped lang="scss">
-  .head {
-    background: $gewis-black;
+.head {
+  background: $gewis-black;
+  color: white;
+  font-size: x-large;
+  padding: 0.5rem;
+}
+
+.balance {
+  color: $gewis-green;
+}
+
+.price {
+  color: $gewis-red;
+}
+
+.summary {
+  font-size: x-large;
+}
+  .checkout-button {
+    background: $gewis-green;
     color: white;
     font-size: xx-large;
-    padding: 0.5rem;
-    .username {
-      font-size: xx-large;
-    }
   }
 
-  .balance {
-    font-size: larger;
-    color: $gewis-green;
-  }
-
-  .summary {
-
+  .checkout-options {
+    background: $gewis-black;
+    color: white;
+    font-size: large;
   }
 
 </style>

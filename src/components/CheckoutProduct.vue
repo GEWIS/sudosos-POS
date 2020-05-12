@@ -5,13 +5,13 @@
         {{product.name}}
       </b-col>
       <b-col class="amount">
-        <a><font-awesome-icon icon="minus" class="mr-2"></font-awesome-icon></a>
+        <a><font-awesome-icon icon="minus" class="mr-1 pt-1"></font-awesome-icon></a>
         x{{subTransaction.amount}}
-        <a><font-awesome-icon icon="plus" class="ml-2"></font-awesome-icon></a>
+        <a><font-awesome-icon icon="plus" class="ml-1 pt-1"></font-awesome-icon></a>
       </b-col>
       <b-col class="text-right">
         <span class="price">{{ dinero({amount: subTransactionPrice}).toFormat() }}</span>
-        <a><font-awesome-icon icon="trash" class="ml-2"></font-awesome-icon></a>
+        <a><font-awesome-icon icon="trash" class="ml-3"></font-awesome-icon></a>
       </b-col>
     </b-row>
   </b-container>
@@ -111,7 +111,8 @@ export default class CheckoutProduce extends Formatters {
 <style scoped lang="scss">
     .product {
       background-color: $gewis-grey-accent;
-      margin: 0.7rem 0;
+      margin-top: 0.7rem;
+      margin-bottom: 0.7rem;
       font-size: larger;
 
       .amount {
