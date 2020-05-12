@@ -30,9 +30,8 @@
     </b-col></b-row>
 
     <!-- TODO: Should be attached to the bottom instead of top -->
-    <!-- TODO: Consider removing one row-colum, i.g. create row in root for each elem -->
     <!-- Checkout calculation -->
-    <b-row class="summary ml-2 mr-2">
+    <b-row class="summary ml-2 mr-2 summary-border">
         <b-col class="text-left ml-n2">Total</b-col>
         <b-col class="text-right mr-n2 price">
           {{ dinero({amount: 337}).toFormat() }}
@@ -54,8 +53,8 @@
     </b-row>
 
     <!-- Checkout options -->
-    <b-row align-v="center" class="checkout-options">
-      <b-col cols="6">
+    <b-row align-v="center" class="checkout-options p-4">
+      <b-col cols="6 option-border">
         Checkout &amp; Continue
       </b-col>
       <b-col cols="6">
@@ -97,6 +96,11 @@ export default class Checkout extends Formatters {
 .summary {
   font-size: x-large;
 }
+
+.summary-border {
+  border-top: 0.13rem solid black;
+}
+
   .checkout-button {
     background: $gewis-green;
     color: white;
@@ -106,7 +110,10 @@ export default class Checkout extends Formatters {
   .checkout-options {
     background: $gewis-black;
     color: white;
-    font-size: large;
+    font-size: x-large;
+    .option-border {
+      border-right: 0.13rem solid white;
+    }
   }
 
 </style>
