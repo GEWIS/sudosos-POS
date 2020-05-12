@@ -96,7 +96,7 @@ export default class CheckoutProduce extends Formatters {
   // *************************************************
   products: Product[] = [this.beugel, this.tripel, this.alcoholFree, this.cocktail];
 
-  pid = this.subTransaction.productId;
+  pid = Number(this.subTransaction.productId);
 
   product = this.products[this.pid];
 
@@ -104,7 +104,7 @@ export default class CheckoutProduce extends Formatters {
 
   productAmount = this.subTransaction.amount;
 
-  subTransactionPrice = this.pricePerProduct * this.productAmount;
+  subTransactionPrice = Number(this.pricePerProduct) * Number(this.productAmount);
 }
 </script>
 
