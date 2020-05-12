@@ -1,15 +1,15 @@
 <template>
   <b-container fluid class="product">
     <b-row class="text-center" align-v="center">
-      <b-col class="text-left">
+      <b-col class="name text-left">
         {{product.name}}
       </b-col>
-      <b-col>
+      <b-col class="amount">
         <a><font-awesome-icon icon="minus" class="mr-2"></font-awesome-icon></a>
         x{{subTransaction.amount}}
         <a><font-awesome-icon icon="plus" class="ml-2"></font-awesome-icon></a>
       </b-col>
-      <b-col class="text-right">
+      <b-col class="price text-right">
         {{ dinero({amount: subTransactionPrice}).toFormat() }}
         <a><font-awesome-icon icon="trash" class="ml-2"></font-awesome-icon></a>
       </b-col>
@@ -111,8 +111,18 @@ export default class CheckoutProduce extends Formatters {
 <style scoped lang="scss">
     .product {
       background-color: $gewis-grey-accent;
-      margin: 0.5rem 0;
-      font-weight: bold;
+      margin: 0.7rem 0;
       font-size: larger;
+
+      .name {
+      }
+
+      .amount {
+        font-weight: bold;
+      }
+
+      .price {
+        font-weight: bold;
+      }
     }
 </style>
