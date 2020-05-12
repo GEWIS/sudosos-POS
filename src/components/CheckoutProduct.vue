@@ -96,7 +96,7 @@ export default class CheckoutProduce extends Formatters {
   // *************************************************
   products: Product[] = [this.beugel, this.tripel, this.alcoholFree, this.cocktail];
 
-  pid = Number(this.subTransaction.productId);
+  pid = Number(this.subTransaction.productId) - 1;
 
   product = this.products[this.pid];
 
@@ -114,15 +114,14 @@ export default class CheckoutProduce extends Formatters {
       margin: 0.7rem 0;
       font-size: larger;
 
-      .name {
-      }
-
       .amount {
         font-weight: bold;
+        font-size: larger;
       }
 
       .price {
         color: $gewis-red;
+        font-size: larger;
       }
     }
 </style>
