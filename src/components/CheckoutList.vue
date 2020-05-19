@@ -38,6 +38,13 @@ function fetchSubTransactions() : SubTransaction[] {
       amount: 1,
       pricePerProduct: 50,
     } as SubTransaction,
+    {
+      transactionId: '001',
+      productId: '2',
+      storageId: '1',
+      amount: 2,
+      pricePerProduct: 90,
+    } as SubTransaction,
   ] as SubTransaction[];
 
   return subTransactions;
@@ -57,5 +64,6 @@ export default class CheckoutList extends Vue {
 <style scoped lang="scss">
   .checkout-list {
     background: $gewis-grey-light;
+    scroll-behavior: smooth;
   }
 </style>
