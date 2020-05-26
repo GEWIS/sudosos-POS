@@ -1,13 +1,20 @@
 <template>
   <b-nav :vertical="vertical" class="nav"
          v-bind:class="{ vertical: vertical, horizontal:!vertical }">
-    <b-nav-item class="gewis-logo"><img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo"/>
+    <b-nav-item class="gewis-logo d-none d-lg-block">
+      <img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo"/>
     </b-nav-item>
     <b-nav-item><font-awesome-icon icon="beer" /></b-nav-item>
     <b-nav-item><font-awesome-icon icon="coffee" /></b-nav-item>
     <b-nav-item><font-awesome-icon icon="cookie-bite" /></b-nav-item>
     <b-nav-item><font-awesome-icon icon="ticket-alt" /></b-nav-item>
-    <b-nav-item class="other-button"><font-awesome-icon icon="ellipsis-h" /></b-nav-item>
+    <!-- TODO: Fix pull to bottom -->
+    <b-nav-item class="other-button">
+      <font-awesome-icon icon="search"/>
+    </b-nav-item>
+    <b-nav-item class="other-button">
+      <font-awesome-icon icon="ellipsis-h" />
+    </b-nav-item>
   </b-nav>
 </template>
 
