@@ -41,39 +41,53 @@ export default class Navbar extends Formatters {
 </script>
 
 <style scoped lang="scss">
-.vertical {
-  height: 100vh;
-  width: 6rem;
-  > li {
-    width: 100%;
-    &.other-button {
-      margin-top: auto;
-    }
-  }
-}
+  @import "~bootstrap/scss/bootstrap";
 
-.horizontal > li {
-  height: 100%;
-  width: calc(100% / 6);
-  > a {
-    margin: auto 0;
-    padding: 0;
-    > svg {
-      font-size: 30px;
-    }
-  }
-  &.gewis-logo > a {
-    padding: 0.5rem 0.2rem !important;
-    > img {
-      margin-top: -0.4rem !important;
-      height: 100%;
-    }
-  }
-}
+  .vertical {
+    height: 100vh;
+    width: 6rem;
 
-@media(min-width: 576px) {
+    > li {
+      width: 100%;
+
+      &.other-button {
+        margin-top: auto;
+      }
+    }
+  }
+
   .horizontal > li {
-    width: calc(100% / 7);
+    height: 100%;
+    width: calc(100% / 6);
+
+    > a {
+      margin: auto 0;
+      padding: 0;
+
+      > svg {
+        font-size: 30px;
+      }
+    }
+
+    &.gewis-logo > a {
+      padding: 0.5rem 0.2rem !important;
+
+      > img {
+        margin-top: -0.4rem !important;
+        height: 100%;
+      }
+    }
   }
-}
+
+  @include media-breakpoint-down(lg) {
+    .horizontal > .gewis-logo > a > img {
+      max-height: 59px !important;
+    }
+  }
+
+  @include media-breakpoint-up(sm) {
+    .horizontal > li {
+      width: calc(100% / 7);
+    }
+  }
 </style>
