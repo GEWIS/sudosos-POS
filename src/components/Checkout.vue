@@ -53,19 +53,18 @@
 
     <!-- Checkout button -->
 
-    <b-row align-v="center" class="checkout-button p-4 mt-3">
-      <b-col class="text-left">
-        <font-awesome-icon icon="check" ></font-awesome-icon>
+    <b-row align-v="center" class="bottom-button checkout-button">
+      <b-col class="text-center">
+        <font-awesome-icon icon="check" ></font-awesome-icon> Checkout
       </b-col>
-      <b-col class="text-right">Checkout</b-col>
     </b-row>
 
     <!-- Checkout options -->
-    <b-row align-v="center" class="checkout-options p-4 align-bottom">
-      <b-col cols="6 option-border">
+    <b-row align-v="center" class="bottom-button checkout-options ">
+      <b-col cols="6" class="option-border text-center">
         Checkout &amp; Continue
       </b-col>
-      <b-col cols="6">
+      <b-col cols="6" class="text-center">
         Charge someone
       </b-col>
     </b-row>
@@ -110,25 +109,51 @@ export default class Checkout extends Formatters {
   border-top: 0.13rem solid black;
 }
 
-  .checkout-button {
-    background: $gewis-green;
-    color: white;
-    font-size: xx-large;
-  }
-
-  .checkout-options {
-    background: $gewis-black;
-    color: white;
-    font-size: x-large;
-    .option-border {
-      border-right: 0.13rem solid white;
-    }
-  }
-
   .bottom-fix {
     position: fixed;
     display: flow;
     bottom: 0;
   }
+
+.checkout-options {
+  background: $gewis-black;
+  .option-border {
+    border-right: 0.13rem solid white;
+  }
+}
+
+  .bottom-button { // Small
+    color: white;
+    padding: 1rem;
+    font-size: x-large;
+  }
+
+  .checkout-button {
+    background: $gewis-green;
+  }
+
+
+  @media(min-width: 768px){ // Tablets
+    .bottom-button {
+      padding: 1rem;
+      font-size: x-large;
+      font-weight: bolder;
+    }
+    .checkout-button {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+  }
+
+  @media(min-width: 992px){ // Desktops
+    .bottom-button {
+      padding: 1rem;
+      padding-left: 2rem;
+      padding-right: 2rem;
+      font-size: xx-large;
+      font-weight: bolder;
+    }
+  }
+
 
 </style>
