@@ -1,5 +1,5 @@
 <template>
-  <b-nav :vertical="vertical" class="nav"
+  <b-nav :vertical="vertical" class="nav align-items-center"
          v-bind:class="{ vertical: vertical, horizontal:!vertical }">
     <b-nav-item class="gewis-logo d-none d-sm-block">
       <img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo"/>
@@ -40,58 +40,40 @@ export default class Navbar extends Formatters {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .vertical {
   height: 100vh;
   width: 6rem;
-}
-
-.vertical > li {
-  width: 100%
-}
-
-.vertical > li > a {
-  width: 100%
-}
-
-.vertical > li.other-button {
-  margin-top: auto;
-}
-
-.horizontal {
-  width: 100vw;
-  height: 4rem;
-  font-size: 12px;
-  line-height: 1.2;
+  > li {
+    width: 100%;
+    &.other-button {
+      margin-top: auto;
+    }
+  }
 }
 
 .horizontal > li {
   height: 100%;
-  width: calc(100% / 6)
+  width: calc(100% / 6);
+  > a {
+    margin: auto 0;
+    padding: 0;
+    > svg {
+      font-size: 30px;
+    }
+  }
+  &.gewis-logo > a {
+    padding: 0.5rem 0.2rem !important;
+    > img {
+      margin-top: -0.4rem !important;
+      height: 100%;
+    }
+  }
 }
 
 @media(min-width: 576px) {
   .horizontal > li {
-    width: calc(100% / 7)
+    width: calc(100% / 7);
   }
-}
-
-.horizontal > li > a {
-  height: 100%;
-  margin: auto 0;
-  padding: 0;
-}
-
-.horizontal > li > a > svg {
-  font-size: 30px;
-}
-
-.horizontal > li.gewis-logo > a {
-  padding: 0.4rem 0.2rem !important;
-}
-
-.horizontal > li.gewis-logo > a > img {
-  margin-top: -0.4rem !important;
-  height: 100%;
 }
 </style>
