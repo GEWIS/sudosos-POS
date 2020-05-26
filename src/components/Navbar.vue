@@ -26,7 +26,7 @@ import '@/styles/Nav.scss';
 
 @Component
 export default class Navbar extends Formatters {
-  public vertical: boolean = window.innerWidth > 768;
+  public vertical: boolean = window.innerWidth > 768 && window.innerHeight > 615;
 
   mounted() {
     window.addEventListener('resize', () => {
@@ -35,7 +35,7 @@ export default class Navbar extends Formatters {
   }
 
   checkWindowSize() {
-    this.vertical = window.innerWidth > 768;
+    this.vertical = window.innerWidth > 768 && window.innerHeight > 615;
   }
 }
 </script>
