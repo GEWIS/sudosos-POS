@@ -12,7 +12,7 @@
     <b-nav-item class="other-button">
       <font-awesome-icon icon="search"/>
     </b-nav-item>
-    <b-nav-item class="other-button">
+    <b-nav-item class="">
       <font-awesome-icon icon="ellipsis-h" />
     </b-nav-item>
   </b-nav>
