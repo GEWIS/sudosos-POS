@@ -1,7 +1,7 @@
 <template>
   <b-nav :vertical="vertical" class="nav"
          v-bind:class="{ vertical: vertical, horizontal:!vertical }">
-    <b-nav-item class="gewis-logo d-none d-lg-block">
+    <b-nav-item class="gewis-logo d-none d-sm-block">
       <img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo"/>
     </b-nav-item>
     <b-nav-item><font-awesome-icon icon="beer" /></b-nav-item>
@@ -68,6 +68,12 @@ export default class Navbar extends Formatters {
 .horizontal > li {
   height: 100%;
   width: calc(100% / 6)
+}
+
+@media(min-width: 576px) {
+  .horizontal > li {
+    width: calc(100% / 7)
+  }
 }
 
 .horizontal > li > a {
