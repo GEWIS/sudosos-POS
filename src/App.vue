@@ -51,6 +51,7 @@ export default class App extends Vue {
     width: 6rem;
     position: fixed;
     top: 0;
+    z-index: 1000;
 
     > li {
       width: 100%;

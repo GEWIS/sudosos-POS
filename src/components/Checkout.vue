@@ -1,6 +1,6 @@
 <!-- TODO: Fix text/button sizing on different layouts and delete this line -->
 <template>
-  <div class="h-100 pb-4 mr-0" style="overflow: hidden">
+  <div class="h-100 pb-4 mr-0">
     <div id="wrapper">
     <!-- Checkout header -->
     <b-row class="head" align-v="center">
@@ -96,7 +96,6 @@ export default class Checkout extends Formatters {
   #wrapper {
     min-height: 100%;
     margin-bottom: -234px;
-    overflow: hidden;
   }
 
   #checkout-buttons,
