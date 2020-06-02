@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Checkout />
+    <CheckoutList />
     <ProductListComponent hidden></ProductListComponent>
   </div>
 </template>
@@ -8,12 +8,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import ProductListComponent from '@/components/ProductListComponent.vue';
-import Checkout from '@/components/Checkout.vue';
+import CheckoutList from '@/components/CheckoutList.vue';
 
 @Component({
   components: {
-    Checkout,
     ProductListComponent,
+    CheckoutList,
   },
 })
 export default class Home extends Vue {

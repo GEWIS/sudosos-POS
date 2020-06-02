@@ -7,7 +7,7 @@ import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fort
 import {
   faPlus,
   faMinus,
-  faTrash,
+  faTimes,
   faSignOutAlt,
   faUser,
   faWallet,
@@ -31,7 +31,7 @@ import './styles/global/_main.scss';
 library.add(
   faPlus,
   faMinus,
-  faTrash,
+  faTimes,
   faSignOutAlt,
   faUser,
   faWallet,

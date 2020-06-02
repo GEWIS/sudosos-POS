@@ -1,128 +1,54 @@
 <template>
-  <b-container fluid class="product">
-    <b-row class="text-center" align-v="center">
-      <b-col class="name text-left">
-        {{product.name}}
-      </b-col>
-      <b-col class="amount">
-        <a><font-awesome-icon icon="minus" class="mr-1 pt-1"></font-awesome-icon></a>
-        x{{subTransaction.amount}}
-        <a><font-awesome-icon icon="plus" class="ml-1 pt-1"></font-awesome-icon></a>
-      </b-col>
-      <b-col class="text-right">
-        <span class="price">{{ dinero({amount: subTransactionPrice}).toFormat() }}</span>
-        <a><font-awesome-icon icon="trash" class="ml-3"></font-awesome-icon></a>
-      </b-col>
-    </b-row>
-  </b-container>
+<b-row class="w-100 mx-0 my-2 px-1 py-2">
+  <b-col cols="12" sm="6" class="text-truncate">{{ product.name }}</b-col>
+  <b-col cols="6" sm="3" class="text-left text-sm-center mt-1 mt-sm-0">
+    <span>
+      <span>
+        <font-awesome-icon icon="minus" size="xs" class="mr-1 icon remove" />
+      </span>
+      x{{ subTransaction.amount }}
+    <span><font-awesome-icon icon="plus" size="xs" class="ml-1 icon add" /></span>
+    </span>
+  </b-col>
+  <b-col cols="6" sm="3" class="text-right mt-1 mt-sm-0">
+    <span>
+    {{ dinero({amount: subTransaction.pricePerProduct * subTransaction.amount}).toFormat() }}
+    <font-awesome-icon icon="times" size="xs" class="ml-1 icon remove" />
+      </span>
+  </b-col>
+</b-row>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { SubTransaction } from '@/entities/SubTransaction';
-import { Product } from '@/entities/Product';
 import Formatters from '@/mixins/Formatters';
+import { Product } from '@/entities/Product';
+import FakeProducts from '@/assets/FakeProducts';
+
 
 @Component
-export default class CheckoutProduce extends Formatters {
-  @Prop()
-  subTransaction!: SubTransaction;
+export default class CheckoutProduct extends Formatters {
+  @Prop() subTransaction!: SubTransaction;
 
-  // *************************************************
-  //
-  //               Begin test data
-  //
-  // *************************************************
-  beugel: Product = {
-    id: '1',
-    name: 'Grolsch beugel',
-    ownerId: '1',
-    price: 110,
-    picture: 'https://www.supermarktaanbiedingen.com/public/images/product/2017/39/0-508102fls-grolsch-premium-pilsner-beugel-45cl.jpg',
-    traySize: 20,
-    category: 'drink',
-    isAlcoholic: true,
-    negative: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  tripel: Product = {
-    id: '2',
-    name: 'Grimbergen tripel (voor de sfeer)',
-    ownerId: '1',
-    price: 90,
-    picture: 'https://deklokdranken.blob.core.windows.net/product-images/105120.jpg',
-    traySize: 24,
-    category: 'drink',
-    isAlcoholic: true,
-    negative: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  private alcoholFree: Product = {
-    id: '3',
-    name: 'Alcoholvrije Athena-meuk',
-    ownerId: '2',
-    price: 50,
-    picture: 'https://www.cocktailicious.nl/wp-content/uploads/2019/10/sex-on-the-beach.jpg',
-    traySize: 1,
-    category: 'drink',
-    isAlcoholic: false,
-    negative: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  private cocktail: Product = {
-    id: '4',
-    name: 'Athena-meuk met alcohol',
-    ownerId: '2',
-    price: 150,
-    picture: 'https://www.mitra.nl/cms/userfiles/cocktails/298-mojito43.png',
-    traySize: 1,
-    category: 'drink',
-    isAlcoholic: true,
-    negative: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
-
-  // *************************************************
-  //
-  //               End test data
-  //
-  // *************************************************
-  products: Product[] = [this.beugel, this.tripel, this.alcoholFree, this.cocktail];
-
-  pid = Number(this.subTransaction.productId) - 1;
-
-  product = this.products[this.pid];
-
-  pricePerProduct = this.subTransaction.pricePerProduct;
-
-  productAmount = this.subTransaction.amount;
-
-  subTransactionPrice = Number(this.pricePerProduct) * Number(this.productAmount);
+  product : Product = FakeProducts.fetchProducts()[Number(this.subTransaction.productId)];
 }
 </script>
 
 <style scoped lang="scss">
-    .product {
-      background-color: $gewis-grey-accent;
-      margin-top: 0.7rem;
-      margin-bottom: 0.7rem;
-      font-size: larger;
+  .icon:hover {
+    cursor: pointer;
 
-      .amount {
-        font-weight: bold;
-        font-size: larger;
-      }
-
-      .price {
-        color: $gewis-red;
-        font-size: larger;
-      }
+    &.add {
+      color: $gewis-green;
     }
+
+    &.remove {
+      color: $gewis-red;
+    }
+  }
+
+  .row {
+    background-color: $gewis-grey-accent;
+  }
 </style>
