@@ -1,5 +1,6 @@
+<!-- TODO: Fix text/button sizing on different layouts and delete this line -->
 <template>
-  <div class="h-100">
+  <div class="h-100 pb-4 mr-0" style="overflow: hidden">
     <div id="wrapper">
     <!-- Checkout header -->
     <b-row class="head" align-v="center">
@@ -8,7 +9,7 @@
           <b-col cols="3">
             <font-awesome-icon icon="user"></font-awesome-icon>
           </b-col>
-          <b-col cols="9" class="text-left username">
+          <b-col cols="9" class="text-left username text-sizing">
               <span class="d-inline">Marcin</span>
               <span class="d-none d-md-inline ml-2">van de Ven</span>
               <span class="d-inline d-md-none ml-2">(1234)</span>
@@ -18,7 +19,7 @@
           <b-col cols="3">
             <font-awesome-icon icon="wallet" ></font-awesome-icon>
           </b-col>
-          <b-col cols="9" class="text-left balance">
+          <b-col cols="9" class="text-left balance text-sizing">
             {{ dinero({amount: 1337}).toFormat() }}
           </b-col>
         </b-row>
@@ -29,8 +30,8 @@
     </b-row>
 
     <!-- Checkout list -->
-    <b-row class="pb-2">
-      <b-col cols="12">
+    <b-row>
+      <b-col>
       <CheckoutList></CheckoutList>
     </b-col>
     </b-row>
@@ -41,14 +42,14 @@
     <div id="checkout-buttons">
 
     <!-- Checkout calculation -->
-    <b-row class="summary mx-2 summary-border">
+    <b-row class="summary mx-2 summary-border text-sizing">
         <b-col cols="6" class="text-left ml-n2">Total</b-col>
         <b-col cols="6" class="text-right mr-n2 price">
           {{ dinero({amount: 337}).toFormat() }}
         </b-col>
       </b-row>
 
-      <b-row class="summary mx-2">
+      <b-row class="summary mx-2 text-sizing">
         <b-col cols="6" class="text-left ml-n2">Balance after</b-col>
         <b-col cols="6" class="text-right mr-n2 balance">
           {{ dinero({amount: 1337}).toFormat() }}
@@ -57,14 +58,14 @@
 
     <!-- Checkout button -->
 
-    <b-row align-v="center" class="bottom-button checkout-button">
+    <b-row align-v="center" class="bottom-button checkout-button text-sizing">
       <b-col cols="12" class="text-center">
         <font-awesome-icon icon="check" ></font-awesome-icon> Checkout
       </b-col>
     </b-row>
 
     <!-- Checkout options -->
-    <b-row align-v="center" class="bottom-button checkout-options ">
+    <b-row align-v="center" class="bottom-button checkout-options text-sizing">
       <b-col cols="6" class="option-border text-center">
         Checkout &amp; Continue
       </b-col>
@@ -95,6 +96,7 @@ export default class Checkout extends Formatters {
   #wrapper {
     min-height: 100%;
     margin-bottom: -234px;
+    overflow: hidden;
   }
 
   #checkout-buttons,
@@ -141,30 +143,44 @@ export default class Checkout extends Formatters {
   .bottom-button { // Small
     color: white;
     padding: 1rem;
-    font-size: x-large;
+    font-size: large;
   }
+
+  .text-sizing {
+    font-size: large;
+  }
+
 
   .checkout-button {
     background: $gewis-green;
   }
 
+  @include media-breakpoint-up(sm) { // Larger phones
+    .text-sizing {
+      font-size: larger;
+    }
+  }
+
   @include media-breakpoint-up(md) { // Tablets
     .bottom-button {
       padding: 1rem;
-      font-size: x-large;
-      font-weight: bolder;
     }
     .checkout-button {
       padding-left: 3rem;
       padding-right: 3rem;
+    }
+    .text-sizing {
+      font-size: x-large;
     }
   }
 
   @include media-breakpoint-up(lg) { // Desktops
     .bottom-button {
       padding: 1rem 2rem;
-      font-size: xx-large;
       font-weight: bolder;
+    }
+    .text-sizing {
+      font-size: xx-large;
     }
   }
 </style>
