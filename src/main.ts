@@ -12,7 +12,14 @@ import {
   faUser,
   faWallet,
   faCheck,
+  faBeer,
+  faCoffee,
+  faCookieBite,
+  faTicketAlt,
+  faEllipsisH,
+  faSearch,
 } from '@fortawesome/free-solid-svg-icons';
+  
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -30,6 +37,12 @@ library.add(
   faUser,
   faWallet,
   faCheck,
+  faBeer,
+  faCoffee,
+  faCookieBite,
+  faTicketAlt,
+  faEllipsisH,
+  faSearch,
 );
 
 // Default settings for Dinero

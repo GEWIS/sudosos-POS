@@ -1,0 +1,11 @@
+@import "global/variables.scss";
+
+.nav {
+  background-color: $gewis-red;
+}
+
+.nav > .nav-item > .nav-link {
+  color: white;
+  text-align: center;
+  font-size: 40px;
+}
