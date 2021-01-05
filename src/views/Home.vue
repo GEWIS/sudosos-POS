@@ -14,6 +14,9 @@ import ProductListComponent from '@/components/ProductListComponent.vue';
   },
 })
 export default class Home extends Vue {
-
+  mounted() {
+    // @ts-ignore
+    console.log(this.$parent.currentCategory);
+  }
 }
 </script>
