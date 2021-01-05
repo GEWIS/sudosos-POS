@@ -3,6 +3,9 @@
 .nav {
   background-color: $gewis-red;
 }
+.nav-item.active{
+  background-color: darken($gewis-red, 10%);
+}
 
 .nav > .nav-item > .nav-link {
   color: white;

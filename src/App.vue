@@ -5,10 +5,10 @@
       <b-nav-item class="gewis-logo d-none d-sm-block">
         <img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo"/>
       </b-nav-item>
-      <b-nav-item><font-awesome-icon icon="beer" /></b-nav-item>
-      <b-nav-item><font-awesome-icon icon="coffee" /></b-nav-item>
-      <b-nav-item><font-awesome-icon icon="cookie-bite" /></b-nav-item>
-      <b-nav-item><font-awesome-icon icon="ticket-alt" /></b-nav-item>
+      <home-menu-button :activeButton.sync="currentCategory" :name="'beer'"/>
+      <home-menu-button :activeButton.sync="currentCategory" :name="'coffee'"/>
+      <home-menu-button :activeButton.sync="currentCategory" :name="'cookie-bite'"/>
+      <home-menu-button :activeButton.sync="currentCategory" :name="'ticket-alt'"/>
 
       <b-nav-item class="other-button">
         <font-awesome-icon icon="search"/>
@@ -25,10 +25,17 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import HomeMenuButton from '@/components/HomeMenuButton.vue';
 
-@Component
+@Component({
+  components: {
+    HomeMenuButton,
+  },
+})
 export default class App extends Vue {
   public vertical: boolean = window.innerWidth > 768 && window.innerHeight > 615;
+
+  public currentCategory: string = 'beer';
 
   mounted() {
     window.addEventListener('resize', () => {
@@ -38,6 +45,16 @@ export default class App extends Vue {
 
   checkWindowSize() {
     this.vertical = window.innerWidth > 768 && window.innerHeight > 615;
+  }
+
+  get mappedCategory() {
+    const categoryMap: any = {
+      beer: 'beer',
+      coffee: 'drink',
+      'cookie-bite': 'food',
+      'ticket-alt': 'ticket',
+    };
+    return categoryMap[this.currentCategory];
   }
 }
 </script>
