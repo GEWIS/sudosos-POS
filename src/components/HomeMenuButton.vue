@@ -1,5 +1,5 @@
 <template>
-  <b-nav-item @click="syncedActiveButton = name" :class="{active}">
+  <b-nav-item @click="buttonClicked" :class="{active}">
     <font-awesome-icon :icon="name" />
   </b-nav-item>
 </template>
@@ -13,11 +13,14 @@ export default class HomeMenuButton extends Vue {
   // The name of this button
   @Prop() name!: String;
 
-  // The current active button; Determines style changes
-  @PropSync('activeButton', { type: String }) syncedActiveButton!: String
+  private searchState = this.$store.state.searchState;
 
   get active() {
-    return this.name === this.syncedActiveButton;
+    return this.name === this.searchState.filterName;
+  }
+
+  buttonClicked() {
+    this.$store.commit('searchState/setFilterName', this.name);
   }
 }
 </script>

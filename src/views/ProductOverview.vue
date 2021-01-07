@@ -6,17 +6,23 @@
                         :key="item.id"
       />
     </b-row>
+    <searchbar-with-keyboard
+      :input.sync="query"
+      :showSearchbar="searchState.searching">
+    </searchbar-with-keyboard>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Product } from '@/entities/Product';
+import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
 
   @Component({
     components: {
       ProductComponent,
+      SearchbarWithKeyboard,
     },
   })
 export default class ProductOverview extends Vue {
@@ -123,20 +129,28 @@ export default class ProductOverview extends Vue {
       this.genderInTheBlender,
     ];
 
-    // Is the user searching?
-    searching: boolean = false;
+    // Proxy for the state, compact notation
+    private searchState = this.$store.state.searchState;
+
+    mounted() {
+      // Initialize the product overview with beer
+      this.$store.commit('searchState/setFilterName', 'beer');
+    }
 
     // What is the user searching for?
     query: string = '';
 
+    // Show the search bar with keyboard
+    searching: boolean = false;
+
+    // Filter the products by the desired criteria
     get filteredProducts() {
-      if (this.searching) {
+      if (this.searchState.searching) {
         return this.products
           .filter(product => product.name.toLowerCase().includes(this.query.toLowerCase()));
       }
       // @ts-ignore
-      const currentCategory = this.$parent.mappedCategory;
-      console.log(currentCategory);
+      const currentCategory = this.searchState.filterCategory;
       return this.products.filter(product => product.category === currentCategory);
     }
 }
