@@ -1,8 +1,8 @@
 import { User } from '@/entities/User';
 import { BaseEntity } from '@/entities/BaseEntity';
 
-export interface Transaction extends BaseEntity {
+export interface EANAuthentication extends BaseEntity {
   id: number;
-  from: User;
-  createdBy: User;
+  userID: User['id'];
+  eanCode: string;
 }
