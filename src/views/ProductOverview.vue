@@ -1,25 +1,31 @@
 <template>
   <div>
     <b-row class="mx-0">
-      <ProductComponent v-for="item in products"
+      <ProductComponent v-for="item in filteredProducts"
                         :product="item"
                         :key="item.id"
       />
     </b-row>
+    <searchbar-with-keyboard
+      :input.sync="query"
+      :showSearchbar="searchState.searching">
+    </searchbar-with-keyboard>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Product } from '@/entities/Product';
+import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
 
   @Component({
     components: {
       ProductComponent,
+      SearchbarWithKeyboard,
     },
   })
-export default class ProductListComponent extends Vue {
+export default class ProductOverview extends Vue {
     // *************************************************
     //
     //               Begin test data
@@ -32,7 +38,7 @@ export default class ProductListComponent extends Vue {
       price: 110,
       picture: 'https://www.supermarktaanbiedingen.com/public/images/product/2017/39/0-508102fls-grolsch-premium-pilsner-beugel-45cl.jpg',
       traySize: 20,
-      category: 'drink',
+      category: 'beer',
       isAlcoholic: true,
       negative: false,
       createdAt: new Date(),
@@ -46,7 +52,7 @@ export default class ProductListComponent extends Vue {
       price: 90,
       picture: 'https://deklokdranken.blob.core.windows.net/product-images/105120.jpg',
       traySize: 24,
-      category: 'drink',
+      category: 'beer',
       isAlcoholic: true,
       negative: false,
       createdAt: new Date(),
@@ -81,12 +87,72 @@ export default class ProductListComponent extends Vue {
       updatedAt: new Date(),
     }
 
+    private starmix: Product = {
+      id: '5',
+      name: 'Starmix',
+      ownerId: '3',
+      price: 90,
+      picture: 'https://www.kantinewinkel.nl/media/catalog/product/cache/3/thumbnail/9df78eab33525d08d6e5fb8d27136e95/5/7/574601.jpg',
+      traySize: 1,
+      category: 'food',
+      isAlcoholic: false,
+      negative: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+
+    private genderInTheBlender: Product = {
+      id: '6',
+      name: 'Kaartje "Gender in the blender"',
+      ownerId: '2',
+      price: 100,
+      picture: 'https://images1.persgroep.net/rcs/aEe3BRrfPbrJOENdix0_AJTfdY8/diocontent/153315357/_fitwidth/1240?appId=93a17a8fd81db0de025c8abd1cca1279&quality=0.9',
+      traySize: 1,
+      category: 'ticket',
+      isAlcoholic: false,
+      negative: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+
     // *************************************************
     //
     //               End test data
     //
     // *************************************************
-    products: Product[] = [this.beugel, this.tripel, this.alcoholFree, this.cocktail];
+    products: Product[] = [
+      this.beugel,
+      this.tripel,
+      this.alcoholFree,
+      this.cocktail,
+      this.starmix,
+      this.genderInTheBlender,
+    ];
+
+    // Proxy for the state, compact notation
+    private searchState = this.$store.state.searchState;
+
+    mounted() {
+      // Initialize the product overview with beer
+      this.$store.commit('searchState/setFilterName', 'beer');
+    }
+
+    // What is the user searching for?
+    query: string = '';
+
+    // Show the search bar with keyboard
+    searching: boolean = false;
+
+    // Filter the products by the desired criteria
+    get filteredProducts() {
+      if (this.searchState.searching) {
+        return this.products
+          .filter(product => product.name.toLowerCase().includes(this.query.toLowerCase()));
+      }
+      // @ts-ignore
+      const currentCategory = this.searchState.filterCategory;
+      return this.products.filter(product => product.category === currentCategory);
+    }
 }
 </script>
 

@@ -5,12 +5,15 @@
       <b-nav-item class="gewis-logo d-none d-sm-block">
         <img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo"/>
       </b-nav-item>
-      <home-menu-button :activeButton.sync="currentCategory" :name="'beer'"/>
-      <home-menu-button :activeButton.sync="currentCategory" :name="'coffee'"/>
-      <home-menu-button :activeButton.sync="currentCategory" :name="'cookie-bite'"/>
-      <home-menu-button :activeButton.sync="currentCategory" :name="'ticket-alt'"/>
+      <home-menu-button :name="'beer'"/>
+      <home-menu-button :name="'coffee'"/>
+      <home-menu-button :name="'cookie-bite'"/>
+      <home-menu-button :name="'ticket-alt'"/>
 
-      <b-nav-item class="other-button">
+      <b-nav-item
+        class="other-button"
+        @click="clickSearchButton"
+        :class="{active: searchState.searching}">
         <font-awesome-icon icon="search"/>
       </b-nav-item>
       <b-nav-item class="">
@@ -33,9 +36,10 @@ import HomeMenuButton from '@/components/HomeMenuButton.vue';
   },
 })
 export default class App extends Vue {
-  public vertical: boolean = window.innerWidth > 768 && window.innerHeight > 615;
+  public vertical: boolean = (window.innerWidth / window.innerHeight) >= 1;
 
-  public currentCategory: string = 'beer';
+
+  private searchState = this.$store.state.searchState;
 
   mounted() {
     window.addEventListener('resize', () => {
@@ -44,17 +48,11 @@ export default class App extends Vue {
   }
 
   checkWindowSize() {
-    this.vertical = window.innerWidth > 768 && window.innerHeight > 615;
+    this.vertical = (window.innerWidth / window.innerHeight) >= 1;
   }
 
-  get mappedCategory() {
-    const categoryMap: any = {
-      beer: 'beer',
-      coffee: 'drink',
-      'cookie-bite': 'food',
-      'ticket-alt': 'ticket',
-    };
-    return categoryMap[this.currentCategory];
+  clickSearchButton() {
+    this.$store.commit('searchState/setSearching', !this.searchState.searching);
   }
 }
 </script>
@@ -80,6 +78,13 @@ export default class App extends Vue {
 
   .vertical ~ main {
     margin-left: 6rem;
+  }
+
+  .horizontal ~ main {
+    .searchbar-container {
+      left: 0;
+      width: 100%;
+    }
   }
 
   .horizontal {
