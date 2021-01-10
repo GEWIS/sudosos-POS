@@ -67,7 +67,7 @@ class ProductsState extends VuexModule {
       updatedAt: new Date(),
     };
 
-    private alcoholFree: Product = {
+    alcoholFree: Product = {
       id: 3,
       name: 'Alcoholvrije Athena-meuk',
       owner: this.owner,
@@ -80,7 +80,7 @@ class ProductsState extends VuexModule {
       updatedAt: new Date(),
     };
 
-    private cocktail: Product = {
+    cocktail: Product = {
       id: 4,
       name: 'Athena-meuk met alcohol',
       owner: this.owner,
@@ -93,7 +93,7 @@ class ProductsState extends VuexModule {
       updatedAt: new Date(),
     }
 
-    private starmix: Product = {
+    starmix: Product = {
       id: 5,
       name: 'Starmix',
       owner: this.owner,
@@ -106,7 +106,7 @@ class ProductsState extends VuexModule {
       updatedAt: new Date(),
     }
 
-    private genderInTheBlender: Product = {
+    genderInTheBlender: Product = {
       id: 6,
       name: 'Kaartje "Gender in the blender"',
       owner: this.owner,

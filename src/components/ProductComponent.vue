@@ -1,6 +1,8 @@
 <template>
   <b-col class="text-center product-card px-2"
-         cols="4" sm="4" md="3" lg="2">
+         cols="4" sm="4" md="3" lg="2"
+         @click="productClicked"
+         >
     <div class="product">
       <img :src="product.picture" alt="Placeholder for Beugel" />
       <p class="w-100 product-name mb-0">{{ product.name }}</p>
@@ -17,6 +19,10 @@ import Formatters from '@/mixins/Formatters';
 @Component
 export default class ProductComponent extends Formatters {
   @Prop() product!: Product;
+
+  productClicked() {
+    this.$store.commit('transactionState/addProduct', { product: this.product, amount: 1 });
+  }
 }
 
 </script>

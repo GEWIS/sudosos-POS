@@ -36,7 +36,7 @@ export default class SearchbarWithKeyboard extends Vue {
     position: absolute;
     bottom: 0;
     left: 6rem;
-    width: calc(100% - 6rem);
+    width: calc(100% - 6rem - 16rem);
 
     .query-container {
       p.query-text {

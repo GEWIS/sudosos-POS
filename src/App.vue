@@ -22,6 +22,7 @@
     </b-nav>
     <main>
       <router-view />
+      <checkout-bar />
     </main>
   </div>
 </template>
@@ -29,10 +30,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
-
+import CheckoutBar from '@/components/CheckoutBar.vue';
 @Component({
   components: {
     HomeMenuButton,
+    CheckoutBar,
   },
 })
 export default class App extends Vue {
@@ -78,6 +80,13 @@ export default class App extends Vue {
 
   .vertical ~ main {
     margin-left: 6rem;
+    display: flex;
+    .product-overview-container{
+      flex-grow: 1;
+    }
+    .checkoutbar {
+      width: 16rem;
+    }
   }
 
   .horizontal ~ main {

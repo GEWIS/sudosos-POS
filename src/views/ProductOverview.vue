@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="product-overview-container">
     <b-row class="mx-0">
       <ProductComponent v-for="item in filteredProducts"
                         :product="item"

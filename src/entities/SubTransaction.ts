@@ -1,11 +1,11 @@
 import { User } from '@/entities/User';
-import { Transaction } from '@/entities/Transaction';
 import { Container } from '@/entities/Container';
 import { BaseEntity } from '@/entities/BaseEntity';
+import { SubTransactionRow } from './SubTransactionRow';
 
 export interface SubTransaction extends BaseEntity {
-  id: number;
+  id?: number;
   to: User;
-  transaction: Transaction;
   container: Container;
+  subTransactionRows: SubTransactionRow[];
 }
