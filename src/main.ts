@@ -14,6 +14,7 @@ import {
   faUser,
   faWallet,
   faSignOutAlt,
+  faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import App from './App.vue';
 import router from './router';
@@ -34,6 +35,7 @@ library.add(
   faUser,
   faWallet,
   faSignOutAlt,
+  faUserFriends,
 );
 
 // Default settings for Dinero

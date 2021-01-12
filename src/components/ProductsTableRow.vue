@@ -1,5 +1,5 @@
 <template>
-  <b-row class="product-table-row">
+  <b-row class="products-table-row">
     <b-col cols="2">
       <p class="first-col">{{ item.amount }}</p>
     </b-col>
@@ -28,7 +28,7 @@ export default class ProductsTable extends Formatters {
 </script>
 <style lang="scss" scoped>
 .products-table-row {
-  border-bottom: 4px solid #525659;
+  border-bottom: 4px solid white;
   div{
     padding: 0;
     p {
@@ -36,9 +36,9 @@ export default class ProductsTable extends Formatters {
       &.first-col {
         text-align: center;
       }
-      font-size: 1.5em;
-      margin-bottom: 0;
+      margin-bottom: 0.5em;
       margin-top: 0.5em;
+      font-weight: 700;
     }
   }
 }
