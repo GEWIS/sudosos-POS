@@ -90,5 +90,23 @@ class TransactionState extends VuexModule implements Transaction {
       this.subTransactions.push(subTrans);
     }
   }
+
+  @Mutation
+  public removeProduct(product: Product) {
+    const container: Container|any = this.containers
+      .find(con => con.productIDs.includes(product.id));
+
+    const sub: SubTransaction|undefined = this.subTransactions
+      .find(trans => trans.container === container);
+
+    // Find the relevant subtransaction, then splice the array
+    if (sub) {
+      const index = sub.subTransactionRows
+        .findIndex((row: SubTransactionRow) => row.product === product);
+      if (index > -1) {
+        sub.subTransactionRows.splice(index, 1);
+      }
+    }
+  }
 }
 export default TransactionState;

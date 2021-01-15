@@ -1,0 +1,69 @@
+<template>
+  <b-col class="keypad">
+    <b-row>
+      <b-col cols="6" offset="3" class="value-container">
+        <p>
+          {{ value }}
+        </p>
+      </b-col>
+    </b-row>
+    <b-row class="keys-container">
+      <b-col v-for="key in keys" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
+        <p>{{ key }}</p>
+      </b-col>
+    </b-row>
+  </b-col>
+</template>
+<script lang="ts">
+import { Component, PropSync, Vue } from 'vue-property-decorator';
+@Component
+export default class Keypad extends Vue {
+  private keys: (number|string)[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, '←', 0, '✔'];
+
+  @PropSync('value', { type: Number }) syncedValue!: number;
+
+  // eslint-disable-next-line class-methods-use-this
+  keyClicked(key: number|string) {
+    if (key === '←') {
+      this.syncedValue = Math.floor(this.syncedValue / 10);
+    } else if (key === '✔') {
+      this.$emit('close');
+    } else {
+      this.syncedValue = this.syncedValue * 10 + Number(key);
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+  .keypad {
+    width: 20%;
+    position: absolute;
+    top: 20%;
+    left: 40%;
+
+    background-color: $gewis-grey-shadow;
+
+    .keys-container {
+      margin: 16px;
+      .key {
+        text-align: center;
+        p {
+          cursor: pointer;
+          font-size: 1.5rem;
+          border: 2px solid black;
+          border-radius: 16px;
+          padding: 1.5rem 0;
+        }
+      }
+    }
+    .value-container{
+      text-align: center;
+      margin-top: 1rem;
+      p {
+        font-size: 4rem;
+        background-color: $gewis-grey;
+        border-radius: 8px;
+      }
+    }
+  }
+</style>
