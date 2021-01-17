@@ -27,9 +27,7 @@
       <b-col cols="6" offset="2"><p>Balance after</p></b-col>
       <b-col cols="4"><p>{{ dinero({ amount: balanceAfter }).toFormat() }}</p></b-col>
     </b-row>
-    <b-row class="checkout-button">
-      <p>Checkout</p>
-    </b-row>
+    <checkout-button />
     <b-row class="charge-other-button">
       <p v-if="charging === null">
         <font-awesome-icon icon="user-friends"/> Charge someone
@@ -44,11 +42,12 @@
 import { Component, Prop } from 'vue-property-decorator';
 import Formatters from '@/mixins/Formatters';
 import ProductsTable from '@/components/ProductsTable.vue';
+import CheckoutButton from '@/components/CheckoutButton.vue';
 import { SubTransaction } from '@/entities/SubTransaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User } from '@/entities/User';
 @Component({
-  components: { ProductsTable },
+  components: { ProductsTable, CheckoutButton },
 })
 export default class CheckoutBar extends Formatters {
   private userState = this.$store.state.userState;
@@ -128,20 +127,6 @@ export default class CheckoutBar extends Formatters {
         margin-top: 0.5em;
         font-weight: 700;
       }
-    }
-  }
-  .checkout-button {
-    cursor: pointer;
-    height: 12%;
-    background-color: #93e78e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    p {
-      font-size: 2rem;
-      color: #525659;
-      font-weight: 700;
-      margin: 0;
     }
   }
   .charge-other-button {
