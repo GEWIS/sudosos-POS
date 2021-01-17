@@ -84,6 +84,7 @@ export default class ProductsTable extends Formatters {
 <style lang="scss" scoped>
 .products-table-row {
   border-bottom: 4px solid white;
+  margin: 0;
   &.editing {
     background-color: #525659;
     p {

@@ -1,29 +1,6 @@
 <template>
   <div id="app">
-    <b-nav :vertical="vertical" class="nav align-items-center"
-           v-bind:class="{ vertical: vertical, horizontal: !vertical }">
-      <b-nav-item class="gewis-logo d-none d-sm-block">
-        <img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo"/>
-      </b-nav-item>
-      <home-menu-button :name="'beer'"/>
-      <home-menu-button :name="'coffee'"/>
-      <home-menu-button :name="'cookie-bite'"/>
-      <home-menu-button :name="'ticket-alt'"/>
-
-      <b-nav-item
-        class="other-button"
-        @click="clickSearchButton"
-        :class="{active: searchState.searching}">
-        <font-awesome-icon icon="search"/>
-      </b-nav-item>
-      <b-nav-item class="">
-        <font-awesome-icon icon="ellipsis-h" />
-      </b-nav-item>
-    </b-nav>
-    <main>
-      <router-view />
-      <checkout-bar />
-    </main>
+    <router-view />
   </div>
 </template>
 

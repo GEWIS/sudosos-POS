@@ -1,6 +1,6 @@
 <template>
-  <b-container class="checkoutbar">
-    <b-row>
+  <div class="checkoutbar">
+    <b-row class="user-data-header">
       <b-col cols="8" class="user-data-container">
         <p class="user-data-line">
           <font-awesome-icon icon="user" /> {{ userState.name }}
@@ -28,15 +28,15 @@
       <b-col cols="4"><p>{{ dinero({ amount: balanceAfter }).toFormat() }}</p></b-col>
     </b-row>
     <checkout-button />
-    <b-row class="charge-other-button">
-      <p v-if="charging === null">
+    <b-row class="charge-other-button" @click="chargeOtherPerson">
+      <p v-if="searchState.chargingUser === null">
         <font-awesome-icon icon="user-friends"/> Charge someone
       </p>
       <p v-else>
-        Charging {{ charging.name }}
+        Charging {{ searchState.chargingUser.name }}
       </p>
     </b-row>
-  </b-container>
+  </div>
 </template>
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator';
@@ -53,6 +53,8 @@ export default class CheckoutBar extends Formatters {
   private userState = this.$store.state.userState;
 
   private transactionState = this.$store.state.transactionState;
+
+  private searchState = this.$store.state.searchState;
 
   // Other user to charge
   private charging: User|null = null;
@@ -81,6 +83,10 @@ export default class CheckoutBar extends Formatters {
   get balanceAfter() {
     return this.userState.saldo - this.transactionTotal;
   }
+
+  chargeOtherPerson() {
+    this.$store.commit('searchState/setUserSearching', true);
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -89,20 +95,25 @@ export default class CheckoutBar extends Formatters {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  .user-data-container {
-    padding-top: 0.5rem;
-    background-color: #525659;
-    .user-data-line {
-      white-space: nowrap;
-      overflow: hidden;
-      display: block;
-      text-overflow: ellipsis;
-      color: white;
-      span.positive {
-        color: #93e78e;
-      }
-      span.negative {
-        color: #ed5a5a;
+  .row {
+    margin: 0;
+  }
+  .user-data-header {
+    .user-data-container {
+      padding-top: 0.5rem;
+      background-color: #525659;
+      .user-data-line {
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+        text-overflow: ellipsis;
+        color: white;
+        span.positive {
+          color: #93e78e;
+        }
+        span.negative {
+          color: #ed5a5a;
+        }
       }
     }
   }

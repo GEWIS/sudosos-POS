@@ -1,6 +1,7 @@
 import {
   VuexModule, Module, Mutation, Action,
 } from 'vuex-module-decorators';
+import { User } from '@/entities/User';
 
 @Module({ namespaced: true, name: 'SearchState' })
 class SearchState extends VuexModule {
@@ -9,6 +10,21 @@ class SearchState extends VuexModule {
   filterName: string = '';
 
   filterCategory: string = '';
+
+  userSearching: boolean = false;
+
+  chargingUser: User|null = null;
+
+  @Mutation
+  public setUserSearching(searching: boolean) {
+    this.userSearching = searching;
+  }
+
+  @Mutation
+  public setChargingUser(user: User) {
+    this.chargingUser = user;
+    this.userSearching = false;
+  }
 
   @Mutation
   public setSearching(searching: boolean): void {

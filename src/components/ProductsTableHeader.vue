@@ -15,6 +15,7 @@ export default class ProductsTableHeader extends Vue {}
 <style lang="scss" scoped>
 .products-table-header {
   border-bottom: 4px solid #525659;
+  margin: 0;
   div{
     padding: 0;
     p {

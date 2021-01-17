@@ -3,7 +3,7 @@
     <div class="query-container">
       <p class="query-text">{{ syncedInput }}</p>
     </div>
-    <div class="keyboard-container"></div>
+    <div :class="searchbarId"></div>
   </div>
 </template>
 <script lang="ts">
@@ -20,9 +20,14 @@ export default class SearchbarWithKeyboard extends Vue {
 
   private keyboard: any = null;
 
+  private searchbarId: string = '';
+
   mounted() {
-    this.keyboard = new Keyboard('.keyboard-container', {
-      onChange: this.onChange,
+    this.searchbarId = `keyboard-${Math.random().toString(36).substring(7)}`;
+    this.$nextTick(() => {
+      this.keyboard = new Keyboard(this.searchbarId, {
+        onChange: this.onChange,
+      });
     });
   }
 
