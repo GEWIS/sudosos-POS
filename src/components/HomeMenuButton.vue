@@ -7,20 +7,22 @@
 import {
   Component, Vue, Prop, PropSync,
 } from 'vue-property-decorator';
+import { getModule } from 'vuex-module-decorators';
+import SearchModule from '@/store/modules/search';
 
 @Component
 export default class HomeMenuButton extends Vue {
   // The name of this button
   @Prop() name!: String;
 
-  private searchState = this.$store.state.searchState;
+  private searchState = getModule(SearchModule);
 
   get active() {
     return this.name === this.searchState.filterName;
   }
 
   buttonClicked() {
-    this.$store.commit('searchState/setFilterName', this.name);
+    this.searchState.updateFilterName(this.name);
   }
 }
 </script>

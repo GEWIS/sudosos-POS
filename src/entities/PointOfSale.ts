@@ -1,16 +1,18 @@
-import { User } from '@/entities/User';
-import { Container } from '@/entities/Container';
+import { BaseUser, User } from '@/entities/User';
+import { BaseContainer, Container } from '@/entities/Container';
 import { BaseEntity } from '@/entities/BaseEntity';
+import { ProductOrder } from '@/entities/ProductOrder';
 
-
-export interface PointOfSale extends BaseEntity {
-  id: number;
-  version: number;
+export interface BasePointOfSale extends BaseEntity {
   name: string;
-  owner: User;
+}
+
+export interface PointOfSale extends BasePointOfSale {
+  revision?: number;
+  owner: BaseUser | User;
   startDate: Date;
   endDate: Date;
-  containerIds: Container['id'][];
-  approved: boolean;
+  containers: BaseContainer[] | Container[];
+  productOrder?: ProductOrder[];
   useAuthentication: boolean;
 }

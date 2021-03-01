@@ -1,10 +1,11 @@
 import { User } from '@/entities/User';
 import { BaseEntity } from '@/entities/BaseEntity';
 
-export interface BorrelkaartGroep extends BaseEntity {
-  id: number;
+export interface BorrelkaartGroup extends BaseEntity {
   name: string;
-  activeStartDate: Date;
-  activeEndDate: Date;
+  validDates?: {
+    activeStartDate: Date,
+    activeEndDate: Date,
+  };
   borrelkaarten: User[];
 }

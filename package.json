@@ -19,6 +19,7 @@
     "bootstrap-vue": "^2.8.0",
     "core-js": "^3.4.4",
     "dinero.js": "^1.8.1",
+    "dotenv": "^8.2.0",
     "jquery": "^3.4.1",
     "simple-keyboard": "^2.32.72",
     "vue": "^2.6.10",
