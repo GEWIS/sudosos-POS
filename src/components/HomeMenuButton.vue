@@ -13,7 +13,7 @@ import SearchModule from '@/store/modules/search';
 @Component
 export default class HomeMenuButton extends Vue {
   // The name of this button
-  @Prop() name!: String;
+  @Prop() name!: string;
 
   private searchState = getModule(SearchModule);
 
