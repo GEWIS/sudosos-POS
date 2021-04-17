@@ -1,5 +1,5 @@
 <template>
-  <b-col class="keypad">
+  <b-col class="keypad" :class="{inline}">
     <b-row>
       <b-col cols="6" offset="3" class="value-container">
         <p>
@@ -15,12 +15,16 @@
   </b-col>
 </template>
 <script lang="ts">
-import { Component, PropSync, Vue } from 'vue-property-decorator';
+import {
+  Component, PropSync, Prop, Vue,
+} from 'vue-property-decorator';
 @Component
 export default class Keypad extends Vue {
   private keys: (number|string)[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, '←', 0, '✔'];
 
   @PropSync('value', { type: Number }) syncedValue!: number;
+
+  @Prop({ default: false }) readonly inline: boolean = false;
 
   // eslint-disable-next-line class-methods-use-this
   keyClicked(key: number|string) {
@@ -40,6 +44,14 @@ export default class Keypad extends Vue {
     position: absolute;
     top: 20%;
     left: 40%;
+    &.inline {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: none;
+      top: 0;
+      left: 0;
+    }
 
     background-color: $gewis-grey-shadow;
 
@@ -51,7 +63,6 @@ export default class Keypad extends Vue {
           cursor: pointer;
           font-size: 1.5rem;
           border: 2px solid black;
-          border-radius: 16px;
           padding: 1.5rem 0;
         }
       }
