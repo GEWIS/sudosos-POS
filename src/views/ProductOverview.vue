@@ -15,9 +15,12 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { getModule } from 'vuex-module-decorators';
 import { Product } from '@/entities/Product';
 import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
+import SearchModule from '@/store/modules/search';
+import ProductsModule from '@/store/modules/products';
 
   @Component({
     components: {
@@ -27,13 +30,13 @@ import ProductComponent from '@/components/ProductComponent.vue';
   })
 export default class ProductOverview extends Vue {
     // Proxy for the state, compact notation
-    private searchState = this.$store.state.searchState;
+    private searchState = getModule(SearchModule);
 
-    private productsState = this.$store.state.productsState;
+    private productsState = getModule(ProductsModule);
 
     mounted() {
       // Initialize the product overview with beer
-      this.$store.commit('searchState/setFilterName', 'beer');
+      this.searchState.updateFilterName('beer');
     }
 
     // What is the user searching for?

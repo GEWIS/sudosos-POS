@@ -1,17 +1,17 @@
-import { User } from '@/entities/User';
+import { Dinero } from 'dinero.js';
+import { BaseUser, User } from '@/entities/User';
 import { BaseEntity } from '@/entities/BaseEntity';
 
-export interface Transfer extends BaseEntity {
-  id: number;
-  from: User;
-  to: User;
-  amount: number;
-  type: TransferType
-  description: null | string;
+export enum TransferType {
+  DEPOSIT = 1,
+  INVOICE = 2,
+  CUSTOM = 3,
 }
 
-export enum TransferType {
-  DEPOSIT = 'DEPOSIT',
-  INVOICE = 'INVOICE',
-  CUSTOM = 'CUSTOM',
+export interface Transfer extends BaseEntity {
+  from?: BaseUser | User;
+  to?: BaseUser | User;
+  amount: Dinero;
+  type: TransferType
+  description?: string;
 }

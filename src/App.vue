@@ -28,7 +28,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { getModule } from 'vuex-module-decorators';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
+import SearchModule from '@/store/modules/search';
 
 @Component({
   components: {
@@ -38,8 +40,7 @@ import HomeMenuButton from '@/components/HomeMenuButton.vue';
 export default class App extends Vue {
   public vertical: boolean = (window.innerWidth / window.innerHeight) >= 1;
 
-
-  private searchState = this.$store.state.searchState;
+  private searchState = getModule(SearchModule);
 
   mounted() {
     window.addEventListener('resize', () => {
@@ -52,7 +53,7 @@ export default class App extends Vue {
   }
 
   clickSearchButton() {
-    this.$store.commit('searchState/setSearching', !this.searchState.searching);
+    this.searchState.updateSearching(!this.searchState.searching);
   }
 }
 </script>
