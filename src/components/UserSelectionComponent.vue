@@ -26,7 +26,7 @@ export default class UserSelectionComponent extends Vue {
   searchedName: string = '';
 
   get filteredUser() {
-    return this.userState.allUsers.filter(user => user
+    return this.userState.allUsers.filter((user) => user
       .name.toLowerCase().includes(this.searchedName.toLowerCase()));
   }
 

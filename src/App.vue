@@ -9,8 +9,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import SearchModule from '@/store/modules/search';
-
 import CheckoutBar from '@/components/CheckoutBar.vue';
+
 @Component({
   components: {
     HomeMenuButton,

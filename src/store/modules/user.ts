@@ -78,7 +78,7 @@ export default class UserModule extends VuexModule {
     if (this.user.id === undefined || force) {
       const userResponse = APIHelper.getResource('users') as [];
       this.context.commit('setUsers',
-        userResponse.map(responseUser => UserTransformer.makeUser(responseUser)));
+        userResponse.map((responseUser) => UserTransformer.makeUser(responseUser)));
     }
   }
 }

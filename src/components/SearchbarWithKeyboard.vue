@@ -12,6 +12,7 @@ import {
 } from 'vue-property-decorator';
 import Keyboard from 'simple-keyboard';
 import 'simple-keyboard/build/css/index.css';
+
 @Component
 export default class SearchbarWithKeyboard extends Vue {
   @PropSync('input', { type: String }) syncedInput!: string;

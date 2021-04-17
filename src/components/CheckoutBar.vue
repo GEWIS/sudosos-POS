@@ -50,6 +50,7 @@ import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import TransactionModule from '@/store/modules/transactions';
+
 @Component({
   components: { ProductsTable, CheckoutButton },
 })

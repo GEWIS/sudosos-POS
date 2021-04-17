@@ -18,6 +18,7 @@
 import {
   Component, PropSync, Prop, Vue,
 } from 'vue-property-decorator';
+
 @Component
 export default class Keypad extends Vue {
   private keys: (number|string)[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, '←', 0, '✔'];

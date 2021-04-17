@@ -11,6 +11,7 @@ import {
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import ProductsTableHeader from '@/components/ProductsTableHeader.vue';
 import ProductsTableRow from '@/components/ProductsTableRow.vue';
+
 @Component({
   components: {
     ProductsTableHeader,

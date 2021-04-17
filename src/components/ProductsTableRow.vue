@@ -32,6 +32,7 @@ import {
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import Formatters from '@/mixins/Formatters';
 import Keypad from '@/components/Keypad.vue';
+
 @Component({
   components: {
     Keypad,
