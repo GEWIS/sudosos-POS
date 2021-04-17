@@ -1,8 +1,10 @@
 {
   "name": "sudosos-point-of-sale",
+  "description": "Point of sale frontend for the SudoSOS barsystem",
   "version": "0.1.0",
   "private": true,
   "main": "out/main.js",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
