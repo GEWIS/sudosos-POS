@@ -7,13 +7,14 @@ import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fort
 import {
   faBeer, faCoffee, faCookieBite, faTicketAlt, faEllipsisH, faSearch,
 } from '@fortawesome/free-solid-svg-icons';
+import languages from '@/locales';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import languages from '@/locales';
 
 import 'bootstrap';
 
+// Import the BootstrapVue style
 import './styles/global/_main.scss';
 
 library.add(faBeer, faCoffee, faCookieBite, faTicketAlt, faEllipsisH, faSearch);
@@ -43,5 +44,5 @@ new Vue({
   router,
   store,
   i18n,
-  render: h => h(App),
+  render: (h) => h(App),
 }).$mount('#app');
