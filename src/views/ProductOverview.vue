@@ -45,12 +45,15 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { getModule } from 'vuex-module-decorators';
 import { Product } from '@/entities/Product';
 import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
 import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
+import SearchModule from '@/store/modules/search';
+import ProductsModule from '@/store/modules/products';
 
 @Component({
   components: {
@@ -62,30 +65,28 @@ import CheckoutBar from '@/components/CheckoutBar.vue';
   },
 })
 export default class ProductOverview extends Vue {
-  // Proxy for the state, compact notation
-  private searchState = this.$store.state.searchState;
+    // Proxy for the state, compact notation
+    private searchState = getModule(SearchModule);
 
-  private productsState = this.$store.state.productsState;
+    private productsState = getModule(ProductsModule);
 
-  public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
+    public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
-
-  mounted() {
+    mounted() {
     // Initialize the product overview with beer
-    this.$store.commit('searchState/setFilterName', 'beer');
+      this.searchState.updateFilterName('beer');
+      window.addEventListener('resize', () => {
+        this.checkWindowSize();
+      });
+    }
 
-    window.addEventListener('resize', () => {
-      this.checkWindowSize();
-    });
-  }
+    checkWindowSize() {
+      this.vertical = window.innerWidth / window.innerHeight >= 1;
+    }
 
-  checkWindowSize() {
-    this.vertical = window.innerWidth / window.innerHeight >= 1;
-  }
-
-  clickSearchButton() {
-    this.$store.commit('searchState/setSearching', !this.searchState.searching);
-  }
+    clickSearchButton() {
+      this.$store.commit('searchState/setSearching', !this.searchState.searching);
+    }
 
   // What is the user searching for?
   query: string = '';

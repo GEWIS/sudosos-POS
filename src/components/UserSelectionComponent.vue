@@ -10,8 +10,10 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { getModule } from 'vuex-module-decorators';
 import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
-import { User, UserType } from '@/entities/User';
+import UserModule from '@/store/modules/user';
+import { User } from '@/entities/User';
 
 @Component({
   components: {
@@ -19,41 +21,12 @@ import { User, UserType } from '@/entities/User';
   },
 })
 export default class UserSelectionComponent extends Vue {
-  private rickWouters: User = {
-    id: 1,
-    gewisID: 7987,
-    name: 'Rick Wouters',
-    active: true,
-    saldo: 4646,
-    type: UserType.MEMBER,
-  };
-
-  private marcinsVriendinnetje: User = {
-    id: 2,
-    gewisID: 2005,
-    name: 'Marcin\'s vriendinnetje',
-    active: true,
-    saldo: -18,
-    type: UserType.MEMBER,
-  };
-
-  private wietskeBlijjenberg: User = {
-    id: 3,
-    gewisID: 8096,
-    name: 'Wietske Blijjenberg',
-    active: true,
-    saldo: 4000,
-    type: UserType.MEMBER,
-  };
+  private userState = getModule(UserModule);
 
   searchedName: string = '';
 
-  selectedUser: User|null = null;
-
-  users: User[] = [this.rickWouters, this.marcinsVriendinnetje, this.wietskeBlijjenberg];
-
   get filteredUser() {
-    return this.users.filter(user => user
+    return this.userState.allUsers.filter(user => user
       .name.toLowerCase().includes(this.searchedName.toLowerCase()));
   }
 

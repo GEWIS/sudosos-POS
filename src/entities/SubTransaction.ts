@@ -1,11 +1,12 @@
-import { User } from '@/entities/User';
+import { Dinero } from 'dinero.js';
+import { BaseUser, User } from '@/entities/User';
 import { Container } from '@/entities/Container';
 import { BaseEntity } from '@/entities/BaseEntity';
-import { SubTransactionRow } from './SubTransactionRow';
+import { SubTransactionRow } from '@/entities/SubTransactionRow';
 
 export interface SubTransaction extends BaseEntity {
-  id?: number;
-  to: User;
+  to: BaseUser | User;
   container: Container;
   subTransactionRows: SubTransactionRow[];
+  price: Dinero;
 }

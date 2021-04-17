@@ -20,7 +20,7 @@ export default class CheckoutButton extends Vue {
   checkout() {
     if (this.countdown > 0) {
       this.buttonText = this.countdown.toString();
-      this.timeout = setTimeout(() => {
+      this.timeout = window.setTimeout(() => {
         this.countdown -= 1;
         this.checkout();
       }, 1000);

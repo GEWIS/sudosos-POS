@@ -40,19 +40,23 @@
 </template>
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator';
+import { getModule } from 'vuex-module-decorators';
+import Dinero from 'dinero.js';
 import Formatters from '@/mixins/Formatters';
 import ProductsTable from '@/components/ProductsTable.vue';
 import CheckoutButton from '@/components/CheckoutButton.vue';
 import { SubTransaction } from '@/entities/SubTransaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User } from '@/entities/User';
+import UserModule from '@/store/modules/user';
+import TransactionModule from '@/store/modules/transactions';
 @Component({
   components: { ProductsTable, CheckoutButton },
 })
 export default class CheckoutBar extends Formatters {
-  private userState = this.$store.state.userState;
+  private userState = getModule(UserModule);
 
-  private transactionState = this.$store.state.transactionState;
+  private transactionState = getModule(TransactionModule);
 
   private searchState = this.$store.state.searchState;
 
@@ -60,28 +64,31 @@ export default class CheckoutBar extends Formatters {
   private charging: User|null = null;
 
   get saldoClass() {
-    const saldo = this.dinero({ amount: this.userState.saldo });
+    const saldo = this.dinero({ amount: this.userState.user.saldo });
     return saldo.isPositive() ? 'positive' : 'negative';
   }
 
   get subTransactionRows() {
-    if (this.transactionState.subTransactions.length === 0) {
+    if (this.transactionState.currentTransaction.subTransactions.length === 0) {
       return [];
     }
-    return this.transactionState.subTransactions
+    return this.transactionState.currentTransaction.subTransactions
       .map((sub: SubTransaction) => sub.subTransactionRows)
       .reduce((acc: SubTransactionRow[], curr: SubTransactionRow[]) => acc.concat(curr));
   }
 
   get transactionTotal() {
     return this.subTransactionRows.reduce(
-      (acc: number, curr: SubTransactionRow) => acc + curr.amount * curr.price,
+      (acc: number, curr: SubTransactionRow) => acc + curr.price.multiply(curr.amount).getAmount(),
       0,
     );
   }
 
   get balanceAfter() {
-    return this.userState.saldo - this.transactionTotal;
+    if (this.userState.user.saldo) {
+      return this.userState.user.saldo.subtract(Dinero({ amount: this.transactionTotal }));
+    }
+    return 0;
   }
 
   chargeOtherPerson() {

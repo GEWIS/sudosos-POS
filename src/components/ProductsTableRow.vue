@@ -53,7 +53,7 @@ export default class ProductsTable extends Formatters {
   }
 
   get productTotal() {
-    return this.item.amount * this.item.price;
+    return this.item.price.multiply(this.item.amount);
   }
 
   rowClicked() {
