@@ -8,7 +8,9 @@ import { BorrelkaartGroup } from '@/entities/BorrelkaartGroup';
 import APIHelper from '@/mixins/APIHelper';
 import BorrelkaartGroupTransformer from '@/transformers/BorrelkaartGroupTransformer';
 
-@Module({ dynamic: true, store, name: 'borrelkaartGroupModule' })
+@Module({
+  dynamic: true, namespaced: true, store, name: 'borrelkaartGroupModule',
+})
 export default class BorrelkaartGroupModule extends VuexModule {
   borrelkaartGroups: BorrelkaartGroup[] = [];
 
@@ -35,7 +37,7 @@ export default class BorrelkaartGroupModule extends VuexModule {
     const response = APIHelper.putResource('borrelkaartGroups', borrelkaartGroup);
     const borrelkaartGroupResponse = BorrelkaartGroupTransformer.makeBorrelkaartGroup(response);
     const index = this.borrelkaartGroups.findIndex(brlkrt => brlkrt.id === borrelkaartGroupResponse.id);
-    this.borrelkaartGroups[index] = borrelkaartGroupResponse;
+    this.borrelkaartGroups.splice(index, 1, borrelkaartGroupResponse);
   }
 
   @Action({

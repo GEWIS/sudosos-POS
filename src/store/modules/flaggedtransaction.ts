@@ -8,7 +8,9 @@ import APIHelper from '@/mixins/APIHelper';
 import { FlaggedTransaction } from '@/entities/FlaggedTransaction';
 import FlaggedTransactionTransformer from '@/transformers/FlaggedTransactionTransformer';
 
-@Module({ dynamic: true, store, name: 'FlaggedTransactionsModule' })
+@Module({
+  dynamic: true, namespaced: true, store, name: 'FlaggedTransactionsModule',
+})
 export default class FlaggedTransactionModule extends VuexModule {
   flaggedTransactions: FlaggedTransaction[] = [];
 
@@ -35,7 +37,7 @@ export default class FlaggedTransactionModule extends VuexModule {
     const response = APIHelper.putResource('flaggedTransactions', flaggedTransaction);
     const flaggedTransactionResponse = FlaggedTransactionTransformer.makeFlaggedTransaction(response);
     const index = this.flaggedTransactions.findIndex(trns => trns.id === flaggedTransactionResponse.id);
-    this.flaggedTransactions[index] = flaggedTransactionResponse;
+    this.flaggedTransactions.splice(index, 1, flaggedTransactionResponse);
   }
 
   @Action({

@@ -1,6 +1,6 @@
 import { BaseEntity } from '@/entities/BaseEntity';
 
-export interface ProductCategory extends BaseEntity {
+export interface NFCDevice extends BaseEntity {
   name: string;
-  text?: string;
+  address: string;
 }

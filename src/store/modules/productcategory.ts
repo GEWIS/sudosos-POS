@@ -8,7 +8,9 @@ import APIHelper from '@/mixins/APIHelper';
 import { ProductCategory } from '@/entities/ProductCategory';
 import ProductCategoryTransformer from '@/transformers/ProductCategoryTransformer';
 
-@Module({ dynamic: true, store, name: 'ProductCategoryModule' })
+@Module({
+  dynamic: true, namespaced: true, store, name: 'ProductCategoryModule',
+})
 export default class ProductCategoryModule extends VuexModule {
   productCategories: ProductCategory[] = [];
 
@@ -31,11 +33,11 @@ export default class ProductCategoryModule extends VuexModule {
   }
 
   @Mutation
-  updateAdvertisement(productCategory: {}) {
+  updateProductCategories(productCategory: {}) {
     const response = APIHelper.putResource('productCategories', productCategory);
     const productCategoryResponse = ProductCategoryTransformer.makeProductCategory(response);
     const index = this.productCategories.findIndex(prdc => prdc.id === productCategoryResponse.id);
-    this.productCategories[index] = productCategoryResponse;
+    this.productCategories.splice(index, 1, productCategoryResponse);
   }
 
   @Action({

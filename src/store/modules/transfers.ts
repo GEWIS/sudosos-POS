@@ -6,7 +6,9 @@ import { Transfer } from '@/entities/Transfer';
 import TransferTransformer from '@/transformers/TransferTransformer';
 import store from '@/store';
 
-@Module({ dynamic: true, store, name: 'TransferModule' })
+@Module({
+  dynamic: true, namespaced: true, store, name: 'TransferModule',
+})
 export default class TransferModule extends VuexModule {
   transfers: Transfer[] = [];
 
@@ -33,7 +35,7 @@ export default class TransferModule extends VuexModule {
     const response = APIHelper.putResource('transfers', transfer);
     const transferResponse = TransferTransformer.makeTransfer(response);
     const index = this.transfers.findIndex(trnsfr => trnsfr.id === transferResponse.id);
-    this.transfers[index] = transferResponse;
+    this.transfers.splice(index, 1, transferResponse);
   }
 
   @Action({

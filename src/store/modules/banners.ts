@@ -6,7 +6,9 @@ import { Banner } from '@/entities/Banner';
 import APIHelper from '@/mixins/APIHelper';
 import BannerTransformer from '@/transformers/BannerTransformer';
 
-@Module({ dynamic: true, store, name: 'BannerModule' })
+@Module({
+  dynamic: true, namespaced: true, store, name: 'BannerModule',
+})
 export default class BannerModule extends VuexModule {
   banners: Banner[] = [];
 
@@ -33,7 +35,7 @@ export default class BannerModule extends VuexModule {
     const response = APIHelper.putResource('banners', banner);
     const bannerResponse = BannerTransformer.makeBanner(response);
     const index = this.banners.findIndex(bnr => bnr.id === bannerResponse.id);
-    this.banners[index] = bannerResponse;
+    this.banners.splice(index, 1, bannerResponse);
   }
 
   @Action({

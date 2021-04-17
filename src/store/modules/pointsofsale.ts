@@ -8,7 +8,9 @@ import APIHelper from '@/mixins/APIHelper';
 import { PointOfSale } from '@/entities/PointOfSale';
 import PointOfSaleTransformer from '@/transformers/PointOfSaleTransformer';
 
-@Module({ dynamic: true, store, name: 'PointOfSaleModule' })
+@Module({
+  dynamic: true, namespaced: true, store, name: 'PointOfSaleModule',
+})
 export default class PointOfSaleModule extends VuexModule {
   pointsOfSale: PointOfSale[] = [];
 
@@ -36,7 +38,7 @@ export default class PointOfSaleModule extends VuexModule {
     const response = APIHelper.putResource('pointOfSale', pointOfSale);
     const pointOfSaleResponse = PointOfSaleTransformer.makePointOfSale(response);
     const index = this.pointsOfSale.findIndex(pos => pos.id === pointOfSaleResponse.id);
-    this.pointsOfSale[index] = pointOfSaleResponse as PointOfSale;
+    this.pointsOfSale.splice(index, 1, pointOfSaleResponse as PointOfSale);
   }
 
   @Action({
