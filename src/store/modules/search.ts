@@ -2,6 +2,7 @@ import {
   VuexModule, Module, Mutation, Action,
 } from 'vuex-module-decorators';
 import store from '@/store';
+import { User } from '@/entities/User';
 
 @Module({ dynamic: true, store, name: 'SearchModule' })
 export default class SearchModule extends VuexModule {
@@ -10,6 +11,8 @@ export default class SearchModule extends VuexModule {
   filterName: string = '';
 
   filterCategory: string = '';
+
+  chargingUser: User = {} as User;
 
   @Mutation
   setSearching(searching: boolean): void {
@@ -25,13 +28,18 @@ export default class SearchModule extends VuexModule {
   setFilterName(name: string): void {
     this.searching = false;
     const categoryMap: any = {
-      beer: 'beer',
+      beer: 'alcoholic drink',
       coffee: 'drink',
       'cookie-bite': 'food',
       'ticket-alt': 'ticket',
     };
     this.filterName = name;
     this.filterCategory = categoryMap[name];
+  }
+
+  @Mutation
+  setChargingUser(user: User) {
+    this.chargingUser = user;
   }
 
   @Action({

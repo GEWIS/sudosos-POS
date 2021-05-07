@@ -9,6 +9,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import SearchModule from '@/store/modules/search';
+import UserModule from '@/store/modules/user';
+import ProductsModule from '@/store/modules/products';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 
 @Component({
@@ -20,9 +22,16 @@ import CheckoutBar from '@/components/CheckoutBar.vue';
 export default class App extends Vue {
   public vertical: boolean = (window.innerWidth / window.innerHeight) >= 1;
 
-  private searchState = getModule(SearchModule);
+  searchState = getModule(SearchModule);
+
+  userState = getModule(UserModule);
+
+  productsState = getModule(ProductsModule);
 
   mounted() {
+    this.userState.fetchUser();
+    this.userState.fetchAllUsers();
+    this.productsState.fetchProducts();
     window.addEventListener('resize', () => {
       this.checkWindowSize();
     });

@@ -6,7 +6,7 @@
     <div class="product">
       <img :src="product.picture" alt="Placeholder for Beugel" />
       <p class="w-100 product-name mb-0">{{ product.name }}</p>
-      <p class="w-100 product-price mb-0">({{ dinero({amount: product.price}).toFormat() }})</p>
+      <p class="w-100 product-price mb-0">({{ product.price.toFormat() }})</p>
     </div>
   </b-col>
 </template>

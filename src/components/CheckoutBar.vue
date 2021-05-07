@@ -7,8 +7,8 @@
         </p>
         <p class="user-data-line">
           <font-awesome-icon icon="wallet" />
-          <span :class="saldoClass">
-            {{ dinero({ amount: userState.saldo }).toFormat() }}
+          <span :class="saldoClass" v-if="userState.saldo">
+            {{ userState.saldo.toFormat() }}
           </span>
         </p>
       </b-col>
@@ -19,13 +19,15 @@
     <products-table :items="subTransactionRows" />
     <b-row class="transaction-detail-row">
       <b-col cols="6" offset="2"><p>Total</p></b-col>
-      <b-col cols="4"><p>{{
-        dinero({ amount: transactionTotal }).toFormat()
-      }}</p></b-col>
+      <b-col cols="4">
+          <p v-if="userState.saldo">
+            {{ userState.saldo.toFormat() }}
+          </p>
+        </b-col>
     </b-row>
     <b-row class="transaction-detail-row">
       <b-col cols="6" offset="2"><p>Balance after</p></b-col>
-      <b-col cols="4"><p>{{ dinero({ amount: balanceAfter }).toFormat() }}</p></b-col>
+      <b-col cols="4"><p>{{ balanceAfter.toFormat() }}</p></b-col>
     </b-row>
     <checkout-button />
     <b-row class="charge-other-button" @click="chargeOtherPerson">
@@ -50,6 +52,7 @@ import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import TransactionModule from '@/store/modules/transactions';
+import SearchModule from '@/store/modules/search';
 
 @Component({
   components: { ProductsTable, CheckoutButton },
@@ -59,23 +62,29 @@ export default class CheckoutBar extends Formatters {
 
   private transactionState = getModule(TransactionModule);
 
-  private searchState = this.$store.state.searchState;
+  private searchState = getModule(SearchModule);
 
   // Other user to charge
   private charging: User|null = null;
 
   get saldoClass() {
-    const saldo = this.dinero({ amount: this.userState.user.saldo });
-    return saldo.isPositive() ? 'positive' : 'negative';
+    if (this.userState.user.saldo instanceof Number) {
+      const saldo = this.dinero({ amount: this.userState.user.saldo });
+      return saldo.isPositive() ? 'positive' : 'negative';
+    }
+    return 'positive';
   }
 
   get subTransactionRows() {
-    if (this.transactionState.currentTransaction.subTransactions.length === 0) {
-      return [];
+    if (this.transactionState.currentTransaction.subTransactions) {
+      if (this.transactionState.currentTransaction.subTransactions.length === 0) {
+        return [];
+      }
+      return this.transactionState.currentTransaction.subTransactions
+        .map((sub: SubTransaction) => sub.subTransactionRows)
+        .reduce((acc: SubTransactionRow[], curr: SubTransactionRow[]) => acc.concat(curr));
     }
-    return this.transactionState.currentTransaction.subTransactions
-      .map((sub: SubTransaction) => sub.subTransactionRows)
-      .reduce((acc: SubTransactionRow[], curr: SubTransactionRow[]) => acc.concat(curr));
+    return [];
   }
 
   get transactionTotal() {
@@ -89,7 +98,7 @@ export default class CheckoutBar extends Formatters {
     if (this.userState.user.saldo) {
       return this.userState.user.saldo.subtract(Dinero({ amount: this.transactionTotal }));
     }
-    return 0;
+    return Dinero({ amount: this.transactionTotal });
   }
 
   chargeOtherPerson() {
