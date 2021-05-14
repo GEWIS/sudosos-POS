@@ -3,12 +3,12 @@
     <b-row class="user-data-header">
       <b-col cols="8" class="user-data-container">
         <p class="user-data-line">
-          <font-awesome-icon icon="user" /> {{ userState.name }}
+          <font-awesome-icon icon="user" /> {{ userState.user.name }}
         </p>
         <p class="user-data-line">
           <font-awesome-icon icon="wallet" />
-          <span :class="saldoClass" v-if="userState.saldo">
-            {{ userState.saldo.toFormat() }}
+          <span :class="saldoClass" v-if="userState.user.saldo">
+            {{ userState.user.saldo.toFormat() }}
           </span>
         </p>
       </b-col>
@@ -31,8 +31,8 @@
     </b-row>
     <checkout-button />
     <b-row class="charge-other-button" @click="chargeOtherPerson">
-      <p v-if="searchState.chargingUser === null">
-        <font-awesome-icon icon="user-friends"/> Charge someone
+      <p v-if="searchState.chargingUser.name === undefined">
+        <font-awesome-icon icon="user-friends"/> Charge someone else
       </p>
       <p v-else>
         Charging {{ searchState.chargingUser.name }}
@@ -102,7 +102,7 @@ export default class CheckoutBar extends Formatters {
   }
 
   chargeOtherPerson() {
-    this.$store.commit('searchState/setUserSearching', true);
+    this.searchState.setUserSearching(true);
   }
 }
 </script>

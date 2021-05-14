@@ -1,7 +1,7 @@
 <template>
   <div class="user-selection-component">
     <div class="selection-list">
-      <p v-for="user in users" :key="user.id" @click="userClicked(user)">
+      <p v-for="user in filteredUsers" :key="user.id" @click="userClicked(user)">
         {{ user.name }}
       </p>
     </div>
@@ -13,6 +13,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
 import UserModule from '@/store/modules/user';
+import SearchModule from '@/store/modules/search';
 import { User } from '@/entities/User';
 
 @Component({
@@ -23,15 +24,18 @@ import { User } from '@/entities/User';
 export default class UserSelectionComponent extends Vue {
   private userState = getModule(UserModule);
 
+  private searchState = getModule(SearchModule);
+
   searchedName: string = '';
 
-  get filteredUser() {
+  get filteredUsers() {
     return this.userState.allUsers.filter((user) => user
       .name.toLowerCase().includes(this.searchedName.toLowerCase()));
   }
 
   userClicked(user: User) {
-    this.$store.commit('searchState/setChargingUser', user);
+    this.searchState.setChargingUser(user);
+    this.searchState.setUserSearching(false);
   }
 }
 </script>

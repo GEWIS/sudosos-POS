@@ -6,13 +6,20 @@ import { User } from '@/entities/User';
 
 @Module({ dynamic: true, store, name: 'SearchModule' })
 export default class SearchModule extends VuexModule {
-  searching: boolean = false;
+  searching: boolean = false; // Searching for a product
+
+  userSearching: boolean = false; // Searching for a user
 
   filterName: string = '';
 
   filterCategory: string = '';
 
   chargingUser: User = {} as User;
+
+  @Mutation
+  setUserSearching(userSearching: boolean): void {
+    this.userSearching = userSearching;
+  }
 
   @Mutation
   setSearching(searching: boolean): void {

@@ -75,9 +75,9 @@ export default class UserModule extends VuexModule {
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
   })
   fetchAllUsers(force: boolean = false) {
-    if (this.user.id === undefined || force) {
+    if (this.allUsers.length === 0 || force) {
       const userResponse = APIHelper.getResource('users') as [];
-      this.context.commit('setUsers',
+      this.context.commit('setAllUsers',
         userResponse.map((responseUser) => UserTransformer.makeUser(responseUser)));
     }
   }
