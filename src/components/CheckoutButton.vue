@@ -27,7 +27,12 @@ export default class CheckoutButton extends Vue {
       }, 1000);
     } else {
       this.buttonText = 'Transaction done';
+      this.finishTransaction();
     }
+  }
+
+  finishTransaction() {
+    this.$router.push('/login');
   }
 
   buttonClicked() {
