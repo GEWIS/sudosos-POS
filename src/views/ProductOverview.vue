@@ -85,7 +85,7 @@ export default class ProductOverview extends Vue {
     }
 
     clickSearchButton() {
-      this.$store.commit('searchState/setSearching', !this.searchState.searching);
+      this.searchState.setSearching(!this.searchState.searching);
     }
 
   // What is the user searching for?
