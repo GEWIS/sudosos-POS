@@ -29,6 +29,7 @@ export default {
       ...BaseTransformer.makeBaseEntity(data),
       revision: data.revision,
       name: data.name,
+      containerId: data.containerId,
       price,
       owner: UserTransformer.makeUser(data.owner),
       category: ProductCategoryTransformer.makeProductCategory(data.category),

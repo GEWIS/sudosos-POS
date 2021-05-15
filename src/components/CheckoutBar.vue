@@ -20,8 +20,8 @@
     <b-row class="transaction-detail-row">
       <b-col cols="6" offset="2"><p>Total</p></b-col>
       <b-col cols="4">
-          <p v-if="userState.saldo">
-            {{ userState.saldo.toFormat() }}
+          <p>
+            {{ transactionTotal.toFormat() }}
           </p>
         </b-col>
     </b-row>
@@ -88,17 +88,19 @@ export default class CheckoutBar extends Formatters {
   }
 
   get transactionTotal() {
-    return this.subTransactionRows.reduce(
-      (acc: number, curr: SubTransactionRow) => acc + curr.price.multiply(curr.amount).getAmount(),
-      0,
-    );
+    let total = Dinero({ amount: 0, currency: 'EUR' });
+    this.subTransactionRows.forEach((row) => {
+      const rowTotal = row.price.multiply(row.amount);
+      total = total.add(rowTotal);
+    });
+    return total;
   }
 
   get balanceAfter() {
     if (this.userState.user.saldo) {
-      return this.userState.user.saldo.subtract(Dinero({ amount: this.transactionTotal }));
+      return this.userState.user.saldo.subtract(this.transactionTotal);
     }
-    return Dinero({ amount: this.transactionTotal });
+    return this.transactionTotal;
   }
 
   chargeOtherPerson() {

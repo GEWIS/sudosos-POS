@@ -1,10 +1,14 @@
 import {
   Action, Module, Mutation, VuexModule,
 } from 'vuex-module-decorators';
+import Dinero from 'dinero.js';
 import store from '@/store';
 import APIHelper from '@/mixins/APIHelper';
 import { POSTransaction, Transaction } from '@/entities/Transaction';
+import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import TransactionTransformer from '@/transformers/TransactionTransformer';
+import { Product } from '@/entities/Product';
+import { Container } from '@/entities/Container';
 
 @Module({
   dynamic: true, namespaced: true, store, name: 'TransactionModule',
@@ -15,6 +19,69 @@ export default class TransactionModule extends VuexModule {
   posTransactions: POSTransaction[] = [];
 
   currentTransaction: Transaction = {} as Transaction;
+
+  @Mutation
+  addProduct({ product, amount } : {product: Product, amount: number}) {
+    // First, find if there is already a relevant subtransaction
+    let subTrans = this.currentTransaction.subTransactions
+      .find((sub) => sub.container.id === product.containerId);
+    if (!subTrans) {
+      console.log(product);
+      const subTransContainer: Container = {
+        owner: product.owner,
+        products: [],
+        name: '',
+        id: product.containerId,
+      };
+      subTrans = {
+        container: subTransContainer,
+        subTransactionRows: [],
+        price: Dinero({ amount: 0 }),
+        to: subTransContainer.owner,
+      };
+      this.currentTransaction.subTransactions.push(subTrans);
+    }
+
+    // Check if there is already a subtransaction for this product
+    let subTransRow = subTrans.subTransactionRows
+      .find((row) => row.product === product);
+    if (subTransRow) {
+      subTransRow.amount += amount;
+      subTransRow.price.add(subTransRow.price.multiply(amount));
+    } else {
+      subTransRow = {
+        product,
+        amount,
+        price: product.price.multiply(amount),
+      };
+      subTrans.subTransactionRows.push(subTransRow);
+    }
+  }
+
+  @Mutation
+  removeProduct(product: Product) {
+    this.currentTransaction.subTransactions.forEach((sub, subIndex) => {
+      sub.subTransactionRows.forEach((row, rowIndex) => {
+        if (row.product === product) {
+          sub.subTransactionRows.splice(rowIndex, 1);
+        }
+        if (sub.subTransactionRows.length === 0) {
+          this.currentTransaction.subTransactions.splice(subIndex, 1);
+        }
+      });
+    });
+  }
+
+  @Mutation
+  setProductAmount({ product, amount } : {product: Product, amount: number}) {
+    this.currentTransaction.subTransactions.forEach((sub) => {
+      sub.subTransactionRows.forEach((row) => {
+        if (row.product === product) {
+          row.amount = amount;
+        }
+      });
+    });
+  }
 
   @Mutation
   setCurrentTransaction(transaction: Transaction) {

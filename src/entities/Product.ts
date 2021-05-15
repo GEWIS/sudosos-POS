@@ -10,6 +10,7 @@ export interface BaseProduct extends BaseEntity {
 
 export interface Product extends BaseProduct {
   revision?: number;
+  containerId?: number;
   owner: BaseUser | User;
   category: ProductCategory;
   picture: string;

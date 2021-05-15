@@ -8,6 +8,7 @@
       "id": 1,
       "name": "BAr Commissie"
     },
+    "containerId": 1,
     "category": {
       "id": 0,
       "name": "alcoholic drink"
@@ -26,6 +27,7 @@
       "id": 1,
       "name": "BAr Commissie"
     },
+    "containerId": 1,
     "category": {
       "id": 0,
       "name": "alcoholic drink"
@@ -44,6 +46,7 @@
       "id": 1,
       "name": "BAr Commissie"
     },
+    "containerId": 2,
     "category": {
       "id": 1,
       "name": "drink"
@@ -62,32 +65,15 @@
       "id": 1,
       "name": "BAr Commissie"
     },
+    "containerId": 2,
     "category": {
       "id": 1,
       "name": "drink"
     },
-    "picture": "https://cdn.webshopapp.com/shops/71421/files/264918896/140x140x2/aquarius-blik-24x33cl-lemon.jpg",
+    "picture": "https://bosgroothandel.nl/images/stories/virtuemart/product/aquarius_lemon_blik.jpg",
     "alcoholPercentage": 0,
     "createdAt": "2021-01-01T13:08:38.380Z",
     "updatedAt": "2021-01-01T13:08:38.380Z"
-  },
-  {
-    "id": 5,
-    "revision": 1,
-    "name": "Hamburger",
-    "price": 70,
-    "owner": {
-      "id": 0,
-      "name": "Ruben Brinkman"
-    },
-    "category": {
-      "id": 2,
-      "name": "Food"
-    },
-    "picture": "https://s.mijnreceptenboek.nl/i/lib/v/amerikaanse-hamburger.png",
-    "alcoholPercentage": 0,
-    "createdAt": "2021-01-03T13:08:38.380Z",
-    "updatedAt": "2021-01-03T13:08:38.380Z"
   }
 ]
 

@@ -1,6 +1,6 @@
 <template>
   <b-row class="products-table-row" :class="{editing}" @click="rowClicked">
-    <keypad v-if="openKeypad" :value.sync="item.amount" @close="closeKeypad"/>
+    <keypad v-show="openKeypad" :value.sync="item.amount" @close="closeKeypad"/>
     <b-col cols="2">
       <p class="first-col">{{ item.amount }}</p>
     </b-col>
@@ -8,7 +8,7 @@
       <p>{{ item.product.name }}</p>
     </b-col>
     <b-col cols="4">
-      <p>{{ dinero({ amount: productTotal}).toFormat() }}</p>
+      <p>{{ productTotal.toFormat() }}</p>
     </b-col>
     <b-col cols="12" v-if="editing" class="edit-buttons">
       <b-row>
@@ -29,17 +29,21 @@
 import {
   Component, Prop, PropSync, Vue,
 } from 'vue-property-decorator';
+import { getModule } from 'vuex-module-decorators';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import Formatters from '@/mixins/Formatters';
 import Keypad from '@/components/Keypad.vue';
+import TransactionModule from '@/store/modules/transactions';
 
 @Component({
   components: {
     Keypad,
   },
 })
-export default class ProductsTable extends Formatters {
+export default class ProductsTableRow extends Formatters {
   @Prop() item!: SubTransactionRow;
+
+  transactionsState = getModule(TransactionModule);
 
   private editing: boolean = false;
 
@@ -63,21 +67,23 @@ export default class ProductsTable extends Formatters {
   }
 
   deleteItem() {
-    this.$store.commit('transactionState/removeProduct', this.item.product);
+    this.transactionsState.removeProduct(this.item.product);
   }
 
   closeKeypad() {
     if (this.item.amount === 0) {
-      this.$store.commit('transactionState/removeProduct', this.item.product);
+      this.deleteItem();
     }
+    console.log(this.item.amount);
     this.openKeypad = false;
+    this.transactionsState.setProductAmount(
+      { product: this.item.product, amount: this.item.amount },
+    );
   }
 
   decreaseItem() {
     if (this.item.amount > 1) {
-      this.$store.commit('transactionState/addProduct', {
-        product: this.item.product, amount: -1,
-      });
+      this.transactionsState.addProduct({ product: this.item.product, amount: -1 });
     }
   }
 }

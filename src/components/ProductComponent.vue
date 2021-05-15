@@ -13,15 +13,19 @@
 
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator';
+import { getModule } from 'vuex-module-decorators';
 import { Product } from '@/entities/Product';
+import TransactionModule from '@/store/modules/transactions';
 import Formatters from '@/mixins/Formatters';
 
 @Component
 export default class ProductComponent extends Formatters {
   @Prop() product!: Product;
 
+  private transactionState = getModule(TransactionModule);
+
   productClicked() {
-    this.$store.commit('transactionState/addProduct', { product: this.product, amount: 1 });
+    this.transactionState.addProduct({ product: this.product, amount: 1 });
   }
 }
 
