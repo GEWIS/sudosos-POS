@@ -6,7 +6,7 @@
           <b-col align-self="center">
             <p>
               <font-awesome-icon icon="user" />
-              <span>{{ userId }}</span>
+              <span v-if="userId != 0">{{ userId }}</span>
             </p>
             <p>
               <font-awesome-icon icon="lock" />
@@ -17,7 +17,7 @@
       </b-col>
       <b-col cols="12" lg="4" offset-lg="2" md="6" class="keypad-container">
         <b-row>
-          <keypad :inline="inline"/>
+          <keypad :inline="true" :value.sync="keypadValue" @close="nextLine"/>
         </b-row>
       </b-col>
     </b-row>
@@ -31,7 +31,9 @@
   </b-container>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
 import keypad from '@/components/Keypad.vue';
 
 @Component({
@@ -58,17 +60,45 @@ export default class Login extends Vue {
     'https://i.imgur.com/S9dsgzl.png',
   ];
 
-  public motdIndex: number = 0;
+  public motdIndex = 0;
 
-  public bannerIndex: number = 0;
+  public bannerIndex = 0;
 
-  public userId: number = 0;
+  public userId = 0;
 
-  public passcode: number = -1;
+  public passcode = -1;
 
-  private keypadValue: number = 0;
+  private keypadValue = 0;
 
-  private inline: boolean = true;
+  private enteringUserId = true;
+
+  @Watch('keypadValue')
+  onKeypadChanged(val: number, oldVal: number) {
+    if (this.enteringUserId) {
+      this.userId = val;
+    } else {
+      this.passcode = val;
+    }
+  }
+
+  nextLine() {
+    if (this.enteringUserId) {
+      this.enteringUserId = false;
+      this.keypadValue = 0;
+    } else if (this.passcode > 999) {
+      this.login();
+    }
+  }
+
+  login() {
+    if (this.userId === 7987 && this.passcode === 1972) {
+      // TODO: Add login logic instead of hardcoded values
+      this.keypadValue = 0;
+      this.userId = 0;
+      this.passcode = 0;
+      this.$router.push('/');
+    }
+  }
 
   mounted() {
     setInterval(() => {

@@ -1,6 +1,6 @@
 <template>
   <b-col class="keypad" :class="{inline}">
-    <b-row>
+    <b-row v-if="!inline">
       <b-col cols="6" offset="3" class="value-container">
         <p>
           {{ value }}
@@ -25,12 +25,17 @@ export default class Keypad extends Vue {
 
   @PropSync('value', { type: Number }) syncedValue!: number;
 
-  @Prop({ default: false }) readonly inline: boolean = false;
+  @Prop({ default: false }) readonly inline!: boolean;
 
   // eslint-disable-next-line class-methods-use-this
   keyClicked(key: number|string) {
     if (key === '←') {
-      this.syncedValue = Math.floor(this.syncedValue / 10);
+      console.log(this.syncedValue);
+      if (this.syncedValue < 10) {
+        this.syncedValue = 0;
+      } else {
+        this.syncedValue = Math.floor(this.syncedValue / 10);
+      }
     } else if (key === '✔') {
       this.$emit('close');
     } else {
