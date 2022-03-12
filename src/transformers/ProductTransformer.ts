@@ -8,6 +8,7 @@ import ProductCategoryTransformer from '@/transformers/ProductCategoryTransforme
 export default {
   makeProduct(data: any) : BaseProduct | Product {
     let price;
+    console.log(data);
 
     if (typeof data.price === 'object') {
       // This is to satisfy ESLint, yay

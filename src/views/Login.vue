@@ -96,7 +96,7 @@ export default class Login extends Vue {
     if (this.enteringUserId) {
       this.enteringUserId = false;
       this.keypadValue = 0;
-    } else if (this.passcode > 999 || this.passcode === 0) {
+    } else if (this.passcode > -1) {
       this.login();
     }
   }

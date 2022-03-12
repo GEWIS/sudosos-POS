@@ -6,7 +6,17 @@
   </b-row>
 </template>
 <script lang="ts">
+import { PointOfSale } from '@/entities/PointOfSale';
+import { SubTransaction } from '@/entities/SubTransaction';
+import { SubTransactionRow } from '@/entities/SubTransactionRow';
+import { Transaction } from '@/entities/Transaction';
+import { User } from '@/entities/User';
+import UserModule from '@/store/modules/user';
+import SubTransactionTransformer from '@/transformers/SubTransactionTransformer';
+import TransactionTransformer from '@/transformers/TransactionTransformer';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { getModule } from 'vuex-module-decorators';
+import { postTransaction } from '@/api/transactions';
 
 @Component
 export default class CheckoutButton extends Vue {
@@ -17,6 +27,8 @@ export default class CheckoutButton extends Vue {
   private checkingOut: boolean = false;
 
   private timeout: number = 0;
+
+  userState = getModule(UserModule);
 
   checkout() {
     if (this.countdown > 0) {
@@ -31,8 +43,91 @@ export default class CheckoutButton extends Vue {
     }
   }
 
-  finishTransaction() {
-    this.$router.push('/login');
+  static getContainerForRow(row: any, pos: PointOfSale) {
+    const productId = row.product.id;
+    let rowContainer = {};
+
+    pos.containers.forEach((container) => {
+      if (container.products.findIndex((product) => product.id === productId) > -1) {
+        rowContainer = {
+          id: container.id,
+          revision: container.revision,
+        };
+      }
+    });
+    return rowContainer;
+  }
+
+  static makeSubTransactions(rows: SubTransactionRow[], user: User, pos: any) {
+    const subTransactions: any[] = [];
+    rows.forEach((row) => {
+      // Find if there is a subtransaction for this container
+      const transactionIndex = subTransactions
+        .findIndex((sub) => sub.container === row.product.id);
+      if (transactionIndex > -1) {
+        subTransactions[transactionIndex].subTransactionRows.push(row);
+      } else {
+        const container = CheckoutButton.getContainerForRow(row, pos);
+        console.log(container);
+        const sub = {
+          to: pos.owner.id,
+          container,
+          subTransactionRows: [row],
+        };
+        subTransactions.push(sub);
+      }
+      row.price.amount *= row.amount;
+    });
+
+    // Calculate transaction price
+    subTransactions.forEach((sub) => {
+      console.log(sub);
+      sub.price = {
+        amount: sub.subTransactionRows
+          .reduce((total, row) => total + row.price.amount, 0),
+        currency: 'EUR',
+        precision: 2,
+      };
+    });
+    return subTransactions;
+  }
+
+  async finishTransaction() {
+    const { rows, pointOfSale } = this.$parent.$parent;
+    const { user } = this.userState;
+
+    console.log(rows);
+
+    const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
+
+    console.log(subTransactions);
+    const transaction = {
+      from: user.id,
+      createdBy: user.id,
+      pointOfSale: {
+        id: pointOfSale.id,
+        revision: pointOfSale.revision,
+      },
+      subTransactions,
+    };
+    const price = transaction.subTransactions
+      .reduce((total, sub) => total + sub.price.amount, 0);
+    transaction.price = {
+      amount: price,
+      currency: 'EUR',
+      precision: 2,
+    };
+
+    transaction.subTransactions.forEach((trans) => {
+      trans.subTransactionRows.forEach((row) => {
+        row.product = {
+          id: row.product.id,
+          revision: row.product.revision,
+        };
+      });
+    });
+    postTransaction(transaction);
+    // this.$router.push('/login');
   }
 
   buttonClicked() {

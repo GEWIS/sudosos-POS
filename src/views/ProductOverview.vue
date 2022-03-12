@@ -54,9 +54,11 @@ import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
 import { getProducts } from '@/api/products';
+import { getPointOfSale, getPointOfSaleProducts } from '@/api/pointOfSale';
 import { Transaction } from '@/entities/Transaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { SubTransaction } from '@/entities/SubTransaction';
+import { PointOfSale } from '@/entities/PointOfSale';
 
 @Component({
   components: {
@@ -75,6 +77,8 @@ export default class ProductOverview extends Vue {
 
     public rows: SubTransactionRow[] = [];
 
+    public pointOfSale: PointOfSale | null = null;
+
     public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
     async mounted() {
@@ -83,8 +87,14 @@ export default class ProductOverview extends Vue {
       window.addEventListener('resize', () => {
         this.checkWindowSize();
       });
-
-      this.products = (await getProducts()).records;
+      this.pointOfSale = await getPointOfSale(1);
+      this.pointOfSale.containers.forEach((con) => {
+        const containerId = con.id;
+        con.products.forEach((prod) => {
+          prod.containerId = containerId;
+          this.products.push(prod);
+        });
+      });
     }
 
     checkWindowSize() {
@@ -96,8 +106,8 @@ export default class ProductOverview extends Vue {
     }
 
     addProduct(product: Product, amount: number) {
-      const productIndex = this.rows.findIndex((row) => row.product === product);
-      if (productIndex > 0) {
+      const productIndex = this.rows.findIndex((row) => row.product.id === product.id);
+      if (productIndex > -1) {
         this.rows[productIndex].amount += amount;
       } else {
         const row = {

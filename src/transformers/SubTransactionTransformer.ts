@@ -19,7 +19,7 @@ export default {
       price = dineroPrice;
     } else {
       let tempPrice = 0;
-      subTransactionRows.forEach((subTransRow: SubTransactionRow) => { tempPrice += subTransRow.price.getAmount(); });
+      subTransactionRows.forEach((subTransRow: SubTransactionRow) => { tempPrice += subTransRow.price.amount; });
       price = Dinero({ amount: Number(tempPrice), currency: 'EUR' });
     }
 
