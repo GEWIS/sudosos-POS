@@ -11,8 +11,6 @@ import Dinero from 'dinero.js';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import SearchModule from '@/store/modules/search';
 import UserModule from '@/store/modules/user';
-import ProductsModule from '@/store/modules/products';
-import TransactionModule from '@/store/modules/transactions';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import { PointOfSale } from './entities/PointOfSale';
 
@@ -29,21 +27,7 @@ export default class App extends Vue {
 
   userState = getModule(UserModule);
 
-  productsState = getModule(ProductsModule);
-
-  transactionsState = getModule(TransactionModule);
-
   mounted() {
-    this.userState.fetchUser();
-    this.userState.fetchAllUsers();
-    this.productsState.fetchProducts();
-    // Initialize the store with an empty transaction
-    this.transactionsState.setCurrentTransaction({
-      from: this.userState.user,
-      subTransactions: [],
-      price: Dinero({ amount: 0 }),
-      pointOfSale: {} as PointOfSale,
-    });
     window.addEventListener('resize', () => {
       this.checkWindowSize();
     });

@@ -1,15 +1,17 @@
+/* eslint-disable no-console */
+
 import * as dotenv from 'dotenv';
 import eventBus from '@/eventbus';
 import { ApiError } from '@/entities/ApiError';
 import { ResponseBody } from '@/entities/ResponseBody';
-// import router from '@/router';
+import jwtDecode, { JwtPayload } from 'jwt-decode';
 import devAPI from '../../dev/api';
 
 dotenv.config();
 
-const baseURL = process.env.VUE_APP_API_BASE; // TODO: Set base URL
-const token = ''; // TODO: Make sure we get the token
-const isDev = process.env.VUE_APP_DEVELOP;
+const baseURL = process.env.VUE_APP_API_BASE;
+let token = '';
+const isDev = (process.env.VUE_APP_DEVELOP === 'true');
 
 /**
  * Takes a route string and arguments and converts it into a route that the browser can read
@@ -21,6 +23,18 @@ const isDev = process.env.VUE_APP_DEVELOP;
  */
 function makeRoute(route: string, args: any = null) {
   let newRoute = route;
+
+  const queries = new URLSearchParams(window.location.search);
+
+  if (args === null || (!('skip' in args) || !('take' in args))) {
+    if (queries.has('skip')) {
+      args.skip = queries.get('skip');
+    }
+
+    if (queries.has('take')) {
+      args.take = queries.get('take');
+    }
+  }
 
   // Convert the arguments to a query string
   if (args !== null) {
@@ -45,22 +59,41 @@ function makeRoute(route: string, args: any = null) {
  */
 function checkResponse(fetchResponse: Response) {
   if (fetchResponse.status !== 200) {
-    if (fetchResponse.status === 401) {
-      console.warn('401 - Unauthorized');
-      // TODO : Reroute / give visual warning
-
-      // TODO: Test if below works
+    if (fetchResponse.status === 400) {
+      console.warn('400 - Bad request');
       const body = {
         status: fetchResponse.status,
-        message: 'apiError.test',
+        message: 'apiError.400',
+      } as ApiError;
+      eventBus.$emit('apiError', body);
+    } else if (fetchResponse.status === 401) {
+      console.warn('401 - Unauthorized');
+      const body = {
+        status: fetchResponse.status,
+        message: 'apiError.401',
       } as ApiError;
       eventBus.$emit('apiError', body);
     } else if (fetchResponse.status === 403) {
       console.warn('403 - Forbidden');
-      // TODO : Reroute / give visual warning
+      const body = {
+        status: fetchResponse.status,
+        message: 'apiError.403',
+      } as ApiError;
+      eventBus.$emit('apiError', body);
+    } else if (fetchResponse.status === 404) {
+      console.warn('404 - Not found');
+      const body = {
+        status: fetchResponse.status,
+        message: 'apiError.404',
+      } as ApiError;
+      eventBus.$emit('apiError', body);
     } else if (fetchResponse.status === 500) {
       console.warn('500 - Internal Server Error');
-      // TODO : Reroute / give visual warning
+      const body = {
+        status: fetchResponse.status,
+        message: 'apiError.500',
+      } as ApiError;
+      eventBus.$emit('apiError', body);
     } else if (fetchResponse.status === 9999) {
       console.warn('This local file cannot be found by the dev API');
     }
@@ -75,43 +108,60 @@ function checkResponse(fetchResponse: Response) {
  * @param body: body that has all the correct info for the fetch
  */
 function fetchResource(route: string, body: ResponseBody) {
-  let fetchResult = {};
-
-  if (token === '' && !isDev) {
-    // const currentPath = router.currentRoute;
-    // router.push(`/login?next=${currentPath}`);
-    return null;
-  }
+  let fetchResult: Promise<any> = new Promise<any>((resolve) => {
+    resolve({});
+  });
 
   // If we are currently in development mode get data from the Fake API
   if (isDev) {
     try {
-      fetchResult = devAPI.fetchJSON(route, body);
+      fetchResult = new Promise((resolve) => {
+        resolve(devAPI.fetchJSON(route, body));
+      });
     } catch (e) {
       const reponseBody = {
         status: 404,
         message: 'apiError.Something went wrong',
-        error: e,
       } as ApiError;
       eventBus.$emit('apiError', reponseBody);
       console.error(e);
     }
+  } else {
+    fetchResult = fetch(route, body)
+      .then((response) => {
+        checkResponse(response);
+        return response.json();
+      })
+      .then((data: any) => data)
+      .catch((error) => {
+        console.error(error);
+      });
   }
-
-  fetch(route, body)
-    .then((fetchResponse) => {
-      checkResponse(fetchResponse);
-      fetchResult = fetchResponse.json();
-    })
-    .catch((error) => {
-      console.error(error);
-    });
 
   return fetchResult;
 }
 
 export default {
-  getResource(route: string, args = null) {
+  getToken() {
+    token = localStorage.getItem('jwt_token') as string;
+
+    return {
+      jwtToken: localStorage.getItem('jwt_token'),
+      jwtExpires: localStorage.getItem('jwt_expires'),
+    };
+  },
+
+  setToken(jwtToken: string) {
+    localStorage.setItem('jwt_expires', String(Number(jwtDecode<JwtPayload>(jwtToken).exp) * 1000));
+    localStorage.setItem('jwt_token', jwtToken);
+    token = jwtToken;
+  },
+
+  clearToken() {
+    localStorage.clear();
+  },
+
+  getResource(route: string, args: Object | null = null) {
     const constructedRoute = makeRoute(route, args);
 
     const getBody = {
@@ -153,7 +203,7 @@ export default {
     return fetchResource(constructedRoute, putBody);
   },
 
-  postResource(route: string, data: any, args = null) {
+  postResource(route: string, data: any = {}, args = null) {
     const constructedRoute = makeRoute(route, args);
 
     const postBody = {
@@ -168,11 +218,10 @@ export default {
     return fetchResource(constructedRoute, postBody);
   },
 
-  delResource(route: string, data: any, args = null) {
+  delResource(route: string, args = null) {
     const constructedRoute = makeRoute(route, args);
 
     const delBody = {
-      body: JSON.stringify(data),
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,

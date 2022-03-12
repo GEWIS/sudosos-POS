@@ -7,6 +7,7 @@ export default {
     if (data === undefined) {
       return {} as BaseUser;
     }
+    console.log(data);
 
     if (!Object.keys(data).includes('active')) {
       return {
@@ -31,7 +32,8 @@ export default {
 
     return {
       ...BaseTransformer.makeBaseEntity(data),
-      name: data.name,
+      firstName: data.firstName,
+      lastName: data.lastName,
       gewisID: data.gewisID,
       email: data.email,
       active: data.active,

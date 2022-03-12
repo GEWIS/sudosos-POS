@@ -12,7 +12,7 @@
           </span>
         </p>
       </b-col>
-      <b-col class="logout-button">
+      <b-col class="logout-button" @click="$router.push('/login')">
         <font-awesome-icon icon="sign-out-alt" />
       </b-col>
     </b-row>

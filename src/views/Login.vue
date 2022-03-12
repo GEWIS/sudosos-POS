@@ -1,5 +1,9 @@
 <template>
   <b-container class="login-container" fluid>
+    <b-row class="login-header">
+      <img src="@/assets/img/gewis-branding.svg" />
+      <h1>SudoSOS</h1>
+    </b-row>
     <b-row class="entry-row">
       <b-col cols="12" lg="4" offset-lg="1" md="6" class="keycodes-container">
         <b-row class="login-row">
@@ -35,6 +39,9 @@ import {
   Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import keypad from '@/components/Keypad.vue';
+import APIHelper from '@/mixins/APIHelper';
+import { getModule } from 'vuex-module-decorators';
+import UserModule from '@/store/modules/user';
 
 @Component({
   filters: {
@@ -50,9 +57,13 @@ import keypad from '@/components/Keypad.vue';
   },
 })
 export default class Login extends Vue {
+  userState = getModule(UserModule);
+
   private messagesOfTheDay: string[] = [
     '🦀🦀🦀🦀🦀Het bestuur geeft ons te weinig pizza🦀🦀🦀🦀🦀',
     '👩‍🦼👩‍🦼👩‍🦼Julie de Nooij👩‍🦼👩‍🦼👩‍🦼',
+    'Wannie Beumer is de rechtmatige voorzitter van de AC',
+    'SudoSOS zoekt coder!',
   ];
 
   private banners: string[] = [
@@ -85,18 +96,26 @@ export default class Login extends Vue {
     if (this.enteringUserId) {
       this.enteringUserId = false;
       this.keypadValue = 0;
-    } else if (this.passcode > 999) {
+    } else if (this.passcode > 999 || this.passcode === 0) {
       this.login();
     }
   }
 
-  login() {
-    if (this.userId === 7987 && this.passcode === 1972) {
-      // TODO: Add login logic instead of hardcoded values
+  async login() {
+    const userDetails = {
+      gewisId: this.userId,
+      pin: this.passcode,
+    };
+    const loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
+
+    if (loginResponse && loginResponse !== {} && !('message' in loginResponse)) {
+      APIHelper.setToken(loginResponse.token);
+      this.userState.fetchUser();
+      this.$router.push('/');
+    } else {
       this.keypadValue = 0;
       this.userId = 0;
       this.passcode = 0;
-      this.$router.push('/');
     }
   }
 
@@ -121,6 +140,23 @@ export default class Login extends Vue {
   background-color: #DADADA;
   height: 100vh;
   width: 100vw;
+  display: flex;
+  flex-direction: column;
+
+  .login-header {
+    background-color: #D40000;
+    height: 10%;
+
+    img {
+      margin: 16px;
+      height: calc(100% - 32px);
+    }
+
+    h1 {
+      color: white;
+      line-height: 2.5;
+    }
+  }
 
   .keycodes-container {
     font-size: 4rem;
@@ -148,15 +184,14 @@ export default class Login extends Vue {
   }
 
   .entry-row {
-    height: 55%;
-    background-color: #DADADA;
-    padding-top: 5%;
-    margin-bottom: 5%;
+    background-color: white;
+    margin-bottom: 32px;
+    padding-top: 32px;
   }
 
   .motd-container {
-    min-height: 5%;
     text-align: center;
+    margin-top: auto;
     p {
       font-size: 2rem;
       width: 100%;
@@ -164,15 +199,13 @@ export default class Login extends Vue {
   }
 
   .banner-container {
-    max-height: 30%;
     text-align: center;
     p {
       width: 100%;
       margin-top: auto;
     }
     img {
-      max-height: 100%;
-      max-width: 100%;
+      height: 10vh;
     }
   }
 }

@@ -53,7 +53,7 @@ import ProductComponent from '@/components/ProductComponent.vue';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
-import ProductsModule from '@/store/modules/products';
+import { getProducts } from '@/api/products';
 
 @Component({
   components: {
@@ -68,16 +68,18 @@ export default class ProductOverview extends Vue {
     // Proxy for the state, compact notation
     private searchState = getModule(SearchModule);
 
-    private productsState = getModule(ProductsModule);
+    private products: Product[] = [];
 
     public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
-    mounted() {
+    async mounted() {
     // Initialize the product overview with beer
-      this.searchState.updateFilterName('beer');
+      this.searchState.updateFilterName('Alcoholic');
       window.addEventListener('resize', () => {
         this.checkWindowSize();
       });
+
+      this.products = (await getProducts()).records;
     }
 
     checkWindowSize() {
@@ -94,14 +96,15 @@ export default class ProductOverview extends Vue {
   // Filter the products by the desired criteria
   get filteredProducts() {
     if (this.searchState.searching) {
-      return this.productsState.products
+      return this.products
         .filter((product: Product) => product
           .name.toLowerCase().includes(this.query.toLowerCase()));
     }
     // @ts-ignore
-    const currentCategory = this.searchState.filterCategory;
-    return this.productsState.products.filter(
-      (product: Product) => product.category.name === currentCategory,
+    const currentName = this.searchState.filterName;
+    console.log(this.products);
+    return this.products.filter(
+      (product: Product) => product.category.name === currentName,
     );
   }
 }

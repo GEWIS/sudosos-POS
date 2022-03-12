@@ -21,7 +21,7 @@ import {
 
 @Component
 export default class Keypad extends Vue {
-  private keys: (number|string)[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, '←', 0, '✔'];
+  private keys: (number|string)[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, '🠨', 0, '✔'];
 
   @PropSync('value', { type: Number }) syncedValue!: number;
 
@@ -30,7 +30,6 @@ export default class Keypad extends Vue {
   // eslint-disable-next-line class-methods-use-this
   keyClicked(key: number|string) {
     if (key === '←') {
-      console.log(this.syncedValue);
       if (this.syncedValue < 10) {
         this.syncedValue = 0;
       } else {
