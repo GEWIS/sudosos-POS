@@ -6,7 +6,7 @@
     <div class="product">
       <img :src="product.picture" alt="Placeholder for Beugel" />
       <p class="w-100 product-name mb-0">{{ product.name }}</p>
-      <p class="w-100 product-price mb-0">({{ product.price.toFormat() }})</p>
+      <p class="w-100 product-price mb-0">(€{{ product.price.amount / 100 }})</p>
     </div>
   </b-col>
 </template>
@@ -22,10 +22,8 @@ import Formatters from '@/mixins/Formatters';
 export default class ProductComponent extends Formatters {
   @Prop() product!: Product;
 
-  private transactionState = getModule(TransactionModule);
-
   productClicked() {
-    this.transactionState.addProduct({ product: this.product, amount: 1 });
+    this.$parent.addProduct(this.product, 1);
   }
 }
 

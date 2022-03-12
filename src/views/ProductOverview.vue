@@ -37,7 +37,7 @@
         :showSearchbar="searchState.searching"
       >
       </searchbar-with-keyboard>
-      <checkout-bar />
+      <checkout-bar :subTransactionRows="rows"/>
     </main>
     <user-selection-component v-if="searchState.userSearching"/>
   </div>
@@ -54,6 +54,9 @@ import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
 import { getProducts } from '@/api/products';
+import { Transaction } from '@/entities/Transaction';
+import { SubTransactionRow } from '@/entities/SubTransactionRow';
+import { SubTransaction } from '@/entities/SubTransaction';
 
 @Component({
   components: {
@@ -69,6 +72,8 @@ export default class ProductOverview extends Vue {
     private searchState = getModule(SearchModule);
 
     private products: Product[] = [];
+
+    public rows: SubTransactionRow[] = [];
 
     public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
@@ -88,6 +93,20 @@ export default class ProductOverview extends Vue {
 
     clickSearchButton() {
       this.searchState.setSearching(!this.searchState.searching);
+    }
+
+    addProduct(product: Product, amount: number) {
+      const productIndex = this.rows.findIndex((row) => row.product === product);
+      if (productIndex > 0) {
+        this.rows[productIndex].amount += amount;
+      } else {
+        const row = {
+          product,
+          amount,
+          price: product.price,
+        } as SubTransactionRow;
+        this.rows.push(row);
+      }
     }
 
   // What is the user searching for?

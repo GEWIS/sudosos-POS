@@ -8,7 +8,7 @@
       <p>{{ item.product.name }}</p>
     </b-col>
     <b-col cols="4">
-      <p>{{ productTotal.toFormat() }}</p>
+      <p>€{{ productTotal / 100 }}</p>
     </b-col>
     <b-col cols="12" v-if="editing" class="edit-buttons">
       <b-row>
@@ -58,7 +58,8 @@ export default class ProductsTableRow extends Formatters {
   }
 
   get productTotal() {
-    return this.item.price.multiply(this.item.amount);
+    console.log(this.item);
+    return this.item.price.amount * this.item.amount;
   }
 
   rowClicked() {

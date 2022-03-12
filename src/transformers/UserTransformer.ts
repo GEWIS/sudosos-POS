@@ -7,7 +7,6 @@ export default {
     if (data === undefined) {
       return {} as BaseUser;
     }
-    console.log(data);
 
     if (!Object.keys(data).includes('active')) {
       return {

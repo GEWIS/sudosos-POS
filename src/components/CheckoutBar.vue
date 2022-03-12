@@ -3,7 +3,8 @@
     <b-row class="user-data-header">
       <b-col cols="8" class="user-data-container">
         <p class="user-data-line">
-          <font-awesome-icon icon="user" /> {{ userState.user.name }}
+          <font-awesome-icon icon="user" />
+          {{ userState.user.firstName }} {{ userState.user.lastName }}
         </p>
         <p class="user-data-line">
           <font-awesome-icon icon="wallet" />
@@ -21,7 +22,7 @@
       <b-col cols="6" offset="2"><p>Total</p></b-col>
       <b-col cols="4">
           <p>
-            {{ transactionTotal.toFormat() }}
+            €{{ transactionTotal / 100 }}
           </p>
         </b-col>
     </b-row>
@@ -56,6 +57,11 @@ import SearchModule from '@/store/modules/search';
 
 @Component({
   components: { ProductsTable, CheckoutButton },
+  props: {
+    subTransactionRows: {
+      type: Array,
+    },
+  },
 })
 export default class CheckoutBar extends Formatters {
   private userState = getModule(UserModule);
@@ -75,30 +81,22 @@ export default class CheckoutBar extends Formatters {
     return 'positive';
   }
 
-  get subTransactionRows() {
-    if (this.transactionState.currentTransaction.subTransactions) {
-      if (this.transactionState.currentTransaction.subTransactions.length === 0) {
-        return [];
-      }
-      return this.transactionState.currentTransaction.subTransactions
-        .map((sub: SubTransaction) => sub.subTransactionRows)
-        .reduce((acc: SubTransactionRow[], curr: SubTransactionRow[]) => acc.concat(curr));
-    }
-    return [];
-  }
-
   get transactionTotal() {
-    let total = Dinero({ amount: 0, currency: 'EUR' });
+    let total = 0;
     this.subTransactionRows.forEach((row) => {
-      const rowTotal = row.price.multiply(row.amount);
-      total = total.add(rowTotal);
+      console.log(row);
+      const rowTotal = row.price.amount * row.amount;
+      total += rowTotal;
     });
     return total;
   }
 
   get balanceAfter() {
     if (this.userState.user.saldo) {
-      return this.userState.user.saldo.subtract(this.transactionTotal);
+      return this.userState.user.saldo.subtract(Dinero({
+        amount: this.transactionTotal,
+        currency: 'EUR',
+      }));
     }
     return this.transactionTotal;
   }
