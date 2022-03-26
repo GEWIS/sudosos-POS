@@ -29,8 +29,10 @@ export default class Keypad extends Vue {
 
   // eslint-disable-next-line class-methods-use-this
   keyClicked(key: number|string) {
-    if (key === '←') {
-      if (this.syncedValue < 10) {
+    if (key === '🠨') {
+      if (this.syncedValue === 0) {
+        this.syncedValue = -1;
+      } else if (this.syncedValue < 10) {
         this.syncedValue = 0;
       } else {
         this.syncedValue = Math.floor(this.syncedValue / 10);

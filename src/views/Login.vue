@@ -10,12 +10,13 @@
           <b-col align-self="center">
             <p>
               <font-awesome-icon icon="user" />
-              <span v-if="userId != 0">{{ userId }}</span>
+              <span v-if="userId > 0">{{ userId }}</span>
             </p>
             <p>
               <font-awesome-icon icon="lock" />
               <span>{{ passcode | passcodeDots }} </span>
             </p>
+            <div class="login-error">{{ loginError }}</div>
           </b-col>
         </b-row>
       </b-col>
@@ -83,11 +84,17 @@ export default class Login extends Vue {
 
   private enteringUserId = true;
 
+  private loginError = '';
+
   @Watch('keypadValue')
   onKeypadChanged(val: number, oldVal: number) {
     if (this.enteringUserId) {
       this.userId = val;
     } else {
+      if (val === -1) {
+        this.enteringUserId = true;
+        this.passcode = 0;
+      }
       this.passcode = val;
     }
   }
@@ -116,6 +123,8 @@ export default class Login extends Vue {
       this.keypadValue = 0;
       this.userId = 0;
       this.passcode = 0;
+      this.enteringUserId = true;
+      this.loginError = loginResponse.message;
     }
   }
 
@@ -156,6 +165,11 @@ export default class Login extends Vue {
       color: white;
       line-height: 2.5;
     }
+  }
+
+  .login-error {
+    font-size: 16px;
+    color: #D40000;
   }
 
   .keycodes-container {
