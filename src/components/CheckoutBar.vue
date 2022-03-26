@@ -74,9 +74,10 @@ export default class CheckoutBar extends Formatters {
   get saldoClass() {
     if (this.userState.user.saldo instanceof Number) {
       const saldo = this.dinero({ amount: this.userState.user.saldo });
+      console.log(saldo.isPositive());
       return saldo.isPositive() ? 'positive' : 'negative';
     }
-    return 'positive';
+    return this.userState.user.saldo.isPositive() ? 'positive' : 'negative';
   }
 
   get transactionTotal() {
