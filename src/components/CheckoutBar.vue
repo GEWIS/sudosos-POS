@@ -22,7 +22,7 @@
       <b-col cols="6" offset="2"><p>Total</p></b-col>
       <b-col cols="4">
           <p>
-            €{{ transactionTotal / 100 }}
+            €{{ (transactionTotal / 100).toFixed(2) }}
           </p>
         </b-col>
     </b-row>

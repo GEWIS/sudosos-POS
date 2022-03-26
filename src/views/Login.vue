@@ -117,7 +117,7 @@ export default class Login extends Vue {
 
     if (loginResponse && loginResponse !== {} && !('message' in loginResponse)) {
       APIHelper.setToken(loginResponse.token);
-      this.userState.fetchUser();
+      this.userState.fetchUser(true);
       this.$router.push('/');
     } else {
       this.keypadValue = 0;

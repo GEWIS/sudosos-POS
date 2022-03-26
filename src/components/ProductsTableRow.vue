@@ -8,7 +8,7 @@
       <p>{{ item.product.name }}</p>
     </b-col>
     <b-col cols="4">
-      <p>€{{ productTotal / 100 }}</p>
+      <p>€{{ (productTotal / 100).toFixed(2) }}</p>
     </b-col>
     <b-col cols="12" v-if="editing" class="edit-buttons">
       <b-row>
