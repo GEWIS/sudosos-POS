@@ -96,11 +96,8 @@ export default class CheckoutButton extends Vue {
     const { rows, pointOfSale } = this.$parent.$parent;
     const { user } = this.userState;
 
-    console.log(rows);
-
     const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
 
-    console.log(subTransactions);
     const transaction = {
       from: user.id,
       createdBy: user.id,
@@ -126,8 +123,9 @@ export default class CheckoutButton extends Vue {
         };
       });
     });
-    postTransaction(transaction);
-    // this.$router.push('/login');
+    const transactionResponse = await postTransaction(transaction);
+    console.log(transactionResponse);
+    this.$router.push('/login');
   }
 
   buttonClicked() {
