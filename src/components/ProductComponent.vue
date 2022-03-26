@@ -38,6 +38,7 @@ export default class ProductComponent extends Formatters {
 <style scoped lang="scss">
   .product-card {
     margin: 0.5rem 0;
+    height: fit-content;
 
     .product {
       background-color: $gewis-grey-light;
@@ -45,7 +46,7 @@ export default class ProductComponent extends Formatters {
       > img {
         width: auto;
         height: auto;
-        max-height: 5rem;
+        max-height: 8rem;
         background-color: $gewis-grey-light;
       }
     }

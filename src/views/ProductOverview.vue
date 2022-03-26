@@ -169,7 +169,8 @@ export default class ProductOverview extends Vue {
   }
   .product-row {
     flex: 1;
-    margin: 0
+    margin: 0;
+    align-content: flex-start;
   }
 }
 
