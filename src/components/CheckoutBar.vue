@@ -84,7 +84,6 @@ export default class CheckoutBar extends Formatters {
   get transactionTotal() {
     let total = 0;
     this.subTransactionRows.forEach((row) => {
-      console.log(row);
       const rowTotal = row.price.amount * row.amount;
       total += rowTotal;
     });
@@ -98,7 +97,10 @@ export default class CheckoutBar extends Formatters {
         currency: 'EUR',
       }));
     }
-    return this.transactionTotal;
+    return Dinero({
+      amount: this.transactionTotal,
+      currency: 'EUR',
+    });
   }
 
   chargeOtherPerson() {
