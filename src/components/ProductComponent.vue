@@ -22,6 +22,12 @@ import Formatters from '@/mixins/Formatters';
 export default class ProductComponent extends Formatters {
   @Prop() product!: Product;
 
+  mounted() {
+    if (!this.product.picture) {
+      this.product.picture = 'https://imgur.com/CS0aauU.png';
+    }
+  }
+
   productClicked() {
     this.$parent.addProduct(this.product, 1);
   }
