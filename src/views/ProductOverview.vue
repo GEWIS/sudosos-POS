@@ -8,10 +8,10 @@
       <b-nav-item class="gewis-logo d-none d-sm-block">
         <img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo" />
       </b-nav-item>
-      <home-menu-button :name="'beer'" />
-      <home-menu-button :name="'coffee'" />
-      <home-menu-button :name="'cookie-bite'" />
-      <home-menu-button :name="'ticket-alt'" />
+      <home-menu-button :name="'beer'" :category="1"/>
+      <home-menu-button :name="'coffee'" :category="2"/>
+      <home-menu-button :name="'cookie-bite'" :category="3"/>
+      <home-menu-button :name="'ticket-alt'" :category="4" />
 
       <b-nav-item
         class="other-button"
@@ -29,7 +29,7 @@
         <ProductComponent
           v-for="item in filteredProducts"
           :product="item"
-          :key="item.id"
+          :key="`${item.id}-${item.containerId}`"
         />
       </b-row>
       <searchbar-with-keyboard
@@ -53,8 +53,8 @@ import ProductComponent from '@/components/ProductComponent.vue';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
-import { getProducts } from '@/api/products';
-import { getPointOfSale, getPointOfSaleProducts } from '@/api/pointOfSale';
+
+import { getPointOfSale } from '@/api/pointOfSale';
 import { Transaction } from '@/entities/Transaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { SubTransaction } from '@/entities/SubTransaction';
@@ -82,8 +82,6 @@ export default class ProductOverview extends Vue {
     public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
     async mounted() {
-    // Initialize the product overview with beer
-      this.searchState.updateFilterName('Alcoholic');
       window.addEventListener('resize', () => {
         this.checkWindowSize();
       });
@@ -130,10 +128,12 @@ export default class ProductOverview extends Vue {
           .name.toLowerCase().includes(this.query.toLowerCase()));
     }
     // @ts-ignore
-    const currentName = this.searchState.filterName;
-    console.log(this.products);
+    const currentCategory = this.searchState.filterCategory;
+    if (currentCategory === 0) {
+      return this.products;
+    }
     return this.products.filter(
-      (product: Product) => product.category.name === currentName,
+      (product: Product) => product.category.id === currentCategory,
     );
   }
 }
