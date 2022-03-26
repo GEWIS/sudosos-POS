@@ -66,8 +66,6 @@ import SearchModule from '@/store/modules/search';
 export default class CheckoutBar extends Formatters {
   private userState = getModule(UserModule);
 
-  private transactionState = getModule(TransactionModule);
-
   private searchState = getModule(SearchModule);
 
   // Other user to charge

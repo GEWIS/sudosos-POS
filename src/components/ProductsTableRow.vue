@@ -68,23 +68,30 @@ export default class ProductsTableRow extends Formatters {
   }
 
   deleteItem() {
-    this.transactionsState.removeProduct(this.item.product);
+    const { rows } = this.$parent.$parent.$parent;
+    this.$parent.$parent.$parent.rows = rows
+      .filter((row) => row.product.id !== this.item.product.id);
   }
 
   closeKeypad() {
     if (this.item.amount === 0) {
       this.deleteItem();
     }
-    console.log(this.item.amount);
     this.openKeypad = false;
-    this.transactionsState.setProductAmount(
-      { product: this.item.product, amount: this.item.amount },
-    );
+    const itemIndex = this.$parent.$parent.$parent.rows
+      .findIndex((row) => row.product.id === this.item.product.id);
+
+    this.$parent.$parent.$parent.rows[itemIndex].amount = this.item.amount;
   }
 
   decreaseItem() {
     if (this.item.amount > 1) {
-      this.transactionsState.addProduct({ product: this.item.product, amount: -1 });
+      const itemIndex = this.$parent.$parent.$parent.rows
+        .findIndex((row) => row.product.id === this.item.product.id);
+
+      this.$parent.$parent.$parent.rows[itemIndex].amount -= 1;
+    } else {
+      this.deleteItem();
     }
   }
 }
