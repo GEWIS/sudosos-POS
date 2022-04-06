@@ -5,6 +5,7 @@ import Dinero from 'dinero.js';
 import store from '@/store';
 import { User, UserPermissions } from '@/entities/User';
 import APIHelper from '@/mixins/APIHelper';
+import { getUsers } from '@/api/users';
 import UserTransformer from '@/transformers/UserTransformer';
 import { NFCDevice } from '@/entities/NFCDevice';
 import jwtDecode from 'jwt-decode';
@@ -199,12 +200,11 @@ export default class UserModule extends VuexModule {
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
-  fetchAllUsers(force: boolean = false) {
+  async fetchAllUsers(force: boolean = false) {
     if (this.allUsers.length === 0 || force) {
-      APIHelper.getResource('users').then((userResponse) => {
-        const allUsers = userResponse.map((user: any) => UserTransformer.makeUser(user));
-        this.context.commit('setAllUsers', allUsers);
-      });
+      const allUsers = await getUsers();
+      console.log(allUsers);
+      this.context.commit('setAllUsers', allUsers.records);
     }
   }
 }
