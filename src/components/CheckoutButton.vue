@@ -17,6 +17,7 @@ import TransactionTransformer from '@/transformers/TransactionTransformer';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { postTransaction } from '@/api/transactions';
+import SearchModule from '@/store/modules/search';
 
 @Component
 export default class CheckoutButton extends Vue {
@@ -29,6 +30,8 @@ export default class CheckoutButton extends Vue {
   private timeout: number = 0;
 
   userState = getModule(UserModule);
+
+  searchState = getModule(SearchModule);
 
   checkout() {
     if (this.countdown > 0) {
@@ -95,11 +98,20 @@ export default class CheckoutButton extends Vue {
   async finishTransaction() {
     const { rows, pointOfSale } = this.$parent.$parent;
     const { user } = this.userState;
+    const { chargingUser } = this.searchState;
 
     const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
 
+    let chargingId = 0;
+    console.log(chargingUser.firstName);
+    if (chargingUser.firstName !== undefined) {
+      chargingId = chargingUser.id;
+    } else {
+      chargingId = user.id;
+    }
+
     const transaction = {
-      from: user.id,
+      from: chargingId,
       createdBy: user.id,
       pointOfSale: {
         id: pointOfSale.id,
