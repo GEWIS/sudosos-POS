@@ -106,6 +106,7 @@ export default class CheckoutButton extends Vue {
     console.log(chargingUser.firstName);
     if (chargingUser.firstName !== undefined) {
       chargingId = chargingUser.id;
+      this.searchState.clearChargingUser();
     } else {
       chargingId = user.id;
     }

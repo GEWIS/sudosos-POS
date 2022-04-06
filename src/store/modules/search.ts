@@ -43,6 +43,11 @@ export default class SearchModule extends VuexModule {
     this.chargingUser = user;
   }
 
+  @Mutation
+  clearChargingUser() {
+    this.chargingUser = {} as User;
+  }
+
   @Action({
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
   })
