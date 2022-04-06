@@ -32,11 +32,11 @@
     </b-row>
     <checkout-button />
     <b-row class="charge-other-button" @click="chargeOtherPerson">
-      <p v-if="searchState.chargingUser.name === undefined">
+      <p v-if="searchState.chargingUser.firstName === undefined">
         <font-awesome-icon icon="user-friends"/> Charge someone else
       </p>
       <p v-else>
-        Charging {{ searchState.chargingUser.name }}
+        Charging {{ searchState.chargingUser.firstName }} {{ searchState.chargingUser.lastName }}
       </p>
     </b-row>
   </div>
