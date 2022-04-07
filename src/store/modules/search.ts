@@ -17,6 +17,15 @@ export default class SearchModule extends VuexModule {
   chargingUser: User = {} as User;
 
   @Mutation
+  reset() {
+    this.searching = false;
+    this.userSearching = false;
+    this.filterName = '';
+    this.filterCategory = 0;
+    this.chargingUser = {} as User;
+  }
+
+  @Mutation
   setUserSearching(userSearching: boolean): void {
     this.userSearching = userSearching;
   }

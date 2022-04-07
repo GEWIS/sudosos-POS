@@ -20,12 +20,15 @@
       >
         <font-awesome-icon icon="search" />
       </b-nav-item>
-      <b-nav-item class="">
+      <b-nav-item class="" @click="showSettings = !showSettings">
         <font-awesome-icon icon="ellipsis-h" />
       </b-nav-item>
     </b-nav>
     <main class="product-overview-container">
       <b-row class="product-row">
+        <b-col cols="12" class="text-center borrelmode-text" v-if="userState.borrelModeOrgan.name">
+          Borrelmode actief voor {{ userState.borrelModeOrgan.name }}
+        </b-col>
         <ProductComponent
           v-for="item in filteredProducts"
           :product="item"
@@ -40,6 +43,7 @@
       <checkout-bar :subTransactionRows="rows"/>
     </main>
     <user-selection-component v-if="searchState.userSearching"/>
+    <settings-component v-if="showSettings" />
   </div>
 </template>
 
@@ -49,6 +53,7 @@ import { getModule } from 'vuex-module-decorators';
 import { Product } from '@/entities/Product';
 import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
 import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
+import SettingsComponent from '@/components/SettingsComponent.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
@@ -59,6 +64,7 @@ import { Transaction } from '@/entities/Transaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { SubTransaction } from '@/entities/SubTransaction';
 import { PointOfSale } from '@/entities/PointOfSale';
+import UserModule from '@/store/modules/user';
 
 @Component({
   components: {
@@ -67,11 +73,14 @@ import { PointOfSale } from '@/entities/PointOfSale';
     HomeMenuButton,
     CheckoutBar,
     UserSelectionComponent,
+    SettingsComponent,
   },
 })
 export default class ProductOverview extends Vue {
     // Proxy for the state, compact notation
     private searchState = getModule(SearchModule);
+
+    private userState = getModule(UserModule);
 
     private products: Product[] = [];
 
@@ -80,6 +89,8 @@ export default class ProductOverview extends Vue {
     public pointOfSale: PointOfSale | null = null;
 
     public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
+
+    private showSettings: boolean = false;
 
     async mounted() {
       window.addEventListener('resize', () => {
@@ -220,6 +231,13 @@ export default class ProductOverview extends Vue {
       background-color: $gewis-grey-light;
     }
   }
+}
+
+.borrelmode-text {
+  background-color: green;
+  color: white;
+  font-size: 1.5rem;
+  padding: 0.5rem;
 }
 
 .product-name {

@@ -10,6 +10,10 @@ import UserTransformer from '@/transformers/UserTransformer';
 import { NFCDevice } from '@/entities/NFCDevice';
 import jwtDecode from 'jwt-decode';
 
+interface Organ {
+  id: Number,
+  name: String,
+}
 @Module({
   dynamic: true, namespaced: true, store, name: 'UserModule',
 })
@@ -22,12 +26,20 @@ export default class UserModule extends VuexModule {
 
   permissions: UserPermissions = {} as UserPermissions;
 
+  borrelModeOrgan: Organ = {} as Organ;
+
   @Mutation
   reset() {
     this.user = {} as User;
     this.userRoles = [];
     this.allUsers = [];
     this.permissions = {} as UserPermissions;
+    this.borrelModeOrgan = {} as Organ;
+  }
+
+  @Mutation
+  setBorrelModeOrgan(organ: Organ) {
+    this.borrelModeOrgan = organ;
   }
 
   @Mutation

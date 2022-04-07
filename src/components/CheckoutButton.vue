@@ -137,7 +137,8 @@ export default class CheckoutButton extends Vue {
       });
     });
     const transactionResponse = await postTransaction(transaction);
-    console.log(transactionResponse);
+    this.userState.reset();
+    this.searchState.reset();
     this.$router.push('/login');
   }
 

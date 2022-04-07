@@ -13,7 +13,7 @@
           </span>
         </p>
       </b-col>
-      <b-col class="logout-button" @click="$router.push('/login')">
+      <b-col class="logout-button" @click="logout">
         <font-awesome-icon icon="sign-out-alt" />
       </b-col>
     </b-row>
@@ -104,6 +104,12 @@ export default class CheckoutBar extends Formatters {
 
   chargeOtherPerson() {
     this.searchState.setUserSearching(true);
+  }
+
+  logout() {
+    this.userState.reset();
+    this.searchState.reset();
+    this.$router.push('/login');
   }
 }
 </script>
