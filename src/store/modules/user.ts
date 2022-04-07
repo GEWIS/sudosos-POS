@@ -50,6 +50,9 @@ export default class UserModule extends VuexModule {
   @Mutation
   setAllUsers(allUsers: User[]) {
     this.allUsers = allUsers;
+    allUsers.forEach((user: User) => {
+      user.gewisID = Math.random() * 10000;
+    });
   }
 
   @Mutation
