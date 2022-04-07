@@ -2,7 +2,7 @@
   <div class="user-selection-component">
     <div class="selection-list">
       <p v-for="user in filteredUsers" :key="user.id" @click="userClicked(user)">
-        {{ user.firstName }} {{ user.lastName }}
+        {{ user.firstName }} {{ user.lastName }} - {{ user.gewisID }}
       </p>
     </div>
     <searchbar-with-keyboard :input.sync="searchedName" :showSearchbar="true"/>
@@ -30,7 +30,7 @@ export default class UserSelectionComponent extends Vue {
 
   get filteredUsers() {
     return this.userState.allUsers.filter((user) => {
-      const fullname = (`${user.firstName}${user.lastName}`).toLowerCase();
+      const fullname = (`${user.firstName}${user.lastName}${user.gewisID}`).toLowerCase();
       console.log(fullname, this.searchedName);
       return fullname.includes(this.searchedName.toLowerCase());
     });
