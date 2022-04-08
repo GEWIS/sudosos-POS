@@ -3,17 +3,14 @@ import {
 } from 'vuex-module-decorators';
 import Dinero from 'dinero.js';
 import store from '@/store';
-import { User, UserPermissions } from '@/entities/User';
+import { User, UserPermissions, UserType } from '@/entities/User';
+import { Organ } from '@/entities/Organ';
 import APIHelper from '@/mixins/APIHelper';
 import { getUsers } from '@/api/users';
 import UserTransformer from '@/transformers/UserTransformer';
 import { NFCDevice } from '@/entities/NFCDevice';
 import jwtDecode from 'jwt-decode';
 
-interface Organ {
-  id: Number,
-  name: String,
-}
 @Module({
   dynamic: true, namespaced: true, store, name: 'UserModule',
 })
@@ -24,6 +21,8 @@ export default class UserModule extends VuexModule {
 
   allUsers: User[] = [];
 
+  allOrgans: Organ[] = [];
+
   permissions: UserPermissions = {} as UserPermissions;
 
   borrelModeOrgan: Organ = {} as Organ;
@@ -33,6 +32,7 @@ export default class UserModule extends VuexModule {
     this.user = {} as User;
     this.userRoles = [];
     this.allUsers = [];
+    this.allOrgans = [];
     this.permissions = {} as UserPermissions;
     this.borrelModeOrgan = {} as Organ;
   }
@@ -53,6 +53,19 @@ export default class UserModule extends VuexModule {
     allUsers.forEach((user: User) => {
       user.gewisID = Math.round(Math.random() * 10000);
     });
+  }
+
+  @Mutation
+  setAllOrgans() {
+    if (this.allUsers.length > 0) {
+      this.allOrgans = this.allUsers
+        .filter((user) => user.type === UserType.ORGAN)
+        .map((user) => ({
+          organUser: user,
+          organMembers: [] as User[],
+          organName: user.firstName,
+        }));
+    }
   }
 
   @Mutation
@@ -218,8 +231,23 @@ export default class UserModule extends VuexModule {
   async fetchAllUsers(force: boolean = false) {
     if (this.allUsers.length === 0 || force) {
       const allUsers = await getUsers();
-      console.log(allUsers);
       this.context.commit('setAllUsers', allUsers.records);
+      this.context.commit('setAllOrgans');
+      this.fetchAllOrganMembers();
     }
+  }
+
+  @Action({
+    rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
+  })
+  async fetchAllOrganMembers() {
+    // TODO: Replace with actual fetch code
+    this.allOrgans.forEach((organ) => {
+      for (let i = 0; i < 5; i++) {
+        const organMember = this.allUsers[Math.round(this.allUsers.length * Math.random())];
+        organ.organMembers
+          .push(organMember);
+      }
+    });
   }
 }

@@ -26,8 +26,9 @@
     </b-nav>
     <main class="product-overview-container">
       <b-row class="product-row">
-        <b-col cols="12" class="text-center borrelmode-text" v-if="userState.borrelModeOrgan.name">
-          Borrelmode actief voor {{ userState.borrelModeOrgan.name }}
+        <b-col cols="12" class="text-center borrelmode-text"
+          v-if="userState.borrelModeOrgan.organName" @click="showSettings = true">
+          Borrelmode actief voor {{ userState.borrelModeOrgan.organName }}
         </b-col>
         <ProductComponent
           v-for="item in filteredProducts"

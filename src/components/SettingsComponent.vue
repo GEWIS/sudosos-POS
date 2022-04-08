@@ -3,15 +3,17 @@
     <div class="setting-row">
       <input type="checkbox" id="borrelmode-checkbox" v-model="borrelMode" @change="modeChanged">
       <label for="borrelmode-checkbox">Activeer borrelmode</label>
-      <select v-model="chosenOrgan" name="organselect">
-        <option v-for="organ in availableOrgans" v-bind:key="organ.id" :value="organ">
-          {{ organ.name }}
+      <select v-model="chosenOrgan" name="organselect" @change="modeChanged">
+        <option v-for="organ in userState.allOrgans" v-bind:key="organ.organName" :value="organ">
+          {{ organ.organName }}
         </option>
       </select>
     </div>
   </div>
 </template>
 <script lang="ts">
+import { Organ } from '@/entities/Organ';
+import { User, UserType } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
@@ -22,25 +24,17 @@ export default class SettingsComponent extends Vue {
 
   private borrelMode: boolean = false;
 
-  private availableOrgans: Array<Object> = [
-    {
-      id: 1,
-      name: 'BAC',
-    },
-    {
-      id: 2,
-      name: 'ACACACACACACACACACACACACAC',
-    },
-    {
-      id: 3,
-      name: 'GEHACK',
-    },
-  ];
+  private chosenOrgan: Organ = {} as Organ;
 
-  private chosenOrgan: any = {};
+  mounted() {
+    if (this.userState.borrelModeOrgan.organName) {
+      this.chosenOrgan = this.userState.borrelModeOrgan;
+      this.borrelMode = true;
+    }
+  }
 
   modeChanged() {
-    if (this.borrelMode === true && this.chosenOrgan !== {}) {
+    if (this.borrelMode === true && this.chosenOrgan.organName !== undefined) {
       this.userState.setBorrelModeOrgan(this.chosenOrgan);
     }
   }
