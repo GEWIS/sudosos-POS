@@ -111,7 +111,7 @@ export default class Login extends Vue {
   async login() {
     const userDetails = {
       gewisId: this.userId,
-      pin: this.passcode,
+      pin: this.passcode.toString(),
     };
     const loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
 

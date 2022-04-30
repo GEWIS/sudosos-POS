@@ -1,5 +1,5 @@
 <template>
-  <div class="settings-component">
+  <div class="settings-component pos-card">
     <div class="setting-row">
       <input type="checkbox" id="borrelmode-checkbox" v-model="borrelMode" @change="modeChanged">
       <label for="borrelmode-checkbox">Activeer borrelmode</label>
@@ -13,7 +13,6 @@
 </template>
 <script lang="ts">
 import { Organ } from '@/entities/Organ';
-import { User, UserType } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
@@ -42,13 +41,6 @@ export default class SettingsComponent extends Vue {
 </script>
 <style lang="scss" scoped>
   .settings-component {
-    width: 80%;
-    left: 10%;
-    position: absolute;
-    background-color: white;
-    top: 0;
-    height: 100%;
-
     .setting-row {
       margin-right: auto;
       margin-left: auto;

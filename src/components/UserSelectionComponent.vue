@@ -31,7 +31,6 @@ export default class UserSelectionComponent extends Vue {
   get filteredUsers() {
     return this.userState.allUsers.filter((user) => {
       const fullname = (`${user.firstName}${user.lastName}${user.gewisID}`).toLowerCase();
-      console.log(fullname, this.searchedName);
       return fullname.includes(this.searchedName.toLowerCase());
     });
   }
@@ -39,6 +38,7 @@ export default class UserSelectionComponent extends Vue {
   userClicked(user: User): void {
     this.searchState.setChargingUser(user);
     this.searchState.setUserSearching(false);
+    this.$parent.$emit('userSelected');
   }
 }
 </script>

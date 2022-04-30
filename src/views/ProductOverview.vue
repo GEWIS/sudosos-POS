@@ -45,6 +45,7 @@
     </main>
     <user-selection-component v-if="searchState.userSearching"/>
     <settings-component v-if="showSettings" />
+    <organ-member-component v-if="showOrganMembers" />
   </div>
 </template>
 
@@ -55,6 +56,7 @@ import { Product } from '@/entities/Product';
 import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
 import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
 import SettingsComponent from '@/components/SettingsComponent.vue';
+import OrganMemberComponent from '@/components/OrganMemberComponent.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
@@ -75,6 +77,7 @@ import UserModule from '@/store/modules/user';
     CheckoutBar,
     UserSelectionComponent,
     SettingsComponent,
+    OrganMemberComponent,
   },
 })
 export default class ProductOverview extends Vue {
@@ -92,6 +95,8 @@ export default class ProductOverview extends Vue {
     public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
     private showSettings: boolean = false;
+
+    private showOrganMembers: boolean = false;
 
     async mounted() {
       window.addEventListener('resize', () => {
@@ -254,5 +259,15 @@ export default class ProductOverview extends Vue {
   .horizontal > li {
     width: calc(100% / 7);
   }
+}
+</style>
+<style lang="scss">
+.pos-card {
+    width: 80%;
+    left: 10%;
+    position: absolute;
+    background-color: white;
+    top: 0;
+    height: 100%;
 }
 </style>

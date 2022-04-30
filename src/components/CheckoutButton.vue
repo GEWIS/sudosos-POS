@@ -33,6 +33,22 @@ export default class CheckoutButton extends Vue {
 
   searchState = getModule(SearchModule);
 
+  mounted() {
+    this.$parent.$parent.$on('userSelected', () => {
+      const { organName } = this.userState.borrelModeOrgan;
+      // Make sure we are in borrel mode
+      if (organName) {
+        this.$parent.$parent.showOrganMembers = true;
+      }
+    });
+
+    this.$parent.$parent.$on('organMemberSelected', (selectedMember: User) => {
+      this.$parent.$parent.showOrganMembers = false;
+      const { chargingUser } = this.searchState;
+      this.finishTransaction(selectedMember, chargingUser, true);
+    });
+  }
+
   checkout() {
     if (this.countdown > 0) {
       this.buttonText = this.countdown.toString();
@@ -42,7 +58,9 @@ export default class CheckoutButton extends Vue {
       }, 1000);
     } else {
       this.buttonText = 'Transaction done';
-      this.finishTransaction();
+      const { user } = this.userState;
+      const { chargingUser } = this.searchState;
+      this.finishTransaction(user, chargingUser);
     }
   }
 
@@ -95,10 +113,8 @@ export default class CheckoutButton extends Vue {
     return subTransactions;
   }
 
-  async finishTransaction() {
+  async finishTransaction(user: User, chargingUser: User, borrelMode = false) {
     const { rows, pointOfSale } = this.$parent.$parent;
-    const { user } = this.userState;
-    const { chargingUser } = this.searchState;
 
     const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
 
@@ -137,13 +153,21 @@ export default class CheckoutButton extends Vue {
       });
     });
     const transactionResponse = await postTransaction(transaction);
-    this.userState.reset();
+    console.log(transactionResponse);
     this.searchState.reset();
-    this.$router.push('/login');
+    this.$parent.$parent.rows = [];
+    if (!borrelMode) {
+      this.userState.reset();
+      this.$router.push('/login');
+    }
   }
 
   buttonClicked() {
-    if (this.checkingOut) {
+    const { organName } = this.userState.borrelModeOrgan;
+    // Borrelmode checkout
+    if (organName) {
+      this.searchState.setUserSearching(true);
+    } else if (this.checkingOut) {
       clearTimeout(this.timeout);
       this.countdown = 3;
       this.buttonText = 'Checkout';
