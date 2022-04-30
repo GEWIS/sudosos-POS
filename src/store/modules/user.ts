@@ -230,7 +230,7 @@ export default class UserModule extends VuexModule {
   })
   async fetchAllUsers(force: boolean = false) {
     if (this.allUsers.length === 0 || force) {
-      const allUsers = await getUsers();
+      const allUsers = await getUsers(1000000); // Get all users
       this.context.commit('setAllUsers', allUsers.records);
       this.context.commit('setAllOrgans');
       this.fetchAllOrganMembers();
