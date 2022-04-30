@@ -1,6 +1,12 @@
 <template>
   <b-row class="products-table-row" :class="{editing}" @click="rowClicked">
-    <keypad v-show="openKeypad" :value.sync="item.amount" @close="closeKeypad"/>
+    <keypad
+      v-show="openKeypad"
+      :value="item.amount"
+      @backspace="backspacePressed"
+      @ok="openKeypad = false"
+      @keyPressed="keyPressed"
+    />
     <b-col cols="2">
       <p class="first-col">{{ item.amount }}</p>
     </b-col>
@@ -71,6 +77,18 @@ export default class ProductsTableRow extends Formatters {
     const { rows } = this.$parent.$parent.$parent;
     this.$parent.$parent.$parent.rows = rows
       .filter((row) => row.product.id !== this.item.product.id);
+  }
+
+  keyPressed(keyValue: string) {
+    this.item.amount = parseInt(this.item.amount.toString(10) + keyValue, 10);
+  }
+
+  backspacePressed() {
+    if (this.item.amount > 10) {
+      this.item.amount = parseInt(this.item.amount.toString(10).slice(0, -1), 10);
+    } else {
+      this.item.amount = 0;
+    }
   }
 
   closeKeypad() {

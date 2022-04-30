@@ -23,7 +23,7 @@ import {
 export default class Keypad extends Vue {
   private keys: (number|string)[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, '🠨', 0, '✔'];
 
-  private value = '1';
+  @Prop({ default: 0 }) readonly value!: number;
 
   @Prop({ default: false }) readonly inline!: boolean;
 
