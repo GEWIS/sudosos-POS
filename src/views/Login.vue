@@ -10,7 +10,7 @@
           <b-col align-self="center">
             <p v-bind:class="{'active-input': enteringUserId }" @click="enteringUserId = true">
               <font-awesome-icon icon="user" />
-              <span v-if="userId > 0">{{ userId }}</span>
+              <span>{{ userId }}</span>
             </p>
             <p v-bind:class="{'active-input': !enteringUserId }" @click="enteringUserId = false">
               <font-awesome-icon icon="lock" />
@@ -128,9 +128,8 @@ export default class Login extends Vue {
       this.userState.fetchAllUsers();
       this.$router.push('/');
     } else {
-      this.keypadValue = 0;
-      this.userId = 0;
-      this.passcode = 0;
+      this.userId = '';
+      this.passcode = '';
       this.enteringUserId = true;
       this.loginError = loginResponse.message;
     }
@@ -153,6 +152,11 @@ export default class Login extends Vue {
 }
 </script>
 <style lang="scss" scoped>
+@keyframes cursor-blink {
+  0% {
+    opacity: 0;
+  }
+}
 .login-container {
   background-color: #DADADA;
   height: 100vh;
@@ -189,6 +193,14 @@ export default class Login extends Vue {
           background-color: #EAEAEA;
           span {
             color: #525659;
+            &::after {
+              content: "";
+              width: 5px;
+              height: 3rem;
+              background: #525659;
+              display: inline-block;
+              animation: cursor-blink 1.5s steps(2) infinite;
+            }
           }
           svg {
             background-color: #DADADA;
