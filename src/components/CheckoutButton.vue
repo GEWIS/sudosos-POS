@@ -119,7 +119,6 @@ export default class CheckoutButton extends Vue {
     const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
 
     let chargingId = 0;
-    console.log(chargingUser.firstName);
     if (chargingUser.firstName !== undefined) {
       chargingId = chargingUser.id;
       this.searchState.clearChargingUser();
@@ -136,8 +135,10 @@ export default class CheckoutButton extends Vue {
       },
       subTransactions,
     };
+
     const price = transaction.subTransactions
       .reduce((total, sub) => total + sub.price.amount, 0);
+
     transaction.price = {
       amount: price,
       currency: 'EUR',

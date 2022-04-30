@@ -8,11 +8,11 @@
       <b-col cols="12" lg="4" offset-lg="1" md="6" class="keycodes-container">
         <b-row class="login-row">
           <b-col align-self="center">
-            <p>
+            <p v-bind:class="{'active-input': enteringUserId }" @click="enteringUserId = true">
               <font-awesome-icon icon="user" />
               <span v-if="userId > 0">{{ userId }}</span>
             </p>
-            <p>
+            <p v-bind:class="{'active-input': !enteringUserId }" @click="enteringUserId = false">
               <font-awesome-icon icon="lock" />
               <span>{{ passcode | passcodeDots }} </span>
             </p>
@@ -22,7 +22,10 @@
       </b-col>
       <b-col cols="12" lg="4" offset-lg="2" md="6" class="keypad-container">
         <b-row>
-          <keypad :inline="true" :value.sync="keypadValue" @close="nextLine"/>
+          <keypad :inline="true"
+            @backspace="backspacePressed"
+            @ok="okPressed"
+            @keyPressed="keyPress"/>
         </b-row>
       </b-col>
     </b-row>
@@ -76,41 +79,45 @@ export default class Login extends Vue {
 
   public bannerIndex = 0;
 
-  public userId = 0;
+  public userId = '';
 
-  public passcode = -1;
-
-  private keypadValue = 0;
+  public passcode = '';
 
   private enteringUserId = true;
 
   private loginError = '';
 
-  @Watch('keypadValue')
-  onKeypadChanged(val: number, oldVal: number) {
-    if (this.enteringUserId) {
-      this.userId = val;
-    } else {
-      if (val === -1) {
-        this.enteringUserId = true;
-        this.passcode = 0;
+  backspacePressed() {
+    if (this.enteringUserId && this.userId.length > 0) {
+      this.userId = this.userId.slice(0, -1);
+    } else if (!this.enteringUserId) {
+      if (this.passcode.length > 0) {
+        this.passcode = this.passcode.slice(0, -1);
+      } else {
+        this.enteringUserId = false;
       }
-      this.passcode = val;
     }
   }
 
-  nextLine() {
+  okPressed() {
     if (this.enteringUserId) {
       this.enteringUserId = false;
-      this.keypadValue = 0;
-    } else if (this.passcode > -1) {
+    } else {
       this.login();
+    }
+  }
+
+  keyPress(keyValue: string) {
+    if (this.enteringUserId) {
+      this.userId += keyValue;
+    } else {
+      this.passcode += keyValue;
     }
   }
 
   async login() {
     const userDetails = {
-      gewisId: this.userId,
+      gewisId: parseInt(this.userId, 10),
       pin: this.passcode.toString(),
     };
     const loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
@@ -178,6 +185,16 @@ export default class Login extends Vue {
     .login-row {
       height: 100%;
       p {
+        &.active-input {
+          background-color: #EAEAEA;
+          span {
+            color: #525659;
+          }
+          svg {
+            background-color: #DADADA;
+            color: #525659;
+          }
+        }
         background-color: #525659;
         line-height: 1;
         margin-bottom: 3rem;

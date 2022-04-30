@@ -23,24 +23,18 @@ import {
 export default class Keypad extends Vue {
   private keys: (number|string)[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, '🠨', 0, '✔'];
 
-  @PropSync('value', { type: Number }) syncedValue!: number;
+  private value = '1';
 
   @Prop({ default: false }) readonly inline!: boolean;
 
   // eslint-disable-next-line class-methods-use-this
   keyClicked(key: number|string) {
     if (key === '🠨') {
-      if (this.syncedValue === 0) {
-        this.syncedValue = -1;
-      } else if (this.syncedValue < 10) {
-        this.syncedValue = 0;
-      } else {
-        this.syncedValue = Math.floor(this.syncedValue / 10);
-      }
+      this.$emit('backspace');
     } else if (key === '✔') {
-      this.$emit('close');
+      this.$emit('ok');
     } else {
-      this.syncedValue = this.syncedValue * 10 + Number(key);
+      this.$emit('keyPressed', key.toString());
     }
   }
 }
