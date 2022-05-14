@@ -1,46 +1,31 @@
 <template>
   <div id="app">
-    <b-nav :vertical="vertical" class="nav align-items-center"
-           v-bind:class="{ vertical: vertical, horizontal: !vertical }">
-      <b-nav-item class="gewis-logo d-none d-sm-block">
-        <img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo"/>
-      </b-nav-item>
-      <home-menu-button :name="'beer'"/>
-      <home-menu-button :name="'coffee'"/>
-      <home-menu-button :name="'cookie-bite'"/>
-      <home-menu-button :name="'ticket-alt'"/>
-
-      <b-nav-item
-        class="other-button"
-        @click="clickSearchButton"
-        :class="{active: searchState.searching}">
-        <font-awesome-icon icon="search"/>
-      </b-nav-item>
-      <b-nav-item class="">
-        <font-awesome-icon icon="ellipsis-h" />
-      </b-nav-item>
-    </b-nav>
-    <main>
-      <router-view />
-    </main>
+    <router-view />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
+import Dinero from 'dinero.js';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import SearchModule from '@/store/modules/search';
+import UserModule from '@/store/modules/user';
+import CheckoutBar from '@/components/CheckoutBar.vue';
+import { PointOfSale } from './entities/PointOfSale';
 
 @Component({
   components: {
     HomeMenuButton,
+    CheckoutBar,
   },
 })
 export default class App extends Vue {
   public vertical: boolean = (window.innerWidth / window.innerHeight) >= 1;
 
-  private searchState = getModule(SearchModule);
+  searchState = getModule(SearchModule);
+
+  userState = getModule(UserModule);
 
   mounted() {
     window.addEventListener('resize', () => {
@@ -79,6 +64,13 @@ export default class App extends Vue {
 
   .vertical ~ main {
     margin-left: 6rem;
+    display: flex;
+    .product-overview-container{
+      flex-grow: 1;
+    }
+    .checkoutbar {
+      width: 16rem;
+    }
   }
 
   .horizontal ~ main {

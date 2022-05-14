@@ -3,7 +3,7 @@
     <div class="query-container">
       <p class="query-text">{{ syncedInput }}</p>
     </div>
-    <div class="keyboard-container"></div>
+    <div :class="searchbarId"></div>
   </div>
 </template>
 <script lang="ts">
@@ -12,6 +12,7 @@ import {
 } from 'vue-property-decorator';
 import Keyboard from 'simple-keyboard';
 import 'simple-keyboard/build/css/index.css';
+
 @Component
 export default class SearchbarWithKeyboard extends Vue {
   @PropSync('input', { type: String }) syncedInput!: string;
@@ -20,9 +21,14 @@ export default class SearchbarWithKeyboard extends Vue {
 
   private keyboard: any = null;
 
+  private searchbarId: string = '';
+
   mounted() {
-    this.keyboard = new Keyboard('.keyboard-container', {
-      onChange: this.onChange,
+    this.searchbarId = `keyboard-${Math.random().toString(36).substring(7)}`;
+    this.$nextTick(() => {
+      this.keyboard = new Keyboard(this.searchbarId, {
+        onChange: this.onChange,
+      });
     });
   }
 
@@ -36,7 +42,7 @@ export default class SearchbarWithKeyboard extends Vue {
     position: absolute;
     bottom: 0;
     left: 6rem;
-    width: calc(100% - 6rem);
+    width: calc(100% - 6rem - 16rem);
 
     .query-container {
       p.query-text {

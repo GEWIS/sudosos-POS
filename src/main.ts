@@ -5,7 +5,17 @@ import dinero, { Currency } from 'dinero.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
 import {
-  faBeer, faCoffee, faCookieBite, faTicketAlt, faEllipsisH, faSearch,
+  faBeer,
+  faCoffee,
+  faCookieBite,
+  faTicketAlt,
+  faEllipsisH,
+  faSearch,
+  faUser,
+  faWallet,
+  faSignOutAlt,
+  faUserFriends,
+  faLock,
 } from '@fortawesome/free-solid-svg-icons';
 import languages from '@/locales';
 import App from './App.vue';
@@ -17,7 +27,19 @@ import 'bootstrap';
 // Import the BootstrapVue style
 import './styles/global/_main.scss';
 
-library.add(faBeer, faCoffee, faCookieBite, faTicketAlt, faEllipsisH, faSearch);
+library.add(
+  faBeer,
+  faCoffee,
+  faCookieBite,
+  faTicketAlt,
+  faEllipsisH,
+  faSearch,
+  faUser,
+  faWallet,
+  faSignOutAlt,
+  faUserFriends,
+  faLock,
+);
 
 // Default settings for Dinero
 dinero.defaultCurrency = 'EUR' as Currency;

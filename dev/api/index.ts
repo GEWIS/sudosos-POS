@@ -4,6 +4,7 @@ import { ResponseBody } from '@/entities/ResponseBody';
 import Products from './data/products.json';
 import UserProducts from './data/userproducts.json';
 import User from './data/user.json';
+import AllUsers from './data/users.json';
 import Saldo from './data/saldo.json';
 import Banners from './data/banners.json';
 import Containers from './data/containers.json';
@@ -104,6 +105,10 @@ export default {
 
     if (route.includes('product')) {
       return setResponse(body, route, Products, 'products');
+    }
+
+    if (route.includes('users')) {
+      return AllUsers;
     }
 
     if (route.includes('user')) {

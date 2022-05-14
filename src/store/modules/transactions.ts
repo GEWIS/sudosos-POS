@@ -1,10 +1,14 @@
 import {
   Action, Module, Mutation, VuexModule,
 } from 'vuex-module-decorators';
+import Dinero from 'dinero.js';
 import store from '@/store';
 import APIHelper from '@/mixins/APIHelper';
 import { POSTransaction, Transaction } from '@/entities/Transaction';
+import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import TransactionTransformer from '@/transformers/TransactionTransformer';
+import { Product } from '@/entities/Product';
+import { Container } from '@/entities/Container';
 
 @Module({
   dynamic: true, namespaced: true, store, name: 'TransactionModule',
@@ -13,6 +17,76 @@ export default class TransactionModule extends VuexModule {
   transactions: Transaction[] = [];
 
   posTransactions: POSTransaction[] = [];
+
+  currentTransaction: Transaction = {} as Transaction;
+
+  @Mutation
+  addProduct({ product, amount } : {product: Product, amount: number}) {
+    // First, find if there is already a relevant subtransaction
+    let subTrans = this.currentTransaction.subTransactions
+      .find((sub) => sub.container.id === product.containerId);
+    if (!subTrans) {
+      console.log(product);
+      const subTransContainer: Container = {
+        owner: product.owner,
+        products: [],
+        name: '',
+        id: product.containerId,
+      };
+      subTrans = {
+        container: subTransContainer,
+        subTransactionRows: [],
+        price: Dinero({ amount: 0 }),
+        to: subTransContainer.owner,
+      };
+      this.currentTransaction.subTransactions.push(subTrans);
+    }
+
+    // Check if there is already a subtransaction for this product
+    let subTransRow = subTrans.subTransactionRows
+      .find((row) => row.product === product);
+    if (subTransRow) {
+      subTransRow.amount += amount;
+      subTransRow.price.add(subTransRow.price.multiply(amount));
+    } else {
+      subTransRow = {
+        product,
+        amount,
+        price: product.price.multiply(amount),
+      };
+      subTrans.subTransactionRows.push(subTransRow);
+    }
+  }
+
+  @Mutation
+  removeProduct(product: Product) {
+    this.currentTransaction.subTransactions.forEach((sub, subIndex) => {
+      sub.subTransactionRows.forEach((row, rowIndex) => {
+        if (row.product === product) {
+          sub.subTransactionRows.splice(rowIndex, 1);
+        }
+        if (sub.subTransactionRows.length === 0) {
+          this.currentTransaction.subTransactions.splice(subIndex, 1);
+        }
+      });
+    });
+  }
+
+  @Mutation
+  setProductAmount({ product, amount } : {product: Product, amount: number}) {
+    this.currentTransaction.subTransactions.forEach((sub) => {
+      sub.subTransactionRows.forEach((row) => {
+        if (row.product === product) {
+          row.amount = amount;
+        }
+      });
+    });
+  }
+
+  @Mutation
+  setCurrentTransaction(transaction: Transaction) {
+    this.currentTransaction = transaction;
+  }
 
   @Mutation
   setTransactions(transactions: Transaction[]) {
@@ -28,7 +102,7 @@ export default class TransactionModule extends VuexModule {
   @Mutation
   removeTransaction(transaction: Transaction) {
     APIHelper.delResource('transactions', transaction);
-    const index = this.transactions.findIndex(trns => trns.id === transaction.id);
+    const index = this.transactions.findIndex((trns) => trns.id === transaction.id);
     this.transactions.splice(index, 1);
   }
 
@@ -36,7 +110,7 @@ export default class TransactionModule extends VuexModule {
   updateTransaction(transaction: {}) {
     const response = APIHelper.putResource('transactions', transaction);
     const transactionResponse = TransactionTransformer.makeTransaction(response);
-    const index = this.transactions.findIndex(trns => trns.id === transactionResponse.id);
+    const index = this.transactions.findIndex((trns) => trns.id === transactionResponse.id);
     this.transactions.splice(index, 1, transactionResponse);
   }
 
@@ -46,7 +120,7 @@ export default class TransactionModule extends VuexModule {
   fetchTransactions(force: boolean = false) {
     if (this.transactions.length === 0 || force) {
       const transactionResponse = APIHelper.getResource('transactions') as [];
-      const trans = transactionResponse.map(trns => TransactionTransformer.makeTransaction(trns));
+      const trans = transactionResponse.map((trns) => TransactionTransformer.makeTransaction(trns));
       this.context.commit('setTransactions', trans);
     }
   }
@@ -58,7 +132,7 @@ export default class TransactionModule extends VuexModule {
 
   @Mutation
   updatePOSTransaction(transaction: POSTransaction) {
-    const index = this.posTransactions.findIndex(pos => pos.id === transaction.id);
+    const index = this.posTransactions.findIndex((pos) => pos.id === transaction.id);
     this.posTransactions.splice(index, 1, transaction);
   }
 
@@ -66,12 +140,12 @@ export default class TransactionModule extends VuexModule {
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
   })
   fetchPOSTransactions(posID: number, force: boolean = false) {
-    const index = this.posTransactions.findIndex(pos => pos.id === posID);
+    const index = this.posTransactions.findIndex((pos) => pos.id === posID);
 
     // If the transactions for this POS have not been resolved yet resolve them.
     if (index === -1 || force) {
       const transactionResponse = APIHelper.getResource(`transactionPOS?id=${posID}`) as [];
-      const trans = transactionResponse.map(trns => TransactionTransformer.makeTransaction(trns));
+      const trans = transactionResponse.map((trns) => TransactionTransformer.makeTransaction(trns));
 
       this.context.commit('addPOSTransaction', {
         id: posID,

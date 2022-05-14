@@ -15,14 +15,16 @@ export default class HomeMenuButton extends Vue {
   // The name of this button
   @Prop() name!: string;
 
+  @Prop() category!: number;
+
   private searchState = getModule(SearchModule);
 
   get active() {
-    return this.name === this.searchState.filterName;
+    return this.category === this.searchState.filterCategory;
   }
 
   buttonClicked() {
-    this.searchState.updateFilterName(this.name);
+    this.searchState.updateFilterCategory(this.category);
   }
 }
 </script>

@@ -20,7 +20,9 @@ export default {
     let nfcDevices = [];
 
     if ('saldo' in data) {
-      saldo = dinero({ amount: Number(data.saldo), currency: 'EUR' });
+      console.log(data);
+      // saldo = dinero({ amount: Number(data.saldo), currency: 'EUR' });
+      saldo = data.saldo;
     }
 
     if ('nfcDevices' in data) {
@@ -31,7 +33,8 @@ export default {
 
     return {
       ...BaseTransformer.makeBaseEntity(data),
-      name: data.name,
+      firstName: data.firstName,
+      lastName: data.lastName,
       gewisID: data.gewisID,
       email: data.email,
       active: data.active,

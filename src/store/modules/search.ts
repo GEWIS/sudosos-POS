@@ -2,14 +2,33 @@ import {
   VuexModule, Module, Mutation, Action,
 } from 'vuex-module-decorators';
 import store from '@/store';
+import { User } from '@/entities/User';
 
 @Module({ dynamic: true, store, name: 'SearchModule' })
 export default class SearchModule extends VuexModule {
-  searching: boolean = false;
+  searching: boolean = false; // Searching for a product
+
+  userSearching: boolean = false; // Searching for a user
 
   filterName: string = '';
 
-  filterCategory: string = '';
+  filterCategory: number = 0; // Alcoholic drinks as default category
+
+  chargingUser: User = {} as User;
+
+  @Mutation
+  reset() {
+    this.searching = false;
+    this.userSearching = false;
+    this.filterName = '';
+    this.filterCategory = 0;
+    this.chargingUser = {} as User;
+  }
+
+  @Mutation
+  setUserSearching(userSearching: boolean): void {
+    this.userSearching = userSearching;
+  }
 
   @Mutation
   setSearching(searching: boolean): void {
@@ -17,21 +36,25 @@ export default class SearchModule extends VuexModule {
     // Disable filters when searching
     if (searching) {
       this.filterName = '';
-      this.filterCategory = '';
+      this.filterCategory = 0;
     }
   }
 
   @Mutation
-  setFilterName(name: string): void {
+  setFilterCategory(category: number): void {
     this.searching = false;
-    const categoryMap: any = {
-      beer: 'beer',
-      coffee: 'drink',
-      'cookie-bite': 'food',
-      'ticket-alt': 'ticket',
-    };
-    this.filterName = name;
-    this.filterCategory = categoryMap[name];
+    console.log(category);
+    this.filterCategory = category;
+  }
+
+  @Mutation
+  setChargingUser(user: User) {
+    this.chargingUser = user;
+  }
+
+  @Mutation
+  clearChargingUser() {
+    this.chargingUser = {} as User;
   }
 
   @Action({
@@ -46,5 +69,12 @@ export default class SearchModule extends VuexModule {
   })
   updateFilterName(name: string) {
     this.context.commit('setFilterName', name);
+  }
+
+  @Action({
+    rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
+  })
+  updateFilterCategory(category: number) {
+    this.context.commit('setFilterCategory', category);
   }
 }
