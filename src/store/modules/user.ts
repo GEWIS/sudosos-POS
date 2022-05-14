@@ -6,7 +6,7 @@ import store from '@/store';
 import { User, UserPermissions, UserType } from '@/entities/User';
 import { Organ } from '@/entities/Organ';
 import APIHelper from '@/mixins/APIHelper';
-import { getUsers } from '@/api/users';
+import { getOrganMembers, getUsers } from '@/api/users';
 import UserTransformer from '@/transformers/UserTransformer';
 import { NFCDevice } from '@/entities/NFCDevice';
 import jwtDecode from 'jwt-decode';
@@ -59,7 +59,7 @@ export default class UserModule extends VuexModule {
   setAllOrgans() {
     if (this.allUsers.length > 0) {
       this.allOrgans = this.allUsers
-        .filter((user) => user.type === UserType.ORGAN)
+        .filter((user) => user.type.toString() === 'ORGAN')
         .map((user) => ({
           organUser: user,
           organMembers: [] as User[],
@@ -242,12 +242,8 @@ export default class UserModule extends VuexModule {
   })
   async fetchAllOrganMembers() {
     // TODO: Replace with actual fetch code
-    this.allOrgans.forEach((organ) => {
-      for (let i = 0; i < 5; i++) {
-        const organMember = this.allUsers[Math.round(this.allUsers.length * Math.random())];
-        organ.organMembers
-          .push(organMember);
-      }
+    this.allOrgans.forEach(async (organ) => {
+      organ.organMembers = await getOrganMembers(organ.organUser.id);
     });
   }
 }
