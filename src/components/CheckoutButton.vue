@@ -9,7 +9,7 @@
 import { PointOfSale } from '@/entities/PointOfSale';
 import { SubTransaction } from '@/entities/SubTransaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
-import { Transaction } from '@/entities/Transaction';
+import { Container } from '@/entities/Container';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import SubTransactionTransformer from '@/transformers/SubTransactionTransformer';
@@ -18,6 +18,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { postTransaction } from '@/api/transactions';
 import SearchModule from '@/store/modules/search';
+import ProductOverview from '@/views/ProductOverview.vue';
 
 @Component
 export default class CheckoutButton extends Vue {
@@ -38,12 +39,12 @@ export default class CheckoutButton extends Vue {
       const { organName } = this.userState.borrelModeOrgan;
       // Make sure we are in borrel mode
       if (organName) {
-        this.$parent.$parent.showOrganMembers = true;
+        (this.$parent.$parent as ProductOverview).showOrganMembers = true;
       }
     });
 
     this.$parent.$parent.$on('organMemberSelected', (selectedMember: User) => {
-      this.$parent.$parent.showOrganMembers = false;
+      (this.$parent.$parent as ProductOverview).showOrganMembers = false;
       const { chargingUser } = this.searchState;
       this.finishTransaction(selectedMember, chargingUser, true);
     });
@@ -68,7 +69,7 @@ export default class CheckoutButton extends Vue {
     const productId = row.product.id;
     let rowContainer = {};
 
-    pos.containers.forEach((container) => {
+    (pos.containers as Container[]).forEach((container) => {
       if (container.products.findIndex((product) => product.id === productId) > -1) {
         rowContainer = {
           id: container.id,
@@ -153,13 +154,16 @@ export default class CheckoutButton extends Vue {
         };
       });
     });
-    const transactionResponse = await postTransaction(transaction);
-    console.log(transactionResponse);
-    this.searchState.reset();
-    this.$parent.$parent.rows = [];
-    if (!borrelMode) {
-      this.userState.reset();
-      this.$router.push('/login');
+    try {
+      const transactionResponse = await postTransaction(transaction);
+      this.searchState.reset();
+      this.$parent.$parent.rows = [];
+      if (!borrelMode) {
+        this.userState.reset();
+        this.$router.push('/login');
+      }
+    } catch (error: any) {
+      alert(error.message);
     }
   }
 

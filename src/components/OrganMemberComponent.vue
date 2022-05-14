@@ -1,7 +1,7 @@
 <template>
   <b-row class="members-row pos-card">
     <b-col v-for="user in userState.borrelModeOrgan.organMembers"
-      v-bind:key="user.id" lg="2" sm="6" @click="memberSelected(user)">
+      v-bind:key="user.id" lg="3" sm="6" @click="memberSelected(user)">
       <p>{{ user.firstName }} {{ user.lastName }}</p>
     </b-col>
   </b-row>
@@ -23,12 +23,14 @@ export default class OrganMemberComponent extends Vue {
 </script>
 <style lang="scss" scoped>
   .members-row {
+    align-content: flex-start;
     div {
       background-color: lightgray;
       height: fit-content;
+      border: 1px solid black;
       p {
         text-align: center;
-        padding: 1rem 0;
+        padding: 1.5rem 0;
       }
     }
   }

@@ -94,9 +94,9 @@ export default class ProductOverview extends Vue {
 
     public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
-    private showSettings: boolean = false;
+    public showSettings: boolean = false;
 
-    private showOrganMembers: boolean = false;
+    public showOrganMembers: boolean = false;
 
     async mounted() {
       window.addEventListener('resize', () => {
