@@ -17,6 +17,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/vue-fontawesome": "^2.0.2",
     "@types/dinero.js": "^1.6.3",
+    "@typescript-eslint/parser": "^5.25.0",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.8.0",
     "core-js": "^3.4.4",
