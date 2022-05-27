@@ -1,51 +1,48 @@
 <template>
-  <div>
-    <b-nav
-      :vertical="vertical"
-      class="nav align-items-center"
-      v-bind:class="{ vertical: vertical, horizontal: !vertical }"
-    >
-      <b-nav-item class="gewis-logo d-none d-sm-block">
-        <img src="@/assets/img/gewis-branding.svg" alt="GEWIS Logo" />
-      </b-nav-item>
-      <home-menu-button :name="'beer'" :category="1"/>
-      <home-menu-button :name="'coffee'" :category="2"/>
-      <home-menu-button :name="'cookie-bite'" :category="3"/>
-      <home-menu-button :name="'ticket-alt'" :category="4" />
+  <div class="wrapper">
+    <div class="product-overview">
+      <div class="product-overview-container">
+        <b-nav
+          class="nav align-items-center">
 
-      <b-nav-item
-        class="other-button"
-        @click="clickSearchButton"
-        :class="{ active: searchState.searching }"
-      >
-        <font-awesome-icon icon="search" />
-      </b-nav-item>
-      <b-nav-item class="" @click="showSettings = !showSettings">
-        <font-awesome-icon icon="ellipsis-h" />
-      </b-nav-item>
-    </b-nav>
-    <main class="product-overview-container">
-      <b-row class="product-row">
-        <b-col cols="12" class="text-center borrelmode-text"
-          v-if="userState.borrelModeOrgan.organName" @click="showSettings = true">
-          Borrelmode actief voor {{ userState.borrelModeOrgan.organName }}
-        </b-col>
-        <ProductComponent
-          v-for="item in filteredProducts"
-          :product="item"
-          :key="`${item.id}-${item.containerId}`"
-        />
-      </b-row>
-      <searchbar-with-keyboard
-        :input.sync="query"
-        :showSearchbar="searchState.searching"
-      >
-      </searchbar-with-keyboard>
+          <home-menu-button :name="'Alcoholic drinks'" :category="1" />
+          <home-menu-button :name="'Non-alcoholic'" :category="2"/>
+          <home-menu-button :name="'Snacks'" :category="3"/>
+          <home-menu-button :name="'Other'" :category="4" />
+        </b-nav>
+        <main class="products">
+          <div class="product-row">
+            <b-col cols="12" class="text-center borrelmode-text"
+              v-if="userState.borrelModeOrgan.organName" @click="showSettings = true">
+              Borrelmode actief voor {{ userState.borrelModeOrgan.organName }}
+            </b-col>
+            <ProductComponent
+              v-for="item in filteredProducts"
+              :product="item"
+              :key="`${item.id}-${item.containerId}`"
+            />
+            <div class="no-components" v-if="filteredProducts.length == 0">
+              There are no products in this category.
+            </div>
+          </div>
+        </main>
+        <div class="bottom-bar">
+          <div class="options-button" @click="showSettings = !showSettings">
+            <font-awesome-icon icon="ellipsis-h"/>
+          </div>
+          <div class="search-bar">
+            <font-awesome-icon icon="search"/> Search...
+          </div>
+        </div>
+        <settings-component v-if="showSettings" />
+        <!--<user-selection-component v-if="searchState.userSearching"/>
+        <organ-member-component v-if="showOrganMembers" />-->
+      </div>
       <checkout-bar :subTransactionRows="rows"/>
-    </main>
-    <user-selection-component v-if="searchState.userSearching"/>
-    <settings-component v-if="showSettings" />
-    <organ-member-component v-if="showOrganMembers" />
+    </div>
+    <div class="background-logo">
+        <img src="@/assets/img/base-gewis-logo.png" alt="logo" />
+      </div>
   </div>
 </template>
 
@@ -80,6 +77,7 @@ import UserModule from '@/store/modules/user';
     OrganMemberComponent,
   },
 })
+
 export default class ProductOverview extends Vue {
     // Proxy for the state, compact notation
     private searchState = getModule(SearchModule);
@@ -110,6 +108,8 @@ export default class ProductOverview extends Vue {
           this.products.push(prod);
         });
       });
+
+      this.searchState.updateFilterCategory(1);
     }
 
     checkWindowSize() {
@@ -160,81 +160,120 @@ export default class ProductOverview extends Vue {
 @import "~bootstrap/scss/bootstrap";
 @import "./src/styles/Nav.scss";
 
-.vertical {
-  height: 100vh;
-  width: 6rem;
+.background-logo {
   position: fixed;
-  top: 0;
+  top: -20vh;
+  right: -20%;
+  height: 200vh;
+  z-index: 1;
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
 
-  > li {
+  img {
     width: 100%;
-
-    &.other-button {
-      margin-top: auto;
-    }
-  }
-}
-
-.vertical ~ main {
-  margin-left: 6rem;
-  display: flex;
-  .product-overview-container {
-    flex-grow: 1;
-  }
-  .checkoutbar {
-    width: 16rem;
-  }
-  .product-row {
-    flex: 1;
-    margin: 0;
-    align-content: flex-start;
-  }
-}
-
-.horizontal ~ main {
-  .searchbar-container {
-    left: 0;
-    width: 100%;
-  }
-}
-
-.horizontal {
-  width: 100%;
-
-  > li {
     height: 100%;
-    width: calc(100% / 6);
-
-    > a {
-      margin: auto 0;
-      padding: 0;
-
-      > svg {
-        font-size: 30px;
-      }
-    }
-
-    &.gewis-logo > a {
-      padding: 0.5rem 0.2rem !important;
-
-      > img {
-        margin-top: -0.4rem !important;
-        height: 100%;
-      }
-    }
+    object-fit: cover;
   }
 }
-.product-card {
-  margin: 0.5rem 0;
 
-  .product {
-    background-color: $gewis-grey-light;
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  background-color: #dddddd;
+  display: flex;
+  flex-direction: column;
+}
 
-    > img {
-      width: auto;
-      height: auto;
-      max-height: 5rem;
-      background-color: $gewis-grey-light;
+.product-overview {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  margin: 32px;
+  //border-radius: $border-radius;
+  //background: rgba(white, 0.8);
+  //padding: 16px;
+  z-index: 2;
+  gap: 16px;
+}
+
+.products {
+  flex-grow: 1;
+}
+
+.product-overview-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  border-radius: $border-radius;
+  background: rgba(white, 0.8);
+  padding: 16px;
+}
+
+.product-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.no-components {
+  width: 100%;
+  flex: 1;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.bottom-bar {
+  width: 100%;
+  display: flex;
+  align-self: flex-end;
+  flex-direction: row;
+  flex-grow: 0;
+  flex-wrap: nowrap;
+  gap: 16px;
+
+  .options-button {
+    background-color: $gewis-red;
+    border-radius: $border-radius;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: $nav-height;
+    flex-grow: 0;
+    flex-shrink: 0;
+    cursor: pointer;
+    height: $nav-height;
+    text-align: center;
+    flex-basis: 62px;
+    color: white;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .search-bar {
+    border: 1px solid $gewis-red;
+    border-radius: $border-radius;
+    flex: 0 0 200px;
+    width: 200px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    margin-right: 10px;
+
+    .fa-search {
+      margin-right: 10px;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
     }
   }
 }
@@ -249,15 +288,23 @@ export default class ProductOverview extends Vue {
 .product-name {
   background: $gewis-grey-accent;
 }
-@include media-breakpoint-down(lg) {
-  .horizontal > .gewis-logo > a > img {
-    max-height: 59px !important;
+
+@media screen and (max-width: 950px) {
+  .product-overview {
+    margin: 0;
+    border-radius: 0;
   }
 }
 
-@include media-breakpoint-up(sm) {
-  .horizontal > li {
-    width: calc(100% / 7);
+@media screen and (max-width: 820px) {
+  .product-overview {
+    flex-direction: column;
+    padding: 8px;
+  }
+
+  .product-overview-container {
+    border-bottom: 1px solid $bootstrap-black;
+    margin-bottom: 8px;
   }
 }
 </style>

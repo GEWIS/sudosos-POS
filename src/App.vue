@@ -84,9 +84,6 @@ export default class App extends Vue {
     width: 100%;
 
     > li {
-      height: 100%;
-      width: calc(100% / 6);
-
       > a {
         margin: auto 0;
         padding: 0;
@@ -110,12 +107,6 @@ export default class App extends Vue {
   @include media-breakpoint-down(lg) {
     .horizontal > .gewis-logo > a > img {
       max-height: 59px !important;
-    }
-  }
-
-  @include media-breakpoint-up(sm) {
-    .horizontal > li {
-      width: calc(100% / 7);
     }
   }
 </style>
