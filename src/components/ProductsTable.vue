@@ -1,6 +1,5 @@
 <template>
   <div class="products-table-container">
-    <products-table-header/>
     <products-table-row v-for="item in items" :key="item.product.id" :item="item" />
   </div>
 </template>

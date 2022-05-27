@@ -185,32 +185,35 @@ export default class CheckoutButton extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-  .checkout-button {
-    cursor: pointer;
-    height: 12%;
-    background-color: #93e78e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+@import "@/styles/global/variables.scss";
 
-    &.checking-out {
-      background-color: #ed5a5a;
-      animation: checkout-background 1s 3;
+.checkout-button {
+  cursor: pointer;
+  height: $nav-height;
+  background-color: #93e78e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: $border-radius;
 
-      p {
-        color: white;
-      }
-    }
+  &.checking-out {
+    background-color: #ed5a5a;
+    animation: checkout-background 1s 3;
+
     p {
-      font-size: 2rem;
-      color: #525659;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    @keyframes checkout-background {
-      from { background-color: #ed5a5a;}
-      to { background-color: #F40000;}
+      color: white;
     }
   }
+  p {
+    font-size: 26px;
+    color: #525659;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  @keyframes checkout-background {
+    from { background-color: #ed5a5a;}
+    to { background-color: #F40000;}
+  }
+}
 </style>
