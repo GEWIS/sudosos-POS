@@ -37,7 +37,6 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@vue/cli-plugin-babel": "^4.1.0",
-    "@vue/cli-plugin-eslint": "^4.1.0",
     "@vue/cli-plugin-router": "^4.1.0",
     "@vue/cli-plugin-typescript": "^4.5.12",
     "@vue/cli-plugin-vuex": "^4.1.0",

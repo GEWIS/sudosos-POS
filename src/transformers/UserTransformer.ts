@@ -20,7 +20,6 @@ export default {
     let nfcDevices = [];
 
     if ('saldo' in data) {
-      console.log(data);
       // saldo = dinero({ amount: Number(data.saldo), currency: 'EUR' });
       saldo = data.saldo;
     }
@@ -51,5 +50,9 @@ export default {
       name: data.name,
       address: data.address,
     };
+  },
+
+  makeSaldo(data: any) {
+    return dinero({ amount: data, currency: 'EUR' });
   },
 };

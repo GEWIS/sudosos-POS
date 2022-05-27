@@ -65,6 +65,8 @@ export default class CheckoutBar extends Formatters {
 
   private searchState = getModule(SearchModule);
 
+  subTransactionRows: any;
+
   // Other user to charge
   private charging: User|null = null;
 
@@ -74,12 +76,12 @@ export default class CheckoutBar extends Formatters {
       console.log(saldo.isPositive());
       return saldo.isPositive() ? 'positive' : 'negative';
     }
-    return this.userState.user.saldo.isPositive() ? 'positive' : 'negative';
+    return this.userState?.user?.saldo?.isPositive() ? 'positive' : 'negative';
   }
 
   get transactionTotal() {
     let total = 0;
-    this.subTransactionRows.forEach((row) => {
+    this.subTransactionRows.forEach((row: any) => {
       const rowTotal = row.price.amount * row.amount;
       total += rowTotal;
     });

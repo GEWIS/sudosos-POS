@@ -26,7 +26,7 @@ export default class ProductComponent extends Formatters {
   }
 
   productClicked() {
-    this.$parent.addProduct(this.product, 1);
+    (this.$parent as any).addProduct(this.product, 1);
   }
 }
 

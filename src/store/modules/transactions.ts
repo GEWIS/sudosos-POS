@@ -24,21 +24,21 @@ export default class TransactionModule extends VuexModule {
   addProduct({ product, amount } : {product: Product, amount: number}) {
     // First, find if there is already a relevant subtransaction
     let subTrans = this.currentTransaction.subTransactions
-      .find((sub) => sub.container.id === product.containerId);
+      .find((sub) => sub.container.id === (product as any).containerId);
     if (!subTrans) {
       console.log(product);
       const subTransContainer: Container = {
         owner: product.owner,
         products: [],
         name: '',
-        id: product.containerId,
-      };
+        id: (product as any).containerId,
+      } as any;
       subTrans = {
         container: subTransContainer,
         subTransactionRows: [],
         price: Dinero({ amount: 0 }),
         to: subTransContainer.owner,
-      };
+      } as any;
       this.currentTransaction.subTransactions.push(subTrans);
     }
 
@@ -53,7 +53,7 @@ export default class TransactionModule extends VuexModule {
         product,
         amount,
         price: product.price.multiply(amount),
-      };
+      } as any;
       subTrans.subTransactionRows.push(subTransRow);
     }
   }
@@ -119,7 +119,7 @@ export default class TransactionModule extends VuexModule {
   })
   fetchTransactions(force: boolean = false) {
     if (this.transactions.length === 0 || force) {
-      const transactionResponse = APIHelper.getResource('transactions') as [];
+      const transactionResponse = APIHelper.getResource('transactions') as any;
       const trans = transactionResponse.map((trns) => TransactionTransformer.makeTransaction(trns));
       this.context.commit('setTransactions', trans);
     }
@@ -144,7 +144,7 @@ export default class TransactionModule extends VuexModule {
 
     // If the transactions for this POS have not been resolved yet resolve them.
     if (index === -1 || force) {
-      const transactionResponse = APIHelper.getResource(`transactionPOS?id=${posID}`) as [];
+      const transactionResponse = APIHelper.getResource(`transactionPOS?id=${posID}`) as any;
       const trans = transactionResponse.map((trns) => TransactionTransformer.makeTransaction(trns));
 
       this.context.commit('addPOSTransaction', {

@@ -98,7 +98,8 @@ export default class CheckoutButton extends Vue {
         };
         subTransactions.push(sub);
       }
-      row.price.amount *= row.amount;
+
+      (row.price as any).amount *= row.amount;
     });
 
     // Calculate transaction price
@@ -115,7 +116,7 @@ export default class CheckoutButton extends Vue {
   }
 
   async finishTransaction(user: User, chargingUser: User, borrelMode = false) {
-    const { rows, pointOfSale } = this.$parent.$parent;
+    const { rows, pointOfSale } = this.$parent.$parent as any;
 
     const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
 
@@ -140,7 +141,7 @@ export default class CheckoutButton extends Vue {
     const price = transaction.subTransactions
       .reduce((total, sub) => total + sub.price.amount, 0);
 
-    transaction.price = {
+    (transaction as any).price = {
       amount: price,
       currency: 'EUR',
       precision: 2,
@@ -157,13 +158,14 @@ export default class CheckoutButton extends Vue {
     try {
       const transactionResponse = await postTransaction(transaction);
       this.searchState.reset();
-      this.$parent.$parent.rows = [];
+      (this.$parent.$parent as any).rows = [];
       if (!borrelMode) {
         this.userState.reset();
         this.$router.push('/login');
       }
     } catch (error: any) {
-      alert(error.message);
+      // discard
+      // alert(error.message);
     }
   }
 

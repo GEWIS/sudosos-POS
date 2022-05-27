@@ -36,5 +36,5 @@ export function deleteUser(id: number) {
 
 export function getOrganMembers(id: number) {
   return APIHelper.getResource(`/users/${id}/members`)
-    .then((response) => response.records.map((res) => UserTransformer.makeUser(res)));
+    .then((response) => response.records.map((res: any) => UserTransformer.makeUser(res)));
 }

@@ -28,26 +28,26 @@ export default class ProductsTableRow extends Formatters {
   transactionsState = getModule(TransactionModule);
 
   get productTotal() {
-    return this.item.price.amount * this.item.amount;
+    return (this.item.price as any).amount * this.item.amount;
   }
 
   get amount() {
-    const itemIndex = this.$parent.$parent.$parent.rows
+    const itemIndex = (this.$parent.$parent.$parent as any).rows
       .findIndex((row) => row.product.id === this.item.product.id);
 
-    return this.$parent.$parent.$parent.rows[itemIndex].amount;
+    return (this.$parent.$parent.$parent as any).rows[itemIndex].amount;
   }
 
   set amount(value: number) {
-    const itemIndex = this.$parent.$parent.$parent.rows
+    const itemIndex = (this.$parent.$parent.$parent as any).rows
       .findIndex((row) => row.product.id === this.item.product.id);
 
-    this.$parent.$parent.$parent.rows[itemIndex].amount = value;
+    (this.$parent.$parent.$parent as any).rows[itemIndex].amount = value;
   }
 
   deleteItem() {
-    const { rows } = this.$parent.$parent.$parent;
-    this.$parent.$parent.$parent.rows = rows
+    const { rows } = this.$parent.$parent.$parent as any;
+    (this.$parent.$parent.$parent as any).rows = rows
       .filter((row) => row.product.id !== this.item.product.id);
   }
 

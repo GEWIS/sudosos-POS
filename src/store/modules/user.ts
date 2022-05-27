@@ -160,8 +160,8 @@ export default class UserModule extends VuexModule {
     email: string,
     }) {
     const userResponse = APIHelper.putResource('user/updateUserInfo', data);
-    this.user.firstname = data.firstname;
-    this.user.lastname = data.lastname;
+    this.user.firstName = data.firstname;
+    this.user.lastName = data.lastname;
     this.user.email = data.email;
   }
 
@@ -177,8 +177,8 @@ export default class UserModule extends VuexModule {
     const userIndex = this.allUsers.findIndex((user) => user.id === data.userID);
     const user = this.allUsers[userIndex];
 
-    user.firstname = data.firstname;
-    user.lastname = data.lastname;
+    user.firstName = data.firstname;
+    user.lastName = data.lastname;
     user.name = `${data.firstname} ${data.lastname}`;
     user.email = data.email;
     user.active = data.active;

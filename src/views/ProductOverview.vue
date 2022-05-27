@@ -103,7 +103,7 @@ export default class ProductOverview extends Vue {
       this.pointOfSale = await getPointOfSale(1);
       this.pointOfSale.containers.forEach((con) => {
         const containerId = con.id;
-        con.products.forEach((prod) => {
+        (con as any).products.forEach((prod: any) => {
           prod.containerId = containerId;
           this.products.push(prod);
         });
