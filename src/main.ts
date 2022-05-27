@@ -16,6 +16,8 @@ import {
   faSignOutAlt,
   faUserFriends,
   faLock,
+  faAngleDown,
+  faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons';
 import languages from '@/locales';
 import App from './App.vue';
@@ -39,6 +41,8 @@ library.add(
   faSignOutAlt,
   faUserFriends,
   faLock,
+  faAngleDown,
+  faExclamationTriangle,
 );
 
 // Default settings for Dinero
