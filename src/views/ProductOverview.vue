@@ -41,8 +41,8 @@
       <checkout-bar :subTransactionRows="rows"/>
     </div>
     <div class="background-logo">
-        <img src="@/assets/img/base-gewis-logo.png" alt="logo" />
-      </div>
+      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />
+    </div>
   </div>
 </template>
 
@@ -158,31 +158,8 @@ export default class ProductOverview extends Vue {
 
 <style scoped lang="scss">
 @import "~bootstrap/scss/bootstrap";
+@import "./src/styles/common.scss";
 @import "./src/styles/Nav.scss";
-
-.background-logo {
-  position: fixed;
-  top: -20vh;
-  right: -20%;
-  height: 200vh;
-  z-index: 1;
-  filter: blur(4px);
-  -webkit-filter: blur(4px);
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-.wrapper {
-  width: 100vw;
-  height: 100vh;
-  background-color: #dddddd;
-  display: flex;
-  flex-direction: column;
-}
 
 .product-overview {
   flex: 1;

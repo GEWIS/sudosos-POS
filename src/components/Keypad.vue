@@ -1,18 +1,9 @@
 <template>
-  <b-col class="keypad" :class="{inline}">
-    <b-row v-if="!inline">
-      <b-col cols="6" offset="3" class="value-container">
-        <p>
-          {{ value }}
-        </p>
-      </b-col>
-    </b-row>
-    <b-row class="keys-container">
-      <b-col v-for="key in keys" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
-        <p>{{ key }}</p>
-      </b-col>
-    </b-row>
-  </b-col>
+  <div class="keypad" :class="{inline}">
+    <div v-for="key in keys" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
+      <div class="key-text">{{ key }}</div>
+    </div>
+  </div>
 </template>
 <script lang="ts">
 import {
@@ -40,42 +31,27 @@ export default class Keypad extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-  .keypad {
-    width: 20%;
-    position: absolute;
-    top: 20%;
-    left: 40%;
-    &.inline {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      background: none;
-      top: 0;
-      left: 0;
-    }
+@import "./src/styles/global/_variables.scss";
 
-    background-color: $gewis-grey-shadow;
+.keypad {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
 
-    .keys-container {
-      margin: 16px;
-      .key {
-        text-align: center;
-        p {
-          cursor: pointer;
-          font-size: 1.5rem;
-          border: 2px solid black;
-          padding: 1.5rem 0;
-        }
-      }
-    }
-    .value-container{
-      text-align: center;
-      margin-top: 1rem;
-      p {
-        font-size: 4rem;
-        background-color: $gewis-grey;
-        border-radius: 8px;
-      }
+  .key {
+    flex: 1 1 30%;
+    cursor: pointer;
+    background: $gewis-red;
+    border-radius: $border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .key-text {
+      font-size: 1.5rem;
+      color: white;
     }
   }
+}
 </style>
