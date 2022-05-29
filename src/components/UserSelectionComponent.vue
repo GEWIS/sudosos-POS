@@ -45,17 +45,23 @@ export default class UserSelectionComponent extends Vue {
 <style lang="scss" scoped>
   .user-selection-component {
     position: absolute;
-    width: 80%;
-    left: 10%;
+    width: 100%;
+    left: 0;
     top: 0;
     background-color: rgba(255, 255, 255, 0.8);
     text-align: center;
-    padding-top: 20px;
+    padding-top: 60px;
     height: 100%;
+    overflow: hidden;
     z-index: 5;
     p {
       font-size: 2rem;
     }
+  }
+
+  .selection-list {
+    overflow: hidden;
+    max-height: 68%;
   }
 </style>
 <style lang="scss">
