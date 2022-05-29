@@ -1,7 +1,7 @@
 <template>
   <div class="text-center product-card" @click="productClicked">
     <div class="product">
-      <img :src="product.picture" alt="Placeholder for Beugel" />
+      <img :src="image" :alt="product.name" />
       <p class="w-100 product-name mb-0">{{ product.name }}</p>
       <p class="w-100 product-price mb-0">€{{ product.price.amount / 100 }}</p>
     </div>
@@ -19,9 +19,13 @@ import Formatters from '@/mixins/Formatters';
 export default class ProductComponent extends Formatters {
   @Prop() product!: Product;
 
-  mounted() {
+  image: string = null;
+
+  beforeMount() {
     if (!this.product.picture) {
-      this.product.picture = 'https://imgur.com/CS0aauU.png';
+      this.image = 'https://imgur.com/CS0aauU.png';
+    } else {
+      this.image = `https://sudosos.gewis.nl/static/products/${this.product.picture}`;
     }
   }
 
