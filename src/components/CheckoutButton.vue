@@ -90,7 +90,6 @@ export default class CheckoutButton extends Vue {
         subTransactions[transactionIndex].subTransactionRows.push(row);
       } else {
         const container = CheckoutButton.getContainerForRow(row, pos);
-        console.log(container);
         const sub = {
           to: pos.owner.id,
           container,
@@ -102,12 +101,20 @@ export default class CheckoutButton extends Vue {
       (row.price as any).amount *= row.amount;
     });
 
+    subTransactions.forEach((t) => {
+      t.subTransactionRows.forEach((row) => {
+        Object.defineProperty(row, 'totalPriceInclVat',
+          Object.getOwnPropertyDescriptor(row, 'price'));
+        delete row.price;
+      });
+    });
+
     // Calculate transaction price
     subTransactions.forEach((sub) => {
       console.log(sub);
-      sub.price = {
+      sub.totalPriceInclVat = {
         amount: sub.subTransactionRows
-          .reduce((total, row) => total + row.price.amount, 0),
+          .reduce((total, row) => total + row.totalPriceInclVat.amount, 0),
         currency: 'EUR',
         precision: 2,
       };
@@ -139,9 +146,9 @@ export default class CheckoutButton extends Vue {
     };
 
     const price = transaction.subTransactions
-      .reduce((total, sub) => total + sub.price.amount, 0);
+      .reduce((total, sub) => total + sub.totalPriceInclVat.amount, 0);
 
-    (transaction as any).price = {
+    (transaction as any).totalPriceInclVat = {
       amount: price,
       currency: 'EUR',
       precision: 2,
@@ -164,7 +171,6 @@ export default class CheckoutButton extends Vue {
         this.$router.push('/login');
       }
     } catch (error: any) {
-      // discard
       // alert(error.message);
     }
   }

@@ -7,21 +7,7 @@ import ProductCategoryTransformer from '@/transformers/ProductCategoryTransforme
 
 export default {
   makeProduct(data: any) : BaseProduct | Product {
-    let price;
-
-    if (typeof data.priceInclVat === 'object') {
-      if (data.priceInclVat.amount !== undefined) {
-        price = Dinero({ amount: Number(data.priceInclVat.amount), currency: 'EUR' });
-      } else {
-        // This is to satisfy ESLint, yay
-        const dineroPrice = data.price;
-        price = dineroPrice;
-      }
-    } else if (typeof data.price === 'object') {
-      price = data.price;
-    } else {
-      price = Dinero({ amount: Number(data.price), currency: 'EUR' });
-    }
+    const price = data.priceInclVat;
 
     if (!Object.keys(data).includes('owner')) {
       return {

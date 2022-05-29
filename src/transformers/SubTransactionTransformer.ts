@@ -13,9 +13,9 @@ export default {
     const subTransactionRows = data.subTransactionRows.map((subTransRow: any) => SubTransactionRowTransformer.makeSubTransactionRow(subTransRow));
     let price;
 
-    if (typeof data.price === 'object') {
+    if (typeof data.totalPriceInclVat === 'object') {
       // This is to satisfy ESLint, yay
-      const dineroPrice = data.price;
+      const dineroPrice = data.totalPriceInclVat;
       price = dineroPrice;
     } else {
       let tempPrice = 0;
