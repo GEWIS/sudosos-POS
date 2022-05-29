@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="product-overview">
-      <div class="product-overview-container">
+      <div class="product-overview-container shadow">
         <b-nav
           class="nav align-items-center">
 
@@ -35,13 +35,13 @@
           </div>
         </div>
         <settings-component v-if="showSettings" />
-        <!--<user-selection-component v-if="searchState.userSearching"/>
-        <organ-member-component v-if="showOrganMembers" />-->
+        <user-selection-component v-if="searchState.userSearching"/>
+        <organ-member-component v-if="showOrganMembers" />
       </div>
       <checkout-bar :subTransactionRows="rows"/>
     </div>
     <div class="background-logo">
-      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />
+<!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
     </div>
   </div>
 </template>

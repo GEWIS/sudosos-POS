@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="wrap-container">
-      <div class="wrap-container-child login-container">
+      <div class="wrap-container-child login-container shadow">
         <div class="entry-row">
           <div class="keycodes-container">
             <div class="title">
@@ -26,12 +26,12 @@
           </div>
         </div>
       </div>
-      <div class="wrap-container-child sponsor-container">
+      <div class="wrap-container-child sponsor-container shadow">
         <img :src="banners[bannerIndex]" />
       </div>
     </div>
     <div class="background-logo">
-      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />
+<!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
     </div>
   </div>
 </template>
@@ -93,7 +93,7 @@ export default class Login extends Vue {
       this.userId = this.userId.slice(0, -1);
     } else if(!this.enteringUserId && this.passcode.length == 0) {
       this.switchInput();
-    } else if (!this.enteringUserId && this.passcode.length > 0) {	
+    } else if (!this.enteringUserId && this.passcode.length > 0) {
       this.passcode = this.passcode.slice(0, -1);
     }
   }
@@ -113,13 +113,13 @@ export default class Login extends Vue {
   keyPress(keyValue: string) {
     if (this.enteringUserId) {
       if(this.userId.length >= this.maxUserIdLength) return;
-      
+
       this.userId += keyValue;
-      
+
       if(this.userId.length == this.maxUserIdLength) this.switchInput();
     } else {
       if(this.passcode.length >= this.maxPasscodeLength) return;
-      
+
       this.passcode += keyValue;
     }
   }

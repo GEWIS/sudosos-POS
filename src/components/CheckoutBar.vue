@@ -1,5 +1,5 @@
 <template>
-  <div class="checkoutbar">
+  <div class="checkoutbar shadow">
     <b-row class="order-for">
       <b-col class="for-text">
           Order for

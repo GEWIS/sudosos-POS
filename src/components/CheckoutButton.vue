@@ -44,6 +44,7 @@ export default class CheckoutButton extends Vue {
     });
 
     this.$parent.$parent.$on('organMemberSelected', (selectedMember: User) => {
+      console.error(selectedMember);
       (this.$parent.$parent as ProductOverview).showOrganMembers = false;
       const { chargingUser } = this.searchState;
       this.finishTransaction(selectedMember, chargingUser, true);
@@ -177,9 +178,11 @@ export default class CheckoutButton extends Vue {
 
   buttonClicked() {
     const { organName } = this.userState.borrelModeOrgan;
+
     // Borrelmode checkout
     if (organName) {
       this.searchState.setUserSearching(true);
+      console.error(this.searchState.userSearching);
     } else if (this.checkingOut) {
       clearTimeout(this.timeout);
       this.countdown = 3;
