@@ -52,6 +52,7 @@ export default class UserSelectionComponent extends Vue {
     text-align: center;
     padding-top: 20px;
     height: 100%;
+    z-index: 5;
     p {
       font-size: 2rem;
     }

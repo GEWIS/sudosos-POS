@@ -135,7 +135,7 @@ export default class Login extends Vue {
       APIHelper.setToken(loginResponse.token);
       this.userState.fetchUser(true);
       this.userState.fetchAllUsers();
-      this.$router.push('/');
+      this.$router.push('/productOverview');
     } else {
       this.userId = '';
       this.passcode = '';

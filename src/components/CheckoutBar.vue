@@ -108,7 +108,7 @@ export default class CheckoutBar extends Formatters {
   logout() {
     this.userState.reset();
     this.searchState.reset();
-    this.$router.push('/login');
+    this.$router.push('/');
   }
 }
 </script>
