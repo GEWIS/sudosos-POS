@@ -8,7 +8,8 @@ import jwtDecode, { JwtPayload } from 'jwt-decode';
 import devAPI from '../../dev/api';
 
 dotenv.config();
-const baseURL = 'https://sudosos.test.gewis.nl/api/v1/';
+
+const baseURL = process.env.VUE_APP_API_BASE;
 let token = '';
 const isDev = (process.env.VUE_APP_DEVELOP === 'true');
 

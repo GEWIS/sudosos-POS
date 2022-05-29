@@ -70,14 +70,14 @@ export default class CheckoutBar extends Formatters {
   // Other user to charge
   private charging: User|null = null;
 
-  get saldoClass() {
-    if (this.userState.user.saldo instanceof Number) {
-      const saldo = this.dinero({ amount: this.userState.user.saldo });
-      console.log(saldo.isPositive());
-      return saldo.isPositive() ? 'positive' : 'negative';
-    }
-    return this.userState?.user?.saldo?.isPositive() ? 'positive' : 'negative';
-  }
+  // get saldoClass() {
+  //   if (this.userState.user.saldo instanceof Number) {
+  //     const saldo = this.dinero({ amount: this.userState.user.saldo });
+  //     console.log(saldo.isPositive());
+  //     return saldo.isPositive() ? 'positive' : 'negative';
+  //   }
+  //   return this.userState?.user?.saldo?.isPositive() ? 'positive' : 'negative';
+  // }
 
   get transactionTotal() {
     let total = 0;
