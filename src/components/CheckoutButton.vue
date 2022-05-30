@@ -169,7 +169,7 @@ export default class CheckoutButton extends Vue {
       (this.$parent.$parent as any).rows = [];
       if (!borrelMode) {
         this.userState.reset();
-        this.$router.push('/login');
+        this.$router.push('/');
       }
     } catch (error: any) {
       // alert(error.message);
