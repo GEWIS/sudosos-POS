@@ -8,11 +8,13 @@
               <div class="sub-title">Welcome to</div>
               <div class="title-text">SudoSOS</div>
             </div>
-            <p v-bind:class="{'active-input': enteringUserId, 'can-enter':  userId.length < maxUserIdLength}" @click="enteringUserId = true">
+            <p v-bind:class="{'active-input': enteringUserId,
+             'can-enter':  userId.length < maxUserIdLength}" @click="enteringUserId = true">
                 <font-awesome-icon icon="user" />
                 <span>{{ userId }}</span>
               </p>
-              <p v-bind:class="{'active-input': !enteringUserId, 'can-enter':  (passcode | passcodeDots).length < maxPasscodeLength }" @click="enteringUserId = false">
+              <p v-bind:class="{'active-input': !enteringUserId,
+               'can-enter':  passcode.length < maxPasscodeLength }" @click="enteringUserId = false">
                 <font-awesome-icon icon="lock" />
                 <span class="passcode">{{ passcode | passcodeDots }} </span>
               </p>
@@ -46,9 +48,9 @@ import UserModule from '@/store/modules/user';
 
 @Component({
   filters: {
-    passcodeDots(passcode: number) {
-      if (passcode > 0) {
-        return '•'.repeat(Math.floor(passcode).toString().length);
+    passcodeDots(passcode: string) {
+      if (passcode.length > 0) {
+        return '•'.repeat(passcode.length);
       }
       return '';
     },
@@ -121,6 +123,7 @@ export default class Login extends Vue {
       if(this.passcode.length >= this.maxPasscodeLength) return;
 
       this.passcode += keyValue;
+      if (this.passcode.length === this.maxPasscodeLength) this.login();
     }
   }
 
