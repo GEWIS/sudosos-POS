@@ -43,7 +43,6 @@ export default class SearchModule extends VuexModule {
   @Mutation
   setFilterCategory(category: number): void {
     this.searching = false;
-    console.log(category);
     this.filterCategory = category;
   }
 

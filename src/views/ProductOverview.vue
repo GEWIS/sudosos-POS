@@ -48,6 +48,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import Dinero from 'dinero.js';
 import { getModule } from 'vuex-module-decorators';
 import { Product } from '@/entities/Product';
 import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
@@ -125,6 +126,7 @@ export default class ProductOverview extends Vue {
       if (productIndex > -1) {
         this.rows[productIndex].amount += amount;
       } else {
+        const price = Dinero({ amount: product.price.getAmount() });
         const row = {
           product,
           amount,

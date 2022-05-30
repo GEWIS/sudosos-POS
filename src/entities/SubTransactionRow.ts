@@ -6,4 +6,9 @@ export interface SubTransactionRow extends BaseEntity {
   product: Product;
   amount: number;
   price: Dinero;
+  totalPriceInclVat?: {
+    amount: number,
+    precision: number,
+    currency: string,
+  },
 }

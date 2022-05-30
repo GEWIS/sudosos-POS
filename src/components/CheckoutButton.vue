@@ -84,6 +84,7 @@ export default class CheckoutButton extends Vue {
   static makeSubTransactions(rows: SubTransactionRow[], user: User, pos: any) {
     const subTransactions: any[] = [];
     rows.forEach((row) => {
+      delete row.price;
       // Find if there is a subtransaction for this container
       const transactionIndex = subTransactions
         .findIndex((sub) => sub.container === row.product.id);
@@ -99,20 +100,16 @@ export default class CheckoutButton extends Vue {
         subTransactions.push(sub);
       }
 
-      (row.price as any).amount *= row.amount;
-    });
-
-    subTransactions.forEach((t) => {
-      t.subTransactionRows.forEach((row) => {
-        Object.defineProperty(row, 'totalPriceInclVat',
-          Object.getOwnPropertyDescriptor(row, 'price'));
-        delete row.price;
-      });
+      row.totalPriceInclVat = {
+        amount: row.product.price.getAmount(),
+        precision: row.product.price.getPrecision(),
+        currency: row.product.price.getCurrency(),
+      };
+      row.totalPriceInclVat.amount *= row.amount;
     });
 
     // Calculate transaction price
     subTransactions.forEach((sub) => {
-      console.log(sub);
       sub.totalPriceInclVat = {
         amount: sub.subTransactionRows
           .reduce((total, row) => total + row.totalPriceInclVat.amount, 0),

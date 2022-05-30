@@ -7,7 +7,11 @@ import ProductCategoryTransformer from '@/transformers/ProductCategoryTransforme
 
 export default {
   makeProduct(data: any) : BaseProduct | Product {
-    const price = data.priceInclVat;
+    const price = Dinero({
+      amount: data.priceInclVat.amount,
+      currency: data.priceInclVat.currency,
+      precision: data.priceInclVat.precision,
+    });
 
     if (!Object.keys(data).includes('owner')) {
       return {

@@ -28,7 +28,7 @@ export default class ProductsTableRow extends Formatters {
   transactionsState = getModule(TransactionModule);
 
   get productTotal() {
-    return (this.item.price as any).amount * this.item.amount;
+    return (this.item.price.getAmount() as any) * this.item.amount;
   }
 
   get amount() {

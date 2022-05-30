@@ -26,7 +26,6 @@ export default class TransactionModule extends VuexModule {
     let subTrans = this.currentTransaction.subTransactions
       .find((sub) => sub.container.id === (product as any).containerId);
     if (!subTrans) {
-      console.log(product);
       const subTransContainer: Container = {
         owner: product.owner,
         products: [],
@@ -49,10 +48,11 @@ export default class TransactionModule extends VuexModule {
       subTransRow.amount += amount;
       subTransRow.price.add(subTransRow.price.multiply(amount));
     } else {
+      const price = Dinero({ amount: product.price.getAmount() }).multiply(amount);
       subTransRow = {
         product,
         amount,
-        price: product.price.multiply(amount),
+        price,
       } as any;
       subTrans.subTransactionRows.push(subTransRow);
     }
