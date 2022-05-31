@@ -1,15 +1,9 @@
 <template>
   <div class="wrapper">
     <div class="product-overview">
-<<<<<<< Updated upstream
       <div class="product-overview-container shadow">
         <b-nav
           class="nav align-items-center">
-
-=======
-      <div class="product-overview-container">
-        <b-nav class="nav align-items-center">
->>>>>>> Stashed changes
           <home-menu-button :name="'Alcoholic drinks'" :category="1" />
           <home-menu-button :name="'Non-alcoholic'" :category="2"/>
           <home-menu-button :name="'Snacks'" :category="3"/>
@@ -40,10 +34,7 @@
             <font-awesome-icon icon="search"/> Search...
           </div>
         </div>
-<<<<<<< Updated upstream
         <settings-component v-if="showSettings" />
-=======
->>>>>>> Stashed changes
         <user-selection-component v-if="searchState.userSearching"/>
         <organ-member-component v-if="showOrganMembers" />
       </div>
