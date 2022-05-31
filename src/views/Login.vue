@@ -86,7 +86,7 @@ export default class Login extends Vue {
 
   private loginError = '';
 
-  private maxUserIdLength = 4;
+  private maxUserIdLength = 5;
 
   private maxPasscodeLength = 4;
 
@@ -207,6 +207,7 @@ export default class Login extends Vue {
     display: flex;
     flex-direction: column;
     flex-basis: 50%;
+    width: fit-content;
     justify-content: center;
     gap: 24px;
     align-items: center;
@@ -242,7 +243,8 @@ export default class Login extends Vue {
       line-height: 1;
       margin: 0;
       padding: 8px;
-      width: 320px;
+      min-width: 320px;
+      width: fit-content;
       font-size: 64px;
 
       span {
