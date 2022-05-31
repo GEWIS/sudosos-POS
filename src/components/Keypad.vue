@@ -38,7 +38,7 @@ export default class Keypad extends Vue {
   align-content: center;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
 
   .key {
     flex: 1 1 30%;
