@@ -188,7 +188,7 @@ export default class Login extends Vue {
   flex: 1;
   border-radius: $border-radius;
   background: rgba(white, 0.8);
-  padding: 16px;
+  padding: 32px;
 }
 
 .login-container {
@@ -294,6 +294,7 @@ export default class Login extends Vue {
     display: flex;
     flex-direction: row;
     flex: 1;
+    gap: 16px;
   }
 
   .motd-container {

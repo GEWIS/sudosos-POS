@@ -1,10 +1,15 @@
 <template>
   <div class="wrapper">
     <div class="product-overview">
+<<<<<<< Updated upstream
       <div class="product-overview-container shadow">
         <b-nav
           class="nav align-items-center">
 
+=======
+      <div class="product-overview-container">
+        <b-nav class="nav align-items-center">
+>>>>>>> Stashed changes
           <home-menu-button :name="'Alcoholic drinks'" :category="1" />
           <home-menu-button :name="'Non-alcoholic'" :category="2"/>
           <home-menu-button :name="'Snacks'" :category="3"/>
@@ -30,11 +35,15 @@
           <div class="options-button" @click="showSettings = !showSettings">
             <font-awesome-icon icon="ellipsis-h"/>
           </div>
+          <settings-component v-if="showSettings" />
           <div class="search-bar">
             <font-awesome-icon icon="search"/> Search...
           </div>
         </div>
+<<<<<<< Updated upstream
         <settings-component v-if="showSettings" />
+=======
+>>>>>>> Stashed changes
         <user-selection-component v-if="searchState.userSearching"/>
         <organ-member-component v-if="showOrganMembers" />
       </div>
@@ -168,9 +177,6 @@ export default class ProductOverview extends Vue {
   display: flex;
   flex-direction: row;
   margin: 32px;
-  //border-radius: $border-radius;
-  //background: rgba(white, 0.8);
-  //padding: 16px;
   z-index: 2;
   gap: 16px;
 }
@@ -211,6 +217,7 @@ export default class ProductOverview extends Vue {
   flex-grow: 0;
   flex-wrap: nowrap;
   gap: 16px;
+  position: relative;
 
   .options-button {
     background-color: $gewis-red;
