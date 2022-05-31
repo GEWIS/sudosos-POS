@@ -90,10 +90,12 @@ export default class Login extends Vue {
 
   private maxPasscodeLength = 4;
 
+  private maxUserId = 40000;
+
   backspacePressed() {
     if (this.enteringUserId && this.userId.length > 0) {
       this.userId = this.userId.slice(0, -1);
-    } else if(!this.enteringUserId && this.passcode.length == 0) {
+    } else if (!this.enteringUserId && this.passcode.length == 0) {
       this.switchInput();
     } else if (!this.enteringUserId && this.passcode.length > 0) {
       this.passcode = this.passcode.slice(0, -1);
@@ -114,13 +116,16 @@ export default class Login extends Vue {
 
   keyPress(keyValue: string) {
     if (this.enteringUserId) {
-      if(this.userId.length >= this.maxUserIdLength) return;
+      if (this.userId.length >= this.maxUserIdLength) return;
 
       this.userId += keyValue;
 
-      if(this.userId.length == this.maxUserIdLength) this.switchInput();
+      if (this.userId.length === this.maxUserIdLength
+        || Number(this.userId) * 10 > this.maxUserId) {
+        this.switchInput();
+      }
     } else {
-      if(this.passcode.length >= this.maxPasscodeLength) return;
+      if (this.passcode.length >= this.maxPasscodeLength) return;
 
       this.passcode += keyValue;
       if (this.passcode.length === this.maxPasscodeLength) this.login();
