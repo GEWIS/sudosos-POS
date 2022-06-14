@@ -123,6 +123,8 @@ export default class CheckoutBar extends Formatters {
     this.userState.reset();
     this.searchState.reset();
     this.$router.push('/');
+    // @ts-ignore
+    document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
   }
 }
 </script>
