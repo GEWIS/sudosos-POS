@@ -42,6 +42,8 @@ export default class ProductComponent extends Formatters {
     height: fit-content;
     background: white;
     border-radius: $border-radius;
+    overflow: hidden;
+    width: 128px;
 
     .product {
       > img {
@@ -58,6 +60,8 @@ export default class ProductComponent extends Formatters {
     font-weight: bold;
     font-size: 16px;
     height: 22px;
+    overflow: hidden;
+    word-wrap: break-word;
   }
 
   .product-price {

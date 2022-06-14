@@ -23,6 +23,11 @@
             <input type="text" id="search-input1" v-model="query" @input="updateSearchFromInput" v-if="state == State.SEARCH" />
             <input type="text" id="search-input2" v-model="userQuery" @input="updateSearchFromInput" v-if="state == State.USER_SEARCH" />
           </div>
+          <div class="nav-item active" v-if="state == State.USER_SEARCH">
+            <div class="nav-link">
+              Order myself
+            </div>
+          </div>
         </div>
         <main class="products" v-if="state == State.CATEGORIES || state == State.SEARCH">
           <div class="product-row">
@@ -42,12 +47,15 @@
           </div>
         </main>
         <div class="users" v-if="state == State.USER_SEARCH">
-          <div class="user" v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
-            {{item.firstName}} {{item.lastName}} - {{item.gewisID}}
+          <div class="users-row">
+            <div class="user" v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
+              <div class="user-text">{{item.firstName}} {{item.lastName}} - {{item.gewisID}}</div>
+              <div class="user-button">Select</div>
+            </div>
           </div>
         </div>
         <div class="keyboard-container" :style="{'display': (state == State.SEARCH || state == State.USER_SEARCH) ? 'initial' : 'none'}">
-          <div id="keyboard" class="keyboard"></div>
+          <keyboard ref="keyboard" :onChange="updateSearchFromKeyboard" :allowNumbers="state == State.USER_SEARCH"/>
         </div>
         <div class="bottom-bar" v-if="state == State.CATEGORIES">
           <div class="options-button" id="options-button" @click="showSettings = !showSettings">
@@ -91,7 +99,7 @@ import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 
 import FuzzySearch from 'fuzzy-search';
-import Keyboard from 'simple-keyboard';
+import Keyboard from '@/components/Keyboard.vue';
 import 'simple-keyboard/build/css/index.css';
 
 enum State {
@@ -108,9 +116,9 @@ enum State {
     UserSelectionComponent,
     SettingsComponent,
     OrganMemberComponent,
+    Keyboard,
   },
 })
-
 export default class ProductOverview extends Vue {
   // Proxy for the state, compact notation
   private searchState = getModule(SearchModule);
@@ -128,8 +136,6 @@ export default class ProductOverview extends Vue {
   public showSettings: boolean = false;
 
   public showOrganMembers: boolean = false;
-
-  private keyboard: any = null;
 
   State: any = State;
 
@@ -150,10 +156,6 @@ export default class ProductOverview extends Vue {
       });
     });
 
-    this.keyboard = new Keyboard("keyboard", {
-      onChange: input => this.updateSearchFromKeyboard(input)
-    });
-
     this.searchState.updateFilterCategory(1);
   }
 
@@ -170,14 +172,16 @@ export default class ProductOverview extends Vue {
 
   openProductSearch() {
     this.searchState.updateSearching(true);
-    this.keyboard.setInput("");
+    // @ts-ignore
+      this.$refs.keyboard.setInput("");
 
     this.$nextTick(() => this.focusOnSearch());
   }
 
   openUserSearch() {
     this.searchState.updateUserSearching(true);
-    this.keyboard.setInput("");
+    // @ts-ignore
+      this.$refs.keyboard.setInput("");
 
     this.$nextTick(() => this.focusOnSearch());
   }
@@ -191,7 +195,8 @@ export default class ProductOverview extends Vue {
     }
 
     if(this.state == State.SEARCH) {
-      this.keyboard.setInput(this.query);
+      // @ts-ignore
+      this.$refs.keyboard.setInput(this.query);
     }
   }
 
@@ -313,7 +318,43 @@ export default class ProductOverview extends Vue {
 }
 
 .users {
+  flex-grow: 1;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 16px 0;
+
+  .users-row {
+    flex: 1 0 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .user {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    height: 40px;
+
+    .user-text {
+      flex: 1;
+      font-size: 20px;
+      overflow: hidden;
+      word-wrap: break-word;
+      line-height: 40px;
+    }
+
+    .user-button {
+      background: $gewis-red;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      padding: 8px 16px;
+      margin-left: 8px;
+    }
+  }
 }
 
 .product-overview-container {
@@ -395,7 +436,7 @@ export default class ProductOverview extends Vue {
 .search-text {
   border: 1px solid $gewis-red;
   border-radius: $border-radius;
-  min-width: 200px;
+  flex: 1 1 100px;
   display: flex;
   flex-direction: row;
   align-items: left;
