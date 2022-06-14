@@ -12,11 +12,11 @@
           {{ searchState.chargingUser.firstName }}
         </div>
         <div class="angle-down-icon">
-         <font-awesome-icon icon="angle-down"/>
+        <font-awesome-icon icon="angle-down"/>
         </div>
       </b-col>
       <b-col class="logout-button" @click="logout" align-v="center">
-         <font-awesome-icon icon="sign-out-alt"/>
+        <font-awesome-icon icon="sign-out-alt"/>
       </b-col>
     </b-row>
     <products-table :items="subTransactionRows" />
@@ -33,8 +33,8 @@
         <div class="balance-value" v-else>{{ balanceAfter.toFormat() }}</div>
       </div>
       <div class="warning-row" v-if="searchState.chargingUser.firstName != undefined">
-         <font-awesome-icon icon="exclamation-triangle"/>
-         You are charging {{ searchState.chargingUser.firstName }}!
+        <font-awesome-icon icon="exclamation-triangle"/>
+        You are charging {{ searchState.chargingUser.firstName }}!
       </div>
     </b-row>
     <checkout-button />
