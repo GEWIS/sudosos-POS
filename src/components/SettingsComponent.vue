@@ -54,7 +54,7 @@ export default class SettingsComponent extends Vue {
       document.querySelector(':root').style.setProperty('--gewis-red', 'green');
     }
     else {
-      this.userState.setBorrelModeOrgan({});
+      this.userState.setBorrelModeOrgan({} as Organ);
       // @ts-ignore
       document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
     }

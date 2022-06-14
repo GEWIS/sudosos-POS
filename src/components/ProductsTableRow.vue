@@ -1,8 +1,8 @@
 <template>
   <b-row class="products-table-row">
-    <b-button class="row-button" @click="decreaseItem">-</b-button>
+    <b-button class="row-button" @mouseup="decreaseClick" @mousedown="startDecreaseHold">-</b-button>
     <div class="row-amount">{{amount}}</div>
-    <b-button class="row-button" @click="increaseItem">+</b-button>
+    <b-button class="row-button" @mouseup="increaseClick" @mousedown="startIncreaseHold">+</b-button>
     <div class="row-name">{{ item.product.name }}</div>
     <div class="row-price">€{{ (productTotal / 100).toFixed(2) }}</div>
   </b-row>
@@ -26,6 +26,13 @@ export default class ProductsTableRow extends Formatters {
   @Prop() item!: SubTransactionRow;
 
   transactionsState = getModule(TransactionModule);
+
+  private holdDefaultDelay: number = 800;
+  private holdMinimalDelay: number = 80;
+  private holdDecreaseFactor: number = 1.5;
+
+  private holdDelay: number = 1000;
+  private held: boolean = false;
 
   get productTotal() {
     return (this.item.price.getAmount() as any) * this.item.amount;
@@ -51,6 +58,16 @@ export default class ProductsTableRow extends Formatters {
       .filter((row) => row.product.id !== this.item.product.id);
   }
 
+  increaseClick() {
+    this.held = false;
+    this.increaseItem();
+  }
+
+  decreaseClick() {
+    this.held = false;
+    this.decreaseItem();
+  }
+
   increaseItem() {
     this.amount += 1;
   }
@@ -60,6 +77,50 @@ export default class ProductsTableRow extends Formatters {
       this.amount -= 1;
     } else {
       this.deleteItem();
+    }
+  }
+
+  startDecreaseHold() {
+    this.held = true;
+    this.holdDelay = this.holdDefaultDelay;
+    this.decreaseHold();
+  }
+
+  startIncreaseHold() {
+    this.held = true;
+    this.holdDelay = this.holdDefaultDelay;
+    this.increaseHold();
+  }
+
+  increaseHold() {
+    if(!this.held) return;
+
+    setTimeout(() => {
+      if(!this.held) return;
+
+      this.increaseItem();
+      this.decreaseDelay();
+      this.increaseHold();
+    }, this.holdDelay);
+  }
+
+  decreaseHold() {
+    if(!this.held) return;
+
+    setTimeout(() => {
+      if(!this.held) return;
+
+      this.decreaseItem();
+      this.decreaseDelay();
+      this.decreaseHold();
+    }, this.holdDelay);
+  }
+
+  decreaseDelay() {
+    this.holdDelay = Math.round(this.holdDelay / this.holdDecreaseFactor);
+
+    if(this.holdDelay < this.holdMinimalDelay) {
+      this.holdDelay = this.holdMinimalDelay;
     }
   }
 }
