@@ -1,18 +1,14 @@
 <template>
   <div class="keyboard">
     <div class="keyrow" v-if="allowNumbers">
-        <div class="padding" :style="{'flex-grow':0.1}"></div>
         <div v-for="key in keys[3]" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
             <div class="key-text">{{ key }}</div>
         </div>
-        <div class="padding" :style="{'flex-grow':0.1}"></div>
     </div>
     <div class="keyrow">
-        <div class="padding" :style="{'flex-grow':0.1}"></div>
         <div v-for="key in keys[0]" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
             <div class="key-text">{{ key }}</div>
         </div>
-        <div class="padding" :style="{'flex-grow':0.1}"></div>
     </div>
     <div class="keyrow">
         <div class="padding" :style="{'flex-grow':1}"></div>
@@ -93,11 +89,11 @@ export default class Keyboard extends Vue {
   flex-direction: column;
   flex-wrap: wrap;
   gap: 2px;
+  max-width: 720px;
 
   .keyrow {
     display: flex;
     flex-direction: row;
-    flex: 1 1 100%;
     width: 100%;
     gap: 2px;
   }

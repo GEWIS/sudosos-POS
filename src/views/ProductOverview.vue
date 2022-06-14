@@ -53,7 +53,7 @@
             </div>
           </div>
         </div>
-        <div class="keyboard-container" :style="{'display': (state == State.SEARCH || state == State.USER_SEARCH) ? 'initial' : 'none'}">
+        <div class="keyboard-container" v-show="state == State.SEARCH || state == State.USER_SEARCH">
           <keyboard ref="keyboard" :onChange="updateSearchFromKeyboard" :allowNumbers="state == State.USER_SEARCH"/>
         </div>
         <div class="bottom-bar" v-if="state == State.CATEGORIES">
@@ -635,6 +635,17 @@ $scroll-bar-width: 40px;
     border: none !important;
     outline: none !important;
     color: rgba(0,0,0,0);
+  }
+}
+
+.keyboard-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+
+  .keyboard {
+    flex: 0 1 720px;
   }
 }
 

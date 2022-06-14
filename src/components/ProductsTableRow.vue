@@ -44,13 +44,13 @@ export default class ProductsTableRow extends Formatters {
   get amount() {
     const itemIndex = this.rows.findIndex((row) => row.product.id === this.item.product.id);
 
-    return (this.$parent.$parent.$parent as any).rows[itemIndex].amount;
+    return this.rows[itemIndex].amount;
   }
 
   set amount(value: number) {
     const itemIndex = this.rows.findIndex((row) => row.product.id === this.item.product.id);
 
-    (this.$parent.$parent.$parent as any).rows[itemIndex].amount = value;
+    this.rows[itemIndex].amount = value;
   }
 
   deleteItem() {
