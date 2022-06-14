@@ -24,8 +24,11 @@
             <input type="text" id="search-input2" v-model="userQuery" @input="updateSearchFromInput" v-if="state == State.USER_SEARCH" />
           </div>
           <div class="nav-item active" v-if="state == State.USER_SEARCH" @click="orderSelf()">
-            <div class="nav-link">
-              Order myself
+            <div class="nav-link" v-if="userState.borrelModeOrgan.organName">
+              Charge no-one
+            </div>
+            <div class="nav-link" v-else>
+              Charge myself
             </div>
           </div>
         </div>
@@ -75,7 +78,7 @@
           </div>
         </div>
       </div>
-      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch" :openPickMember="openPickMember"/>
+      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch" :openPickMember="openPickMember" :updateRows="updateRows" />
     </div>
     <div class="background-logo">
 <!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
@@ -89,7 +92,6 @@ import Dinero from 'dinero.js';
 import { getModule } from 'vuex-module-decorators';
 import { Product } from '@/entities/Product';
 import SettingsComponent from '@/components/SettingsComponent.vue';
-import OrganMemberComponent from '@/components/OrganMemberComponent.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
@@ -120,7 +122,6 @@ enum State {
     HomeMenuButton,
     CheckoutBar,
     SettingsComponent,
-    OrganMemberComponent,
     Keyboard,
   },
 })
@@ -176,6 +177,10 @@ export default class ProductOverview extends Vue {
     }
     
     return State.CATEGORIES;
+  }
+
+  updateRows(rows: SubTransactionRow[]) {
+    this.rows = rows;
   }
 
   openProductSearch() {

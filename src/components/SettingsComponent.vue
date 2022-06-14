@@ -31,7 +31,7 @@ export default class SettingsComponent extends Vue {
   @Prop() visible: boolean;
 
   mounted() {
-    if (this.userState.borrelModeOrgan && this.userState.borrelModeOrgan.organName) {
+    if (this.userState.isInBorrelMode) {
       this.chosenOrgan = this.userState.borrelModeOrgan;
       this.borrelMode = true;
       // @ts-ignore

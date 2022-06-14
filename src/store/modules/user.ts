@@ -27,6 +27,10 @@ export default class UserModule extends VuexModule {
 
   borrelModeOrgan: Organ = {} as Organ;
 
+  get isInBorrelMode() {
+    return this.borrelModeOrgan.organName != undefined;
+  }
+
   @Mutation
   reset() {
     this.user = {} as User;

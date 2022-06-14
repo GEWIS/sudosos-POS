@@ -1,5 +1,5 @@
 import {
-  VuexModule, Module, Mutation, Action,
+  VuexModule, Module, Mutation, Action, 
 } from 'vuex-module-decorators';
 import store from '@/store';
 import { User } from '@/entities/User';
@@ -15,6 +15,10 @@ export default class SearchModule extends VuexModule {
   filterCategory: number = 0; // Alcoholic drinks as default category
 
   chargingUser: User = {} as User;
+
+  get isChargingUser() {
+    return this.chargingUser.firstName != undefined;
+  }
 
   @Mutation
   reset() {

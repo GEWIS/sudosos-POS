@@ -291,7 +291,8 @@ export default class Login extends Vue {
     justify-content: center;
 
     .keypad {
-      flex: 0 1 350px;
+      // TODO: Not a good approach
+      flex: 0 1 324px;
     }
   }
 
@@ -325,4 +326,28 @@ export default class Login extends Vue {
     height: 100%;
   }
 }
+
+@media screen and (max-width: 950px) {
+  .wrap-container {
+    margin: 0;
+    gap: 0;
+  }
+
+  .wrap-container-child {
+    border-radius: 0;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .entry-row {
+    flex-direction: column !important;
+    align-items: center;
+  }
+
+  .keycodes-container {
+    justify-content: center;
+  }
+}
+
+
 </style>

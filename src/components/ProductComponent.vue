@@ -10,9 +10,7 @@
 
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator';
-import { getModule } from 'vuex-module-decorators';
 import { Product } from '@/entities/Product';
-import TransactionModule from '@/store/modules/transactions';
 import Formatters from '@/mixins/Formatters';
 
 @Component
@@ -37,35 +35,35 @@ export default class ProductComponent extends Formatters {
 </script>
 
 <style scoped lang="scss">
-  .product-card {
-    padding: 0 0 8px 0;
-    height: fit-content;
-    background: white;
-    border-radius: $border-radius;
-    overflow: hidden;
-    width: 128px;
+.product-card {
+  padding: 0 0 8px 0;
+  height: fit-content;
+  background: white;
+  border-radius: $border-radius;
+  overflow: hidden;
+  width: 128px;
 
-    .product {
-      > img {
-        width: 128px;
-        height: 128px;
-        background-color: $gewis-grey-light;
-        border-top-left-radius: $border-radius;
-        border-top-right-radius: $border-radius;
-      }
+  .product {
+    > img {
+      width: 128px;
+      height: 128px;
+      background-color: $gewis-grey-light;
+      border-top-left-radius: $border-radius;
+      border-top-right-radius: $border-radius;
     }
   }
+}
 
-  .product-name {
-    font-weight: bold;
-    font-size: 16px;
-    height: 22px;
-    overflow: hidden;
-    word-wrap: break-word;
-  }
+.product-name {
+  font-weight: bold;
+  font-size: 16px;
+  height: 22px;
+  overflow: hidden;
+  word-wrap: break-word;
+}
 
-  .product-price {
-    font-size: 13px;
-    height: 15px;
-  }
+.product-price {
+  font-size: 13px;
+  height: 15px;
+}
 </style>

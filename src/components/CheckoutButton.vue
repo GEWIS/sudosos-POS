@@ -7,18 +7,14 @@
 </template>
 <script lang="ts">
 import { PointOfSale } from '@/entities/PointOfSale';
-import { SubTransaction } from '@/entities/SubTransaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { Container } from '@/entities/Container';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
-import SubTransactionTransformer from '@/transformers/SubTransactionTransformer';
-import TransactionTransformer from '@/transformers/TransactionTransformer';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { postTransaction } from '@/api/transactions';
 import SearchModule from '@/store/modules/search';
-import ProductOverview from '@/views/ProductOverview.vue';
 
 @Component
 export default class CheckoutButton extends Vue {
@@ -70,11 +66,13 @@ export default class CheckoutButton extends Vue {
         };
       }
     });
+
     return rowContainer;
   }
 
   static makeSubTransactions(rows: SubTransactionRow[], user: User, pos: any) {
     const subTransactions: any[] = [];
+
     rows.forEach((row) => {
       delete row.price;
       // Find if there is a subtransaction for this container
@@ -109,6 +107,7 @@ export default class CheckoutButton extends Vue {
         precision: 2,
       };
     });
+
     return subTransactions;
   }
 
@@ -118,6 +117,7 @@ export default class CheckoutButton extends Vue {
     const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
 
     let chargingId = 0;
+
     if (chargingUser.firstName !== undefined) {
       chargingId = chargingUser.id;
       this.searchState.clearChargingUser();
@@ -152,8 +152,9 @@ export default class CheckoutButton extends Vue {
         };
       });
     });
+
     try {
-      const transactionResponse = await postTransaction(transaction);
+      await postTransaction(transaction);
       this.searchState.reset();
       (this.$parent.$parent as any).rows = [];
       if (!borrelMode) {
@@ -161,7 +162,7 @@ export default class CheckoutButton extends Vue {
         this.$router.push('/');
       }
     } catch (error: any) {
-      // alert(error.message);
+      // TODO: Catch error
     }
   }
 
@@ -177,8 +178,7 @@ export default class CheckoutButton extends Vue {
     const { organName } = this.userState.borrelModeOrgan;
 
     // Borrelmode checkout
-    if (organName && this.searchState.chargingUser.firstName) {
-      console.log(this.searchState.chargingUser.firstName);
+    if (organName && this.searchState.isChargingUser) {
       this.openPickMember();
     } else if (organName) {
       this.searchState.setUserSearching(true);

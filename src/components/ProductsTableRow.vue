@@ -1,16 +1,14 @@
 <template>
   <b-row class="products-table-row">
-    <b-button class="row-button" @mouseup="decreaseClick" @mousedown="startDecreaseHold">-</b-button>
+    <b-button class="row-button" @mouseup="decreaseClick" @mousedown="startDecreaseHold" @mouseleave="stopHold">-</b-button>
     <div class="row-amount">{{amount}}</div>
-    <b-button class="row-button" @mouseup="increaseClick" @mousedown="startIncreaseHold">+</b-button>
+    <b-button class="row-button" @mouseup="increaseClick" @mousedown="startIncreaseHold" @mouseleave="stopHold">+</b-button>
     <div class="row-name">{{ item.product.name }}</div>
     <div class="row-price">€{{ (productTotal / 100).toFixed(2) }}</div>
   </b-row>
 </template>
 <script lang="ts">
-import {
-  Component, Prop, PropSync, Vue,
-} from 'vue-property-decorator';
+import { Component, Prop, } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import Formatters from '@/mixins/Formatters';
@@ -23,7 +21,11 @@ import TransactionModule from '@/store/modules/transactions';
   },
 })
 export default class ProductsTableRow extends Formatters {
+  @Prop() updateRows: Function;
+
   @Prop() item!: SubTransactionRow;
+
+  @Prop() rows: SubTransactionRow[];
 
   transactionsState = getModule(TransactionModule);
 
@@ -33,29 +35,27 @@ export default class ProductsTableRow extends Formatters {
 
   private holdDelay: number = 1000;
   private held: boolean = false;
+  private timeoutHandle: number;
 
   get productTotal() {
     return (this.item.price.getAmount() as any) * this.item.amount;
   }
 
   get amount() {
-    const itemIndex = (this.$parent.$parent.$parent as any).rows
-      .findIndex((row) => row.product.id === this.item.product.id);
+    const itemIndex = this.rows.findIndex((row) => row.product.id === this.item.product.id);
 
     return (this.$parent.$parent.$parent as any).rows[itemIndex].amount;
   }
 
   set amount(value: number) {
-    const itemIndex = (this.$parent.$parent.$parent as any).rows
-      .findIndex((row) => row.product.id === this.item.product.id);
+    const itemIndex = this.rows.findIndex((row) => row.product.id === this.item.product.id);
 
     (this.$parent.$parent.$parent as any).rows[itemIndex].amount = value;
   }
 
   deleteItem() {
-    const { rows } = this.$parent.$parent.$parent as any;
-    (this.$parent.$parent.$parent as any).rows = rows
-      .filter((row) => row.product.id !== this.item.product.id);
+    this.updateRows(this.rows.filter((row) => row.product.id !== this.item.product.id));
+    this.held = false;
   }
 
   increaseClick() {
@@ -80,14 +80,20 @@ export default class ProductsTableRow extends Formatters {
     }
   }
 
+  stopHold() {
+    this.held = false;
+  }
+
   startDecreaseHold() {
     this.held = true;
+    clearTimeout(this.timeoutHandle);
     this.holdDelay = this.holdDefaultDelay;
     this.decreaseHold();
   }
 
   startIncreaseHold() {
     this.held = true;
+    clearTimeout(this.timeoutHandle);
     this.holdDelay = this.holdDefaultDelay;
     this.increaseHold();
   }
@@ -95,7 +101,8 @@ export default class ProductsTableRow extends Formatters {
   increaseHold() {
     if(!this.held) return;
 
-    setTimeout(() => {
+    // @ts-ignore
+    this.timeoutHandle = setTimeout(() => {
       if(!this.held) return;
 
       this.increaseItem();
@@ -107,7 +114,8 @@ export default class ProductsTableRow extends Formatters {
   decreaseHold() {
     if(!this.held) return;
 
-    setTimeout(() => {
+    // @ts-ignore
+    this.timeoutHandle = setTimeout(() => {
       if(!this.held) return;
 
       this.decreaseItem();
@@ -148,6 +156,8 @@ export default class ProductsTableRow extends Formatters {
 
   .row-amount {
     margin: 0 8px;
+    width: 20px;
+    text-align: center;
   }
 
   .row-name {

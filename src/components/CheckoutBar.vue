@@ -5,10 +5,10 @@
           Order for
       </b-col>
       <b-col class="user-button" @click="chargeOtherPerson">
-        <div v-if="searchState.chargingUser.firstName === undefined && userState.borrelModeOrgan.organName != undefined">
-          no-one
+        <div v-if="!searchState.isChargingUser && userState.isInBorrelMode">
+          no one
         </div>
-        <div v-else-if="searchState.chargingUser.firstName === undefined">
+        <div v-else-if="!searchState.isChargingUser">
           {{ userState.user.firstName }}
         </div>
         <div v-else>
@@ -22,26 +22,26 @@
         <font-awesome-icon icon="sign-out-alt"/>
       </b-col>
     </b-row>
-    <products-table :items="subTransactionRows" />
+    <products-table :items="subTransactionRows" :updateRows="updateRows"/>
     <b-row class="transaction-detail-row">
       <div class="total-row">
         <div class="total-text">Total</div>
         <div class="total-value">€{{ (transactionTotal / 100).toFixed(2) }}</div>
       </div>
-      <div class="balance-row" v-if="searchState.chargingUser.firstName == undefined && userState.borrelModeOrgan.organName == undefined">
+      <div class="balance-row" v-if="!searchState.isChargingUser && userState.isInBorrelMode">
         <div class="balance-text">Balance after</div>
         <div class="balance-value warn" v-if="balanceAfter.getAmount() < 0">
           {{ balanceAfter.toFormat() }}
         </div>
         <div class="balance-value" v-else>{{ balanceAfter.toFormat() }}</div>
       </div>
-      <div class="warning-row" v-if="searchState.chargingUser.firstName != undefined">
+      <div class="warning-row" v-if="searchState.isChargingUser">
         <font-awesome-icon icon="exclamation-triangle"/>
         You are charging {{ searchState.chargingUser.firstName }}!
       </div>
     </b-row>
     <checkout-button ref="checkoutButton" :openPickMember="openPickMember" />
-    <div class="borrelmode-text" v-if="userState.borrelModeOrgan.organName != undefined">
+    <div class="borrelmode-text" v-if="userState.isInBorrelMode">
       Borrelmode is active for {{ userState.borrelModeOrgan.organName }}
     </div>
   </div>
@@ -49,14 +49,14 @@
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import DineroType, { Dinero } from 'dinero.js';
+import DineroType from 'dinero.js';
 import Formatters from '@/mixins/Formatters';
 import ProductsTable from '@/components/ProductsTable.vue';
 import CheckoutButton from '@/components/CheckoutButton.vue';
-import APIHelper from '@/mixins/APIHelper';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import SearchModule from '@/store/modules/search';
+import { SubTransactionRow } from '@/entities/SubTransactionRow';
 
 @Component({
   components: { ProductsTable, CheckoutButton },
@@ -71,30 +71,22 @@ export default class CheckoutBar extends Formatters {
 
   @Prop() openPickMember: Function;
 
+  @Prop() updateRows: Function;
+
   private userState = getModule(UserModule);
 
   private searchState = getModule(SearchModule);
 
-  subTransactionRows: any;
-
-  // Other user to charge
-  private charging: User|null = null;
-
-  // get saldoClass() {
-  //   if (this.userState.user.saldo instanceof Number) {
-  //     const saldo = this.dinero({ amount: this.userState.user.saldo });
-  //     console.log(saldo.isPositive());
-  //     return saldo.isPositive() ? 'positive' : 'negative';
-  //   }
-  //   return this.userState?.user?.saldo?.isPositive() ? 'positive' : 'negative';
-  // }
+  subTransactionRows: SubTransactionRow[];
 
   get transactionTotal() {
     let total = 0;
+
     this.subTransactionRows.forEach((row: any) => {
       const rowTotal = row.price.getAmount() * row.amount;
       total += rowTotal;
     });
+
     return total;
   }
 
@@ -105,6 +97,7 @@ export default class CheckoutBar extends Formatters {
         currency: 'EUR',
       }));
     }
+
     return DineroType({
       amount: this.transactionTotal,
       currency: 'EUR',
