@@ -22,6 +22,8 @@ import ProductOverview from '@/views/ProductOverview.vue';
 
 @Component
 export default class CheckoutButton extends Vue {
+  @Prop() openPickMember: Function;
+
   private countdown: number = 3;
 
   private buttonText: string = 'Checkout';
@@ -30,13 +32,15 @@ export default class CheckoutButton extends Vue {
 
   private timeout: number = 0;
 
+  private borrelModeCheckout: boolean = false;
+
   userState = getModule(UserModule);
 
   searchState = getModule(SearchModule);
 
   organMemberSelected(selectedMember: User) {
-    const { chargingUser } = this.searchState;
-    this.finishTransaction(selectedMember, chargingUser, true);
+    this.finishTransaction(selectedMember, this.searchState.chargingUser, true);
+    this.borrelModeCheckout = false;
   }
 
   checkout() {
@@ -161,13 +165,24 @@ export default class CheckoutButton extends Vue {
     }
   }
 
+  isBorrelModeCheckout() {
+    return this.borrelModeCheckout;
+  }
+
+  clearBorrelModeCheckout() {
+    this.borrelModeCheckout = false;
+  }
+
   buttonClicked() {
     const { organName } = this.userState.borrelModeOrgan;
 
     // Borrelmode checkout
-    if (organName) {
+    if (organName && this.searchState.chargingUser.firstName) {
+      console.log(this.searchState.chargingUser.firstName);
+      this.openPickMember();
+    } else if (organName) {
       this.searchState.setUserSearching(true);
-      console.error(this.searchState.userSearching);
+      this.borrelModeCheckout = true;
     } else if (this.checkingOut) {
       clearTimeout(this.timeout);
       this.countdown = 3;

@@ -5,7 +5,10 @@
           Order for
       </b-col>
       <b-col class="user-button" @click="chargeOtherPerson">
-        <div v-if="searchState.chargingUser.firstName === undefined">
+        <div v-if="searchState.chargingUser.firstName === undefined && userState.borrelModeOrgan.organName != undefined">
+          no-one
+        </div>
+        <div v-else-if="searchState.chargingUser.firstName === undefined">
           {{ userState.user.firstName }}
         </div>
         <div v-else>
@@ -25,7 +28,7 @@
         <div class="total-text">Total</div>
         <div class="total-value">€{{ (transactionTotal / 100).toFixed(2) }}</div>
       </div>
-      <div class="balance-row" v-if="searchState.chargingUser.firstName == undefined">
+      <div class="balance-row" v-if="searchState.chargingUser.firstName == undefined && userState.borrelModeOrgan.organName == undefined">
         <div class="balance-text">Balance after</div>
         <div class="balance-value warn" v-if="balanceAfter.getAmount() < 0">
           {{ balanceAfter.toFormat() }}
@@ -37,7 +40,7 @@
         You are charging {{ searchState.chargingUser.firstName }}!
       </div>
     </b-row>
-    <checkout-button ref="checkoutButton" />
+    <checkout-button ref="checkoutButton" :openPickMember="openPickMember" />
     <div class="borrelmode-text" v-if="userState.borrelModeOrgan.organName != undefined">
       Borrelmode is active for {{ userState.borrelModeOrgan.organName }}
     </div>
@@ -65,6 +68,8 @@ import SearchModule from '@/store/modules/search';
 })
 export default class CheckoutBar extends Formatters {
   @Prop() openUserSearch: Function;
+
+  @Prop() openPickMember: Function;
 
   private userState = getModule(UserModule);
 

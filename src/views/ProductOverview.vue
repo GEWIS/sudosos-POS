@@ -75,7 +75,7 @@
           </div>
         </div>
       </div>
-      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"/>
+      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch" :openPickMember="openPickMember"/>
     </div>
     <div class="background-logo">
 <!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
@@ -200,12 +200,24 @@ export default class ProductOverview extends Vue {
     }
     else if(this.state == State.USER_SEARCH) {
       this.searchState.updateUserSearching(false);
+
+      this.exitBorrelModeCheckout();
     }
 
     if(this.state == State.SEARCH) {
       // @ts-ignore
       this.$refs.keyboard.setInput(this.query);
     }
+  }
+
+  exitBorrelModeCheckout() {
+    if(this.userState.borrelModeOrgan.organName == undefined) {
+      return;
+    }
+
+    // TODO: Improve how this is routed
+    // @ts-ignore
+    this.$refs.checkoutBar.$refs.checkoutButton.clearBorrelModeCheckout();
   }
 
   focusOnSearch() {
@@ -296,10 +308,14 @@ export default class ProductOverview extends Vue {
 
     this.searchState.setUserSearching(false);
 
-    if(this.userState.borrelModeOrgan && this.userState.borrelModeOrgan.organName !== undefined) {
-      console.log(this.userState.borrelModeOrgan);
+    if(this.organMemberRequired()) {
       this.showOrganMembers = true;
     }
+  }
+
+  organMemberRequired() {
+    // @ts-ignore
+    return this.userState.borrelModeOrgan.organName && this.$refs.checkoutBar.$refs.checkoutButton.isBorrelModeCheckout();
   }
 
   orderSelf(): void {
@@ -312,8 +328,13 @@ export default class ProductOverview extends Vue {
     this.$refs.checkoutBar.organMemberSelected(user);
   }
 
+  openPickMember() {
+    this.showOrganMembers = true;
+  }
+
   exitPickMember() {
     this.showOrganMembers = false;
+    this.exitBorrelModeCheckout();
   }
 }
 </script>
