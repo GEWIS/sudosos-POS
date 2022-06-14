@@ -11,9 +11,9 @@
         </b-nav>
         <div v-if="state == State.SEARCH || state == State.USER_SEARCH"
           class="nav align-items-center">
-          <div class="nav-item active" @click="exitSearch()">
+          <div class="nav-item active exit-search-button" @click="exitSearch()">
             <div class="nav-link">
-              X
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
             </div>
           </div>
           <div class="nav-item search-text" @click="focusOnSearch()">
@@ -23,7 +23,7 @@
             <input type="text" id="search-input1" v-model="query" @input="updateSearchFromInput" v-if="state == State.SEARCH" />
             <input type="text" id="search-input2" v-model="userQuery" @input="updateSearchFromInput" v-if="state == State.USER_SEARCH" />
           </div>
-          <div class="nav-item active" v-if="state == State.USER_SEARCH">
+          <div class="nav-item active" v-if="state == State.USER_SEARCH" @click="orderSelf()">
             <div class="nav-link">
               Order myself
             </div>
@@ -81,8 +81,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import Dinero from 'dinero.js';
 import { getModule } from 'vuex-module-decorators';
 import { Product } from '@/entities/Product';
-import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
-import ProductSearchComponent from '@/components/ProductSearchComponent.vue';
 import SettingsComponent from '@/components/SettingsComponent.vue';
 import OrganMemberComponent from '@/components/OrganMemberComponent.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
@@ -113,7 +111,6 @@ enum State {
     ProductComponent,
     HomeMenuButton,
     CheckoutBar,
-    UserSelectionComponent,
     SettingsComponent,
     OrganMemberComponent,
     Keyboard,
@@ -282,7 +279,14 @@ export default class ProductOverview extends Vue {
     this.searchState.setChargingUser(user);
     this.searchState.setUserSearching(false);
     // @ts-ignore
-    if(this.$refs.checkoutBar) this.$refs.checkoutBar.$emit('userSelected');
+    this.$refs.checkoutBar.$emit('userSelected');
+  }
+
+  orderSelf(): void {
+    this.searchState.clearChargingUser();
+    this.searchState.setUserSearching(false);
+    // @ts-ignore
+    this.$refs.checkoutBar.$emit('userSelected');
   }
 }
 </script>
@@ -324,6 +328,7 @@ export default class ProductOverview extends Vue {
   flex-direction: column;
   align-items: center;
   margin: 16px 0;
+  scrollbar-width: 50px;
 
   .users-row {
     flex: 1 0 400px;
@@ -481,6 +486,18 @@ export default class ProductOverview extends Vue {
 
 .product-name {
   background: $gewis-grey-accent;
+}
+
+.exit-search-button {
+  .nav-link {
+    padding: 1rem !important;
+  }
+
+  svg {
+    width: 30px;
+    height: 30px;
+    fill: white;
+  }
 }
 
 @media screen and (max-width: 950px) {

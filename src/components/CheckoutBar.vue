@@ -105,7 +105,6 @@ export default class CheckoutBar extends Formatters {
 
   chargeOtherPerson() {
     this.openUserSearch();
-    //this.searchState.setUserSearching(true);
   }
 
   logout() {
