@@ -64,8 +64,11 @@
           <div class="search-bar" @click="openProductSearch()">
             <font-awesome-icon icon="search"/> Search...
           </div>
-          <div class="activity-timeout" v-if="!userState.isInBorrelMode">
+          <div class="activity-timeout" v-if="!userState.isInBorrelMode && !checkingOut">
             Automatically logging out in {{activityTimeoutTimeSeconds}} seconds.
+          </div>
+          <div class="activity-timeout" v-else-if="!userState.isInBorrelMode">
+            No automatic logout during checkout.
           </div>
         </div>
         <div class="organ-members" v-if="state == State.ORGAN_MEMBER_SELECT">
@@ -160,6 +163,8 @@ export default class ProductOverview extends Vue {
 
   private activityTimeoutTime: number = 0;
 
+  private checkingOut: boolean = false;
+
   async mounted() {
     window.addEventListener('resize', () => {
       this.checkWindowSize();
@@ -174,6 +179,18 @@ export default class ProductOverview extends Vue {
     });
     this.searchState.updateFilterCategory(1);
     this.userActivity();
+
+    // @ts-ignore
+    this.$refs.checkoutBar.$refs.checkoutButton.$watch('checkingOut', value => {
+      this.checkingOut = value;
+
+      if(value) {
+        this.clearTimeouts();
+      }
+      else {
+        this.userActivity();
+      }
+    })
   }
 
   get activityTimeoutTimeSeconds() {
@@ -222,6 +239,10 @@ export default class ProductOverview extends Vue {
   }
 
   loggedOut() {
+    this.clearTimeouts();
+  }
+
+  clearTimeouts() {
     if(this.activityTimeoutHandle != undefined) {
       clearTimeout(this.activityTimeoutHandle);
       this.activityTimeoutHandle = undefined;
@@ -454,8 +475,7 @@ export default class ProductOverview extends Vue {
   flex: 1;
   display: flex;
   flex-direction: row;
-  margin: 16px;
-  padding: 16px;
+  padding: 32px;
   z-index: 2;
   gap: 16px;
   overflow: hidden;

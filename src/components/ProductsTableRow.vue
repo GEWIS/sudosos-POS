@@ -31,7 +31,7 @@ export default class ProductsTableRow extends Formatters {
 
   transactionsState = getModule(TransactionModule);
 
-  private holdDefaultDelay: number = 800;
+  private holdDefaultDelay: number = 400;
   private holdMinimalDelay: number = 80;
   private holdDecreaseFactor: number = 1.5;
 
