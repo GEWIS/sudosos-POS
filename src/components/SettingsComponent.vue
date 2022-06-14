@@ -74,14 +74,15 @@ export default class SettingsComponent extends Vue {
     height: auto;
     gap: 16px;
     padding-bottom: 16px;
+    width: 600px;
 
     .header {
       background: $gewis-red;
       color: white;
       padding: 8px 0;
       font-size: 1.2em;
-      border-top-left-radius: $border-radius;
-      border-top-right-radius: $border-radius;
+      border-top-left-radius: $border-radius - 2px;
+      border-top-right-radius: $border-radius - 2px;
       text-align: center;
     }
 
