@@ -1,5 +1,5 @@
 <template>
-  <div class="settings-component pos-card">
+  <div class="settings-component pos-card" id="settings-component">
     <div class="header">Settings</div>
     <div class="setting-row">
       <input type="checkbox" id="borrelmode-checkbox" v-model="borrelMode" @change="modeChanged">
@@ -15,7 +15,7 @@
 <script lang="ts">
 import { Organ } from '@/entities/Organ';
 import UserModule from '@/store/modules/user';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop, PropSync, } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 
 @Component
@@ -26,17 +26,36 @@ export default class SettingsComponent extends Vue {
 
   private chosenOrgan: Organ = {} as Organ;
 
+  private boundedListener: any;
+
+  @Prop() visible: boolean;
+
   mounted() {
     if (this.userState.borrelModeOrgan.organName) {
       this.chosenOrgan = this.userState.borrelModeOrgan;
       this.borrelMode = true;
     }
+
+    this.boundedListener = this.outsideClickListener.bind(this);
+
+    setTimeout(() => document.addEventListener("click", this.boundedListener), 1);
   }
 
   modeChanged() {
     if (this.borrelMode === true && this.chosenOrgan.organName !== undefined) {
       this.userState.setBorrelModeOrgan(this.chosenOrgan);
     }
+  }
+
+  outsideClickListener(e) {
+    if (e.composedPath().includes(document.getElementById("options-button"))
+     || e.composedPath().includes(document.getElementById("settings-component")) 
+     || !this.$parent.$data.showSettings) {
+      return;
+    }
+
+    this.$parent.$data.showSettings = false;
+    document.removeEventListener("click", this.boundedListener);
   }
 }
 </script>
@@ -45,25 +64,31 @@ export default class SettingsComponent extends Vue {
 
   .settings-component {
     position: absolute;
-    top: 100%;
+    top: -100%;
+    left: 75px;
     display: flex;
     flex-direction: column;
     background: white;
     border-radius: $border-radius;
     border: 1px solid $gewis-red;
     height: auto;
+    gap: 16px;
+    padding-bottom: 16px;
 
     .header {
       background: $gewis-red;
       color: white;
       padding: 8px 0;
       font-size: 1.2em;
+      border-top-left-radius: $border-radius;
+      border-top-right-radius: $border-radius;
       text-align: center;
     }
 
     .setting-row {
       width: fit-content;
       font-size: 2rem;
+      padding: 0 16px;
 
       input[type=checkbox] {
         height: 2rem;
@@ -71,7 +96,7 @@ export default class SettingsComponent extends Vue {
       }
 
       label {
-        margin: 1rem 2rem;
+        margin: 0 16px;
       }
     }
   }

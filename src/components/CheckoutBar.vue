@@ -41,7 +41,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import DineroType, { Dinero } from 'dinero.js';
 import Formatters from '@/mixins/Formatters';
@@ -61,6 +61,8 @@ import SearchModule from '@/store/modules/search';
   },
 })
 export default class CheckoutBar extends Formatters {
+  @Prop() openUserSearch: Function;
+
   private userState = getModule(UserModule);
 
   private searchState = getModule(SearchModule);
@@ -102,7 +104,8 @@ export default class CheckoutBar extends Formatters {
   }
 
   chargeOtherPerson() {
-    this.searchState.setUserSearching(true);
+    this.openUserSearch();
+    //this.searchState.setUserSearching(true);
   }
 
   logout() {

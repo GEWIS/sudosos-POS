@@ -2,14 +2,29 @@
   <div class="wrapper">
     <div class="product-overview">
       <div class="product-overview-container shadow">
-        <b-nav
-          class="nav align-items-center">
+        <b-nav v-if="state == State.CATEGORIES"
+          class="align-items-center">
           <home-menu-button :name="'Alcoholic drinks'" :category="1" />
           <home-menu-button :name="'Non-alcoholic'" :category="2"/>
           <home-menu-button :name="'Snacks'" :category="3"/>
           <home-menu-button :name="'Other'" :category="4" />
         </b-nav>
-        <main class="products">
+        <div v-if="state == State.SEARCH || state == State.USER_SEARCH"
+          class="nav align-items-center">
+          <div class="nav-item active" @click="exitSearch()">
+            <div class="nav-link">
+              X
+            </div>
+          </div>
+          <div class="nav-item search-text" @click="focusOnSearch()">
+            <font-awesome-icon icon="search"/>
+            <span>{{state == State.SEARCH ? query : userQuery}}</span>
+            <div class="indicator"></div>
+            <input type="text" id="search-input1" v-model="query" @input="updateSearchFromInput" v-if="state == State.SEARCH" />
+            <input type="text" id="search-input2" v-model="userQuery" @input="updateSearchFromInput" v-if="state == State.USER_SEARCH" />
+          </div>
+        </div>
+        <main class="products" v-if="state == State.CATEGORIES || state == State.SEARCH">
           <div class="product-row">
             <b-col cols="12" class="text-center borrelmode-text"
               v-if="userState.borrelModeOrgan.organName" @click="showSettings = true">
@@ -21,24 +36,31 @@
               :key="`${item.id}-${item.containerId}`"
             />
             <div class="no-components" v-if="filteredProducts.length == 0">
-              There are no products in this category.
+              <div v-if="searchState.searching">There are no products for this query.</div>
+              <div v-else>There are no products in this category.</div>
             </div>
           </div>
         </main>
-        <div class="bottom-bar">
-          <div class="options-button" @click="showSettings = !showSettings">
+        <div class="users" v-if="state == State.USER_SEARCH">
+          <div class="user" v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
+            {{item.firstName}} {{item.lastName}} - {{item.gewisID}}
+          </div>
+        </div>
+        <div class="keyboard-container" :style="{'display': (state == State.SEARCH || state == State.USER_SEARCH) ? 'initial' : 'none'}">
+          <div id="keyboard" class="keyboard"></div>
+        </div>
+        <div class="bottom-bar" v-if="state == State.CATEGORIES">
+          <div class="options-button" id="options-button" @click="showSettings = !showSettings">
             <font-awesome-icon icon="ellipsis-h"/>
           </div>
-          <settings-component v-if="showSettings" />
-          <div class="search-bar">
+          <settings-component v-if="showSettings" :visible="showSettings" />
+          <div class="search-bar" @click="openProductSearch()">
             <font-awesome-icon icon="search"/> Search...
           </div>
         </div>
-        <settings-component v-if="showSettings" />
-        <user-selection-component v-if="searchState.userSearching"/>
         <organ-member-component v-if="showOrganMembers" />
       </div>
-      <checkout-bar :subTransactionRows="rows"/>
+      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"/>
     </div>
     <div class="background-logo">
 <!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
@@ -51,8 +73,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import Dinero from 'dinero.js';
 import { getModule } from 'vuex-module-decorators';
 import { Product } from '@/entities/Product';
-import SearchbarWithKeyboard from '@/components/SearchbarWithKeyboard.vue';
 import UserSelectionComponent from '@/components/UserSelectionComponent.vue';
+import ProductSearchComponent from '@/components/ProductSearchComponent.vue';
 import SettingsComponent from '@/components/SettingsComponent.vue';
 import OrganMemberComponent from '@/components/OrganMemberComponent.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
@@ -65,12 +87,22 @@ import { Transaction } from '@/entities/Transaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { SubTransaction } from '@/entities/SubTransaction';
 import { PointOfSale } from '@/entities/PointOfSale';
+import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
+
+import FuzzySearch from 'fuzzy-search';
+import Keyboard from 'simple-keyboard';
+import 'simple-keyboard/build/css/index.css';
+
+enum State {
+  CATEGORIES,
+  SEARCH,
+  USER_SEARCH,
+}
 
 @Component({
   components: {
     ProductComponent,
-    SearchbarWithKeyboard,
     HomeMenuButton,
     CheckoutBar,
     UserSelectionComponent,
@@ -80,71 +112,148 @@ import UserModule from '@/store/modules/user';
 })
 
 export default class ProductOverview extends Vue {
-    // Proxy for the state, compact notation
-    private searchState = getModule(SearchModule);
+  // Proxy for the state, compact notation
+  private searchState = getModule(SearchModule);
 
-    private userState = getModule(UserModule);
+  private userState = getModule(UserModule);
 
-    private products: Product[] = [];
+  private products: Product[] = [];
 
-    public rows: SubTransactionRow[] = [];
+  public rows: SubTransactionRow[] = [];
 
-    public pointOfSale: PointOfSale | null = null;
+  public pointOfSale: PointOfSale | null = null;
 
-    public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
+  public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
-    public showSettings: boolean = false;
+  public showSettings: boolean = false;
 
-    public showOrganMembers: boolean = false;
+  public showOrganMembers: boolean = false;
 
-    async mounted() {
-      window.addEventListener('resize', () => {
-        this.checkWindowSize();
+  private keyboard: any = null;
+
+  State: any = State;
+
+  private userQuery: string = '';
+
+  private query: string = '';
+
+  async mounted() {
+    window.addEventListener('resize', () => {
+      this.checkWindowSize();
+    });
+    this.pointOfSale = await getPointOfSale(1);
+    this.pointOfSale.containers.forEach((con) => {
+      const containerId = con.id;
+      (con as any).products.forEach((prod: any) => {
+        prod.containerId = containerId;
+        this.products.push(prod);
       });
-      this.pointOfSale = await getPointOfSale(1);
-      this.pointOfSale.containers.forEach((con) => {
-        const containerId = con.id;
-        (con as any).products.forEach((prod: any) => {
-          prod.containerId = containerId;
-          this.products.push(prod);
-        });
-      });
+    });
 
-      this.searchState.updateFilterCategory(1);
+    this.keyboard = new Keyboard("keyboard", {
+      onChange: input => this.updateSearchFromKeyboard(input)
+    });
+
+    this.searchState.updateFilterCategory(1);
+  }
+
+  get state() {
+    if(this.searchState.userSearching) {
+      return State.USER_SEARCH;
+    }
+    else if(this.searchState.searching) {
+      return State.SEARCH;
+    }
+    
+    return State.CATEGORIES;
+  }
+
+  openProductSearch() {
+    this.searchState.updateSearching(true);
+    this.keyboard.setInput("");
+
+    this.$nextTick(() => this.focusOnSearch());
+  }
+
+  openUserSearch() {
+    this.searchState.updateUserSearching(true);
+    this.keyboard.setInput("");
+
+    this.$nextTick(() => this.focusOnSearch());
+  }
+
+  exitSearch() {
+    if(this.state == State.SEARCH) {
+      this.searchState.updateSearching(false);
+    }
+    else if(this.state == State.USER_SEARCH) {
+      this.searchState.updateUserSearching(false);
     }
 
-    checkWindowSize() {
-      this.vertical = window.innerWidth / window.innerHeight >= 1;
+    if(this.state == State.SEARCH) {
+      this.keyboard.setInput(this.query);
     }
+  }
 
-    clickSearchButton() {
-      this.searchState.setSearching(!this.searchState.searching);
+  focusOnSearch() {
+    if(this.state == State.SEARCH) {
+      document.getElementById("search-input1").focus();
+      
     }
-
-    addProduct(product: Product, amount: number) {
-      const productIndex = this.rows.findIndex((row) => row.product.id === product.id);
-      if (productIndex > -1) {
-        this.rows[productIndex].amount += amount;
-      } else {
-        const price = Dinero({ amount: product.price.getAmount() });
-        const row = {
-          product,
-          amount,
-          price: product.price,
-        } as SubTransactionRow;
-        this.rows.push(row);
-      }
+    else if(this.state == State.USER_SEARCH) {
+      document.getElementById("search-input2").focus();
     }
+  }
 
-  // What is the user searching for?
-  query: string = '';
+  checkWindowSize() {
+    this.vertical = window.innerWidth / window.innerHeight >= 1;
+  }
+
+  updateSearchFromKeyboard(text) {
+    if(this.state == State.SEARCH) {
+      this.query = text;
+    }
+    else if(this.state == State.USER_SEARCH) {
+      this.userQuery = text;
+    }
+  }
+
+  updateSearchFromInput(e) {
+    if(this.state == State.SEARCH) {
+      this.query = e.target.value;
+    }
+    else if(this.state == State.USER_SEARCH) {
+      this.userQuery = e.target.value;
+    }
+  }
+
+  clickSearchButton() {
+    this.searchState.setSearching(!this.searchState.searching);
+  }
+
+  addProduct(product: Product, amount: number) {
+    const productIndex = this.rows.findIndex((row) => row.product.id === product.id);
+    if (productIndex > -1) {
+      this.rows[productIndex].amount += amount;
+    } else {
+      const price = Dinero({ amount: product.price.getAmount() });
+      const row = {
+        product,
+        amount,
+        price: product.price,
+      } as SubTransactionRow;
+      this.rows.push(row);
+    }
+  }
 
   // Filter the products by the desired criteria
   get filteredProducts() {
     if (this.searchState.searching) {
-      return this.products
-        .filter((product: Product) => product
-          .name.toLowerCase().includes(this.query.toLowerCase()));
+      return new FuzzySearch(
+        this.products, 
+        ["name", "category.name"], 
+        {caseSensitive: false, sort: true}
+      ).search(this.query);
     }
     // @ts-ignore
     const currentCategory = this.searchState.filterCategory;
@@ -155,6 +264,21 @@ export default class ProductOverview extends Vue {
       (product: Product) => product.category.id === currentCategory,
     );
   }
+
+  get filteredUsers() {
+    return new FuzzySearch(
+      this.userState.allUsers, 
+      ["firstName", "lastName", "gewisID"], 
+      {caseSensitive: false, sort: true}
+    ).search(this.userQuery).filter((v, i, a) => a.findIndex(l => v.gewisID === l.gewisID) === i);
+  }
+
+  userSelected(user: User): void {
+    this.searchState.setChargingUser(user);
+    this.searchState.setUserSearching(false);
+    // @ts-ignore
+    if(this.$refs.checkoutBar) this.$refs.checkoutBar.$emit('userSelected');
+  }
 }
 </script>
 
@@ -163,17 +287,33 @@ export default class ProductOverview extends Vue {
 @import "./src/styles/common.scss";
 @import "./src/styles/Nav.scss";
 
+@keyframes search-cursor-blink {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .product-overview {
   flex: 1;
   display: flex;
   flex-direction: row;
-  margin: 32px;
+  margin: 16px;
+  padding: 16px;
   z-index: 2;
   gap: 16px;
+  overflow: hidden;
 }
 
 .products {
   flex-grow: 1;
+  overflow: auto;
+}
+
+.users {
+  overflow: auto;
 }
 
 .product-overview-container {
@@ -246,12 +386,48 @@ export default class ProductOverview extends Vue {
 
     .fa-search {
       margin-right: 10px;
-
-      svg {
-        width: 20px;
-        height: 20px;
-      }
+      width: 20px;
+      height: 20px;
     }
+  }
+}
+
+.search-text {
+  border: 1px solid $gewis-red;
+  border-radius: $border-radius;
+  min-width: 200px;
+  display: flex;
+  flex-direction: row;
+  align-items: left;
+  justify-content: left;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 30px;
+  padding: 1rem 2rem;
+
+  .indicator {
+    content: "";
+    width: 2px;
+    height: 20px;
+    margin-top: 5px;
+    background: $bootstrap-black;
+    margin-left: 3px;
+    display: inline-block;
+    animation: search-cursor-blink 1.5s steps(2) infinite;
+  }
+
+  .fa-search {
+    margin: 4px 10px 4px 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  #search-input1, #search-input2 {
+    width: 0;
+    height: 0;
+    border: none !important;
+    outline: none !important;
+    color: rgba(0,0,0,0);
   }
 }
 
@@ -282,6 +458,12 @@ export default class ProductOverview extends Vue {
   .product-overview-container {
     border-bottom: 1px solid $bootstrap-black;
     margin-bottom: 8px;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .search-text {
+    padding: .5rem 1rem;
   }
 }
 </style>

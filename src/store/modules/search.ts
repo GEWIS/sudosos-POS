@@ -38,6 +38,9 @@ export default class SearchModule extends VuexModule {
       this.filterName = '';
       this.filterCategory = 0;
     }
+    else {
+      this.filterCategory = 1;
+    }
   }
 
   @Mutation
@@ -61,6 +64,13 @@ export default class SearchModule extends VuexModule {
   })
   updateSearching(searching: boolean) {
     this.context.commit('setSearching', searching);
+  }
+
+  @Action({
+    rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
+  })
+  updateUserSearching(searching: boolean) {
+    this.context.commit('setUserSearching', searching);
   }
 
   @Action({
