@@ -20,6 +20,8 @@ import { getModule } from 'vuex-module-decorators';
 
 @Component
 export default class SettingsComponent extends Vue {
+  @Prop() userActivity: Function;
+
   private userState = getModule(UserModule);
 
   private borrelMode: boolean = false;
@@ -58,6 +60,8 @@ export default class SettingsComponent extends Vue {
       // @ts-ignore
       document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
     }
+
+    this.userActivity(); // Indicate user activity
   }
 
   outsideClickListener(e) {
@@ -67,10 +71,10 @@ export default class SettingsComponent extends Vue {
       return;
     }
 
-    console.log("clicked outside");
-
     this.$parent.$data.showSettings = false;
     document.removeEventListener("click", this.boundedListener);
+
+    this.userActivity(); // Indicate user activity
   }
 }
 </script>
@@ -79,17 +83,18 @@ export default class SettingsComponent extends Vue {
 
   .settings-component {
     position: absolute;
-    top: -100%;
+    top: -75%;
     left: 75px;
     display: flex;
     flex-direction: column;
+    justify-content: left;
     background: white;
     border-radius: $border-radius;
     border: 1px solid $gewis-red;
     height: auto;
     gap: 16px;
     padding-bottom: 16px;
-    width: 600px;
+    width: fit-content;
 
     .header {
       background: $gewis-red;
@@ -103,12 +108,13 @@ export default class SettingsComponent extends Vue {
 
     .setting-row {
       width: fit-content;
-      font-size: 2rem;
+      display: flex;
+      font-size: 20px;
       padding: 0 16px;
 
       input[type=checkbox] {
-        height: 2rem;
-        width: 2rem;
+        height: 28px;
+        width: 28px;
       }
 
       label {

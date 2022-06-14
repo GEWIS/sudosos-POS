@@ -22,7 +22,7 @@
         <font-awesome-icon icon="sign-out-alt"/>
       </b-col>
     </b-row>
-    <products-table :items="subTransactionRows" :updateRows="updateRows"/>
+    <products-table :items="subTransactionRows" :updateRows="updateRows" :userActivity="userActivity"/>
     <b-row class="transaction-detail-row">
       <div class="total-row">
         <div class="total-text">Total</div>
@@ -73,6 +73,10 @@ export default class CheckoutBar extends Formatters {
 
   @Prop() updateRows: Function;
 
+  @Prop() loggedOut: Function;
+
+  @Prop() userActivity: Function;
+
   private userState = getModule(UserModule);
 
   private searchState = getModule(SearchModule);
@@ -110,11 +114,14 @@ export default class CheckoutBar extends Formatters {
 
   organMemberSelected(user: User): void {
     (this.$refs.checkoutButton as CheckoutButton).organMemberSelected(user);
+
+    this.userActivity(); // Indicate user activity
   }
 
   logout() {
     this.userState.reset();
     this.searchState.reset();
+    this.loggedOut();
     this.$router.push('/');
     // @ts-ignore
     document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');

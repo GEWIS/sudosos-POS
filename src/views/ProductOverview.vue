@@ -24,7 +24,7 @@
             <input type="text" id="search-input2" v-model="userQuery" @input="updateSearchFromInput" v-if="state == State.USER_SEARCH" />
           </div>
           <div class="nav-item active" v-if="state == State.USER_SEARCH" @click="orderSelf()">
-            <div class="nav-link" v-if="userState.borrelModeOrgan.organName">
+            <div class="nav-link" v-if="userState.isInBorrelMode">
               Charge no-one
             </div>
             <div class="nav-link" v-else>
@@ -57,12 +57,15 @@
           <keyboard ref="keyboard" :onChange="updateSearchFromKeyboard" :allowNumbers="state == State.USER_SEARCH"/>
         </div>
         <div class="bottom-bar" v-if="state == State.CATEGORIES">
-          <div class="options-button" id="options-button" @click="showSettings = !showSettings">
+          <div class="options-button" id="options-button" @click="toggleSettings">
             <font-awesome-icon icon="ellipsis-h"/>
           </div>
-          <settings-component v-if="showSettings" :visible="showSettings" />
+          <settings-component v-if="showSettings" :visible="showSettings" :userActivity="userActivity"/>
           <div class="search-bar" @click="openProductSearch()">
             <font-awesome-icon icon="search"/> Search...
+          </div>
+          <div class="activity-timeout" v-if="!userState.isInBorrelMode">
+            Automatically logging out in {{activityTimeoutTimeSeconds}} seconds.
           </div>
         </div>
         <div class="organ-members" v-if="state == State.ORGAN_MEMBER_SELECT">
@@ -78,7 +81,8 @@
           </div>
         </div>
       </div>
-      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch" :openPickMember="openPickMember" :updateRows="updateRows" />
+      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch" 
+        :openPickMember="openPickMember" :updateRows="updateRows" :loggedOut="loggedOut" :userActivity="userActivity"/>
     </div>
     <div class="background-logo">
 <!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
@@ -98,9 +102,7 @@ import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
 
 import { getPointOfSale } from '@/api/pointOfSale';
-import { Transaction } from '@/entities/Transaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
-import { SubTransaction } from '@/entities/SubTransaction';
 import { PointOfSale } from '@/entities/PointOfSale';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
@@ -126,7 +128,6 @@ enum State {
   },
 })
 export default class ProductOverview extends Vue {
-  // Proxy for the state, compact notation
   private searchState = getModule(SearchModule);
 
   private userState = getModule(UserModule);
@@ -149,6 +150,16 @@ export default class ProductOverview extends Vue {
 
   private query: string = '';
 
+  private activityTimeoutDelay: number = 30000;
+
+  private activityTimeoutStep: number = 1000;
+
+  private activityTimeoutHandle: number;
+
+  private activityTimeoutTimerHandle: number;
+
+  private activityTimeoutTime: number = 0;
+
   async mounted() {
     window.addEventListener('resize', () => {
       this.checkWindowSize();
@@ -161,8 +172,65 @@ export default class ProductOverview extends Vue {
         this.products.push(prod);
       });
     });
-
     this.searchState.updateFilterCategory(1);
+    this.userActivity();
+  }
+
+  get activityTimeoutTimeSeconds() {
+    return Math.floor(this.activityTimeoutTime / 1000);
+  }
+
+  userActivity() {
+    if(this.activityTimeoutHandle != undefined) {
+      clearTimeout(this.activityTimeoutHandle);
+      this.activityTimeoutHandle = undefined;
+    }
+
+    if(this.userState.isInBorrelMode) {
+      return;
+    }
+
+    this.activityTimeoutTime = this.activityTimeoutDelay;
+
+    // @ts-ignore
+    this.activityTimeoutHandle = setTimeout(() => {
+      (this.$refs.checkoutBar as CheckoutBar).logout();
+    }, this.activityTimeoutDelay);
+
+    this.activityTimeoutTimer();
+  }
+
+  activityTimeoutTimer() {
+    if(this.activityTimeoutTime <= 0) {
+      return;
+    }
+
+    if(this.activityTimeoutTimerHandle != undefined) {
+      clearTimeout(this.activityTimeoutTimerHandle);
+      this.activityTimeoutTimerHandle = undefined;
+    }
+
+    if(this.userState.isInBorrelMode) {
+      return;
+    }
+
+    // @ts-ignore
+    this.activityTimeoutTimerHandle = setTimeout(() => {
+      this.activityTimeoutTime = this.activityTimeoutTime - this.activityTimeoutStep;
+      this.activityTimeoutTimer();
+    }, this.activityTimeoutStep);
+  }
+
+  loggedOut() {
+    if(this.activityTimeoutHandle != undefined) {
+      clearTimeout(this.activityTimeoutHandle);
+      this.activityTimeoutHandle = undefined;
+    }
+
+    if(this.activityTimeoutTimerHandle != undefined) {
+      clearTimeout(this.activityTimeoutTimerHandle);
+      this.activityTimeoutTimerHandle = undefined;
+    }
   }
 
   get state() {
@@ -183,20 +251,30 @@ export default class ProductOverview extends Vue {
     this.rows = rows;
   }
 
+  toggleSettings() {
+    this.showSettings = !this.showSettings;
+
+    this.userActivity(); // Indicate user activity
+  }
+
   openProductSearch() {
     this.searchState.updateSearching(true);
     // @ts-ignore
-      this.$refs.keyboard.setInput("");
+    this.$refs.keyboard.setInput("");
 
     this.$nextTick(() => this.focusOnSearch());
+
+    this.userActivity(); // Indicate user activity
   }
 
   openUserSearch() {
     this.searchState.updateUserSearching(true);
     // @ts-ignore
-      this.$refs.keyboard.setInput("");
+    this.$refs.keyboard.setInput("");
 
     this.$nextTick(() => this.focusOnSearch());
+
+    this.userActivity(); // Indicate user activity
   }
 
   exitSearch() {
@@ -213,6 +291,8 @@ export default class ProductOverview extends Vue {
       // @ts-ignore
       this.$refs.keyboard.setInput(this.query);
     }
+
+    this.userActivity(); // Indicate user activity
   }
 
   exitBorrelModeCheckout() {
@@ -223,6 +303,8 @@ export default class ProductOverview extends Vue {
     // TODO: Improve how this is routed
     // @ts-ignore
     this.$refs.checkoutBar.$refs.checkoutButton.clearBorrelModeCheckout();
+
+    this.userActivity(); // Indicate user activity
   }
 
   focusOnSearch() {
@@ -246,6 +328,8 @@ export default class ProductOverview extends Vue {
     else if(this.state == State.USER_SEARCH) {
       this.userQuery = text;
     }
+
+    this.userActivity(); // Indicate user activity
   }
 
   updateSearchFromInput(e) {
@@ -255,6 +339,8 @@ export default class ProductOverview extends Vue {
     else if(this.state == State.USER_SEARCH) {
       this.userQuery = e.target.value;
     }
+
+    this.userActivity(); // Indicate user activity
   }
 
   clickSearchButton() {
@@ -274,6 +360,8 @@ export default class ProductOverview extends Vue {
       } as SubTransactionRow;
       this.rows.push(row);
     }
+
+    this.userActivity(); // Indicate user activity
   }
 
   // Filter the products by the desired criteria
@@ -316,6 +404,8 @@ export default class ProductOverview extends Vue {
     if(this.organMemberRequired()) {
       this.showOrganMembers = true;
     }
+
+    this.userActivity(); // Indicate user activity
   }
 
   organMemberRequired() {
@@ -331,6 +421,8 @@ export default class ProductOverview extends Vue {
     this.showOrganMembers = false;
     // @ts-ignore
     this.$refs.checkoutBar.organMemberSelected(user);
+
+    this.userActivity(); // Indicate user activity
   }
 
   openPickMember() {
@@ -592,6 +684,10 @@ $scroll-bar-width: 40px;
       width: 20px;
       height: 20px;
     }
+  }
+
+  .activity-timeout {
+    align-self: center;
   }
 }
 
