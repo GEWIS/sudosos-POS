@@ -31,9 +31,15 @@ export default class SettingsComponent extends Vue {
   @Prop() visible: boolean;
 
   mounted() {
-    if (this.userState.borrelModeOrgan.organName) {
+    if (this.userState.borrelModeOrgan && this.userState.borrelModeOrgan.organName) {
       this.chosenOrgan = this.userState.borrelModeOrgan;
       this.borrelMode = true;
+      // @ts-ignore
+      document.querySelector(':root').style.setProperty('--gewis-red', 'green');
+    }
+    else {
+      // @ts-ignore
+      document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
     }
 
     this.boundedListener = this.outsideClickListener.bind(this);
@@ -44,6 +50,13 @@ export default class SettingsComponent extends Vue {
   modeChanged() {
     if (this.borrelMode === true && this.chosenOrgan.organName !== undefined) {
       this.userState.setBorrelModeOrgan(this.chosenOrgan);
+      // @ts-ignore
+      document.querySelector(':root').style.setProperty('--gewis-red', 'green');
+    }
+    else {
+      this.userState.setBorrelModeOrgan(undefined);
+      // @ts-ignore
+      document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
     }
   }
 
@@ -53,6 +66,8 @@ export default class SettingsComponent extends Vue {
      || !this.$parent.$data.showSettings) {
       return;
     }
+
+    console.log("clicked outside");
 
     this.$parent.$data.showSettings = false;
     document.removeEventListener("click", this.boundedListener);
