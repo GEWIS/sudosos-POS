@@ -18,7 +18,7 @@
           </div>
           <div class="nav-item search-text" @click="focusOnSearch()">
             <font-awesome-icon icon="search"/>
-            <span>{{state == State.SEARCH ? query : userQuery}}</span>
+            <span class="text">{{state == State.SEARCH ? query : userQuery}}</span>
             <div class="indicator"></div>
             <input type="text" id="search-input1" v-model="query" @input="updateSearchFromInput" v-if="state == State.SEARCH" />
             <input type="text" id="search-input2" v-model="userQuery" @input="updateSearchFromInput" v-if="state == State.USER_SEARCH" />
@@ -29,12 +29,8 @@
             </div>
           </div>
         </div>
-        <main class="products" v-if="state == State.CATEGORIES || state == State.SEARCH">
+        <main class="products custom-scrollbar" v-if="state == State.CATEGORIES || state == State.SEARCH">
           <div class="product-row">
-            <b-col cols="12" class="text-center borrelmode-text"
-              v-if="userState.borrelModeOrgan.organName" @click="showSettings = true">
-              Borrelmode actief voor {{ userState.borrelModeOrgan.organName }}
-            </b-col>
             <ProductComponent
               v-for="item in filteredProducts"
               :product="item"
@@ -46,11 +42,11 @@
             </div>
           </div>
         </main>
-        <div class="users" v-if="state == State.USER_SEARCH">
+        <div class="users custom-scrollbar" v-if="state == State.USER_SEARCH">
           <div class="users-row">
             <div class="user" v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
-              <div class="user-text">{{item.firstName}} {{item.lastName}} - {{item.gewisID}}</div>
               <div class="user-button">Select</div>
+              <div class="user-text">{{item.firstName}} {{item.lastName}} - {{item.gewisID}}</div>
             </div>
           </div>
         </div>
@@ -66,7 +62,18 @@
             <font-awesome-icon icon="search"/> Search...
           </div>
         </div>
-        <organ-member-component v-if="showOrganMembers" />
+        <div class="organ-members" v-if="state == State.ORGAN_MEMBER_SELECT">
+          <div class="top-bar">
+            <div class="close-button" @click="exitPickMember()">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
+            </div>
+            <div class="title">Select a member of {{userState.borrelModeOrgan.organName}} to charge as:</div>
+          </div>
+          <div class="organ-member" v-for="user in userState.borrelModeOrgan.organMembers"
+            v-bind:key="user.id" @click="organMemberSelected(user)">
+            <span>{{ user.firstName }} {{ user.lastName }}</span>
+          </div>
+        </div>
       </div>
       <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"/>
     </div>
@@ -104,6 +111,7 @@ enum State {
   CATEGORIES,
   SEARCH,
   USER_SEARCH,
+  ORGAN_MEMBER_SELECT,
 }
 
 @Component({
@@ -157,7 +165,10 @@ export default class ProductOverview extends Vue {
   }
 
   get state() {
-    if(this.searchState.userSearching) {
+    if(this.showOrganMembers) {
+      return State.ORGAN_MEMBER_SELECT;
+    }
+    else if(this.searchState.userSearching) {
       return State.USER_SEARCH;
     }
     else if(this.searchState.searching) {
@@ -276,17 +287,33 @@ export default class ProductOverview extends Vue {
   }
 
   userSelected(user: User): void {
-    this.searchState.setChargingUser(user);
+    if(user === undefined) {
+      this.searchState.clearChargingUser();
+    }
+    else {
+      this.searchState.setChargingUser(user);
+    }
+
     this.searchState.setUserSearching(false);
-    // @ts-ignore
-    this.$refs.checkoutBar.$emit('userSelected');
+
+    if(this.userState.borrelModeOrgan && this.userState.borrelModeOrgan.organName !== undefined) {
+      console.log(this.userState.borrelModeOrgan);
+      this.showOrganMembers = true;
+    }
   }
 
   orderSelf(): void {
-    this.searchState.clearChargingUser();
-    this.searchState.setUserSearching(false);
+    this.userSelected(undefined);
+  }
+
+  organMemberSelected(user: User): void {
+    this.showOrganMembers = false;
     // @ts-ignore
-    this.$refs.checkoutBar.$emit('userSelected');
+    this.$refs.checkoutBar.organMemberSelected(user);
+  }
+
+  exitPickMember() {
+    this.showOrganMembers = false;
   }
 }
 </script>
@@ -319,6 +346,55 @@ export default class ProductOverview extends Vue {
 .products {
   flex-grow: 1;
   overflow: auto;
+  margin: 16px 0;
+}
+
+$scroll-bar-width: 40px;
+
+.custom-scrollbar {
+  scrollbar-width: $scroll-bar-width;
+
+  &::-webkit-scrollbar {
+    width: $scroll-bar-width;
+  }
+  &::-webkit-scrollbar-thumb {
+    border: 1px solid $gewis-red;
+    min-height: $scroll-bar-width;
+    background: white;
+    border-radius: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    width: $scroll-bar-width;
+    background: $gewis-red;
+  }
+  /* Buttons */
+  &::-webkit-scrollbar-button:single-button {
+    background-color: $gewis-red;
+
+    display: block;
+    background-size: 20px;
+    background-repeat: no-repeat;
+  }
+
+  /* Up */
+  &::-webkit-scrollbar-button:single-button:vertical:decrement {
+    height: 32px;
+    width: $scroll-bar-width;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-position: center 10px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(255, 255, 255)'><polygon points='50,00 0,50 100,50'/></svg>");
+  }
+
+  /* Down */
+  &::-webkit-scrollbar-button:single-button:vertical:increment {
+    height: 32px;
+    width: $scroll-bar-width;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-position: center 10px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(255, 255, 255)'><polygon points='0,0 100,0 50,50'/></svg>");
+  }
 }
 
 .users {
@@ -328,10 +404,11 @@ export default class ProductOverview extends Vue {
   flex-direction: column;
   align-items: center;
   margin: 16px 0;
-  scrollbar-width: 50px;
+  
 
   .users-row {
-    flex: 1 0 400px;
+    flex: 1 1 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -357,7 +434,61 @@ export default class ProductOverview extends Vue {
       border-radius: 5px;
       cursor: pointer;
       padding: 8px 16px;
-      margin-left: 8px;
+      margin-right: 8px;
+    }
+  }
+}
+
+.organ-members {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+
+  .top-bar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    .close-button {
+      border-radius: $border-radius;
+      background-color: $gewis-red;
+      padding: 1rem;
+      
+      svg {
+        fill: white;
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    .title {
+      flex: 1;
+      font-size: 20px;
+      text-align: center;
+    }
+  }
+
+  .organ-member {
+    flex: 1 0 30%;
+    padding: 8px 4px;
+    font-size: 20px;
+    height: 80px;
+    max-width: 33%;
+    border: 1px solid $gewis-red;
+    border-radius: $border-radius;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    span {
+      line-height: 30px;
     }
   }
 }
@@ -448,8 +579,12 @@ export default class ProductOverview extends Vue {
   justify-content: left;
   cursor: pointer;
   font-size: 20px;
-  line-height: 30px;
+  line-height: 28px;
   padding: 1rem 2rem;
+
+  .text {
+    height: 28px;
+  }
 
   .indicator {
     content: "";
@@ -489,8 +624,11 @@ export default class ProductOverview extends Vue {
 }
 
 .exit-search-button {
+  height: 62px;
+
   .nav-link {
     padding: 1rem !important;
+    height: 62px;
   }
 
   svg {

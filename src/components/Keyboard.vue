@@ -110,7 +110,7 @@ export default class Keyboard extends Vue {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50px;
+    height: 60px;
     max-width: 70px;
 
     .key-text {

@@ -37,7 +37,10 @@
         You are charging {{ searchState.chargingUser.firstName }}!
       </div>
     </b-row>
-    <checkout-button />
+    <checkout-button ref="checkoutButton" />
+    <div class="borrelmode-text" v-if="userState.borrelModeOrgan.organName != undefined">
+      Borrelmode is active for {{ userState.borrelModeOrgan.organName }}
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -105,6 +108,10 @@ export default class CheckoutBar extends Formatters {
 
   chargeOtherPerson() {
     this.openUserSearch();
+  }
+
+  organMemberSelected(user: User): void {
+    (this.$refs.checkoutButton as CheckoutButton).organMemberSelected(user);
   }
 
   logout() {
@@ -243,6 +250,7 @@ export default class CheckoutBar extends Formatters {
       }
     }
   }
+
   .charge-other-button {
     cursor: pointer;
     height: 8%;
@@ -255,6 +263,19 @@ export default class CheckoutBar extends Formatters {
       font-weight: 700;
       margin: 0;
     }
+  }
+
+  .borrelmode-text {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: white;
+    background: $gewis-red;
+    margin: 12px -16px -16px -16px;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+    padding: 8px 16px;
+    text-align: center;
   }
 }
 </style>

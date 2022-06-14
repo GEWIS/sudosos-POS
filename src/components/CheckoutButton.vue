@@ -34,21 +34,9 @@ export default class CheckoutButton extends Vue {
 
   searchState = getModule(SearchModule);
 
-  mounted() {
-    this.$parent.$parent.$on('userSelected', () => {
-      const { organName } = this.userState.borrelModeOrgan;
-      // Make sure we are in borrel mode
-      if (organName) {
-        (this.$parent.$parent as ProductOverview).showOrganMembers = true;
-      }
-    });
-
-    this.$parent.$parent.$on('organMemberSelected', (selectedMember: User) => {
-      console.error(selectedMember);
-      (this.$parent.$parent as ProductOverview).showOrganMembers = false;
-      const { chargingUser } = this.searchState;
-      this.finishTransaction(selectedMember, chargingUser, true);
-    });
+  organMemberSelected(selectedMember: User) {
+    const { chargingUser } = this.searchState;
+    this.finishTransaction(selectedMember, chargingUser, true);
   }
 
   checkout() {
