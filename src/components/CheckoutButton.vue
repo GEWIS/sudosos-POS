@@ -38,6 +38,7 @@ export default class CheckoutButton extends Vue {
     this.finishTransaction(selectedMember, this.searchState.chargingUser, true);
     this.borrelModeCheckout = false;
 
+    // TODO: Unclear that the searchState is reset after the transaction is finished
     if(this.userState.willAutomaticRestart) {
       this.searchState.setUserSearching(true);
     }
@@ -161,9 +162,13 @@ export default class CheckoutButton extends Vue {
       await postTransaction(transaction);
       this.searchState.reset();
       (this.$parent.$parent as any).rows = [];
+
       if (!borrelMode) {
         this.userState.reset();
         this.$router.push('/');
+      }
+      else if(this.userState.willAutomaticRestart) {
+        this.searchState.setUserSearching(true);
       }
     } catch (error: any) {
       // TODO: Catch error

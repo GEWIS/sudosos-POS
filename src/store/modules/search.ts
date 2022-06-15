@@ -25,7 +25,7 @@ export default class SearchModule extends VuexModule {
     this.searching = false;
     this.userSearching = false;
     this.filterName = '';
-    this.filterCategory = 0;
+    this.filterCategory = 1;
     this.chargingUser = {} as User;
   }
 

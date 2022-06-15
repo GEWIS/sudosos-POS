@@ -427,6 +427,7 @@ export default class ProductOverview extends Vue {
 
   organMemberSelected(user: User): void {
     this.showOrganMembers = false;
+    this.userQuery = "";
     // @ts-ignore
     this.$refs.checkoutBar.organMemberSelected(user);
   }
