@@ -1,8 +1,10 @@
 <template>
   <b-row class="checkout-button"
-    :class="{'checking-out': checkingOut}"
+    :class="{'checking-out': checkingOut, 'unfinished': unfinished}"
     @click="buttonClicked">
-    <p>{{ buttonText }}</p>
+    <font-awesome-icon icon="lock" v-if="unfinished" />
+    <p v-if="unfinished">Charge someone</p>
+    <p v-else>{{ buttonText }}</p>
   </b-row>
 </template>
 <script lang="ts">
@@ -42,6 +44,10 @@ export default class CheckoutButton extends Vue {
     if(this.userState.willAutomaticRestart) {
       this.searchState.setUserSearching(true);
     }
+  }
+
+  get unfinished(): boolean {
+    return this.userState.isInBorrelMode && !this.searchState.isChargingUser;
   }
 
   checkout() {
@@ -184,14 +190,11 @@ export default class CheckoutButton extends Vue {
   }
 
   buttonClicked() {
-    const { organName } = this.userState.borrelModeOrgan;
-
     // Borrelmode checkout
-    if (organName && this.searchState.isChargingUser) {
+    if (this.userState.isInBorrelMode && !this.searchState.isChargingUser) {
+      return;
+    } else if (this.userState.isInBorrelMode) {
       this.openPickMember();
-    } else if (organName) {
-      this.searchState.setUserSearching(true);
-      this.borrelModeCheckout = true;
     } else if (this.checkingOut) {
       clearTimeout(this.timeout);
       this.countdown = 3;
@@ -215,6 +218,17 @@ export default class CheckoutButton extends Vue {
   justify-content: center;
   align-items: center;
   border-radius: $border-radius;
+
+  svg {
+    color: #525659;
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+  }
+
+  &.unfinished {
+    background-color: lightgray;
+  }
 
   &.checking-out {
     background-color: #ed5a5a;
