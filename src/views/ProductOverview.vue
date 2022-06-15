@@ -195,6 +195,10 @@ export default class ProductOverview extends Vue {
       this.userActivity();
     })
 
+    document.addEventListener('contextmenu', event =>  {
+      event.preventDefault()
+    });
+
     this.userActivity();
   }
 
@@ -285,16 +289,12 @@ export default class ProductOverview extends Vue {
     this.searchState.updateSearching(true);
     // @ts-ignore
     this.$refs.keyboard.setInput("");
-
-    this.$nextTick(() => this.focusOnSearch());
   }
 
   openUserSearch() {
     this.searchState.updateUserSearching(true);
     // @ts-ignore
     this.$refs.keyboard.setInput("");
-
-    this.$nextTick(() => this.focusOnSearch());
   }
 
   exitSearch() {

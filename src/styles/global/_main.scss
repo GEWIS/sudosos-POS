@@ -1,5 +1,11 @@
 @import "variables.scss";
 
+@media (pointer:coarse) {
+  html * {
+    cursor: none !important;
+  }
+}
+
 $primary: rgba(212, 0, 0, 1) !default;
 $secondary: $gewis-grey !default;
 $success: $gewis-green !default;
