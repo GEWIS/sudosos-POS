@@ -23,8 +23,6 @@ import TransactionModule from '@/store/modules/transactions';
 export default class ProductsTableRow extends Formatters {
   @Prop() updateRows: Function;
 
-  @Prop() userActivity: Function;
-
   @Prop() item!: SubTransactionRow;
 
   @Prop() rows: SubTransactionRow[];
@@ -72,7 +70,6 @@ export default class ProductsTableRow extends Formatters {
 
   increaseItem() {
     this.amount += 1;
-    this.userActivity(); // Indicate user activity
   }
 
   decreaseItem() {
@@ -81,7 +78,6 @@ export default class ProductsTableRow extends Formatters {
     } else {
       this.deleteItem();
     }
-    this.userActivity(); // Indicate user activity
   }
 
   stopHold() {

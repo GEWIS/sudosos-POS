@@ -1,6 +1,6 @@
 <template>
   <div class="products-table-container">
-    <products-table-row v-for="item in items" :key="item.product.id" :item="item" :rows="items" :updateRows="updateRows" :userActivity="userActivity"/>
+    <products-table-row v-for="item in items" :key="item.product.id" :item="item" :rows="items" :updateRows="updateRows"/>
   </div>
 </template>
 <script lang="ts">
@@ -21,7 +21,5 @@ export default class ProductsTable extends Vue {
   @Prop() items!: SubTransactionRow[];
 
   @Prop() updateRows: Function;
-
-  @Prop() userActivity: Function;
 }
 </script>

@@ -20,7 +20,6 @@ import { getModule } from 'vuex-module-decorators';
 
 @Component
 export default class SettingsComponent extends Vue {
-  @Prop() userActivity: Function;
 
   private userState = getModule(UserModule);
 
@@ -60,8 +59,6 @@ export default class SettingsComponent extends Vue {
       // @ts-ignore
       document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
     }
-
-    this.userActivity(); // Indicate user activity
   }
 
   outsideClickListener(e) {
@@ -73,8 +70,6 @@ export default class SettingsComponent extends Vue {
 
     this.$parent.$data.showSettings = false;
     document.removeEventListener("click", this.boundedListener);
-
-    this.userActivity(); // Indicate user activity
   }
 }
 </script>

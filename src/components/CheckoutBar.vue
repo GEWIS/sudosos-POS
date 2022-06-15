@@ -22,7 +22,7 @@
         <font-awesome-icon icon="sign-out-alt"/>
       </b-col>
     </b-row>
-    <products-table :items="subTransactionRows" :updateRows="updateRows" :userActivity="userActivity"/>
+    <products-table :items="subTransactionRows" :updateRows="updateRows"/>
     <b-row class="transaction-detail-row">
       <div class="total-row">
         <div class="total-text">Total</div>
@@ -75,8 +75,6 @@ export default class CheckoutBar extends Formatters {
 
   @Prop() loggedOut: Function;
 
-  @Prop() userActivity: Function;
-
   private userState = getModule(UserModule);
 
   private searchState = getModule(SearchModule);
@@ -114,8 +112,6 @@ export default class CheckoutBar extends Formatters {
 
   organMemberSelected(user: User): void {
     (this.$refs.checkoutButton as CheckoutButton).organMemberSelected(user);
-
-    this.userActivity(); // Indicate user activity
   }
 
   logout() {

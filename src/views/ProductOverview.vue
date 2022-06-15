@@ -60,7 +60,7 @@
           <div class="options-button" id="options-button" @click="toggleSettings">
             <font-awesome-icon icon="ellipsis-h"/>
           </div>
-          <settings-component v-if="showSettings" :visible="showSettings" :userActivity="userActivity"/>
+          <settings-component v-if="showSettings" :visible="showSettings"/>
           <div class="search-bar" @click="openProductSearch()">
             <font-awesome-icon icon="search"/> Search...
           </div>
@@ -85,7 +85,7 @@
         </div>
       </div>
       <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch" 
-        :openPickMember="openPickMember" :updateRows="updateRows" :loggedOut="loggedOut" :userActivity="userActivity"/>
+        :openPickMember="openPickMember" :updateRows="updateRows" :loggedOut="loggedOut"/>
     </div>
     <div class="background-logo">
 <!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
@@ -178,7 +178,6 @@ export default class ProductOverview extends Vue {
       });
     });
     this.searchState.updateFilterCategory(1);
-    this.userActivity();
 
     // @ts-ignore
     this.$refs.checkoutBar.$refs.checkoutButton.$watch('checkingOut', value => {
@@ -190,7 +189,13 @@ export default class ProductOverview extends Vue {
       else {
         this.userActivity();
       }
+    });
+
+    window.addEventListener("mouseup", () => {
+      this.userActivity();
     })
+
+    this.userActivity();
   }
 
   get activityTimeoutTimeSeconds() {
@@ -274,8 +279,6 @@ export default class ProductOverview extends Vue {
 
   toggleSettings() {
     this.showSettings = !this.showSettings;
-
-    this.userActivity(); // Indicate user activity
   }
 
   openProductSearch() {
@@ -284,8 +287,6 @@ export default class ProductOverview extends Vue {
     this.$refs.keyboard.setInput("");
 
     this.$nextTick(() => this.focusOnSearch());
-
-    this.userActivity(); // Indicate user activity
   }
 
   openUserSearch() {
@@ -294,8 +295,6 @@ export default class ProductOverview extends Vue {
     this.$refs.keyboard.setInput("");
 
     this.$nextTick(() => this.focusOnSearch());
-
-    this.userActivity(); // Indicate user activity
   }
 
   exitSearch() {
@@ -312,8 +311,6 @@ export default class ProductOverview extends Vue {
       // @ts-ignore
       this.$refs.keyboard.setInput(this.query);
     }
-
-    this.userActivity(); // Indicate user activity
   }
 
   exitBorrelModeCheckout() {
@@ -324,8 +321,6 @@ export default class ProductOverview extends Vue {
     // TODO: Improve how this is routed
     // @ts-ignore
     this.$refs.checkoutBar.$refs.checkoutButton.clearBorrelModeCheckout();
-
-    this.userActivity(); // Indicate user activity
   }
 
   focusOnSearch() {
@@ -349,8 +344,6 @@ export default class ProductOverview extends Vue {
     else if(this.state == State.USER_SEARCH) {
       this.userQuery = text;
     }
-
-    this.userActivity(); // Indicate user activity
   }
 
   updateSearchFromInput(e) {
@@ -360,8 +353,6 @@ export default class ProductOverview extends Vue {
     else if(this.state == State.USER_SEARCH) {
       this.userQuery = e.target.value;
     }
-
-    this.userActivity(); // Indicate user activity
   }
 
   clickSearchButton() {
@@ -381,8 +372,6 @@ export default class ProductOverview extends Vue {
       } as SubTransactionRow;
       this.rows.push(row);
     }
-
-    this.userActivity(); // Indicate user activity
   }
 
   // Filter the products by the desired criteria
@@ -425,8 +414,6 @@ export default class ProductOverview extends Vue {
     if(this.organMemberRequired()) {
       this.showOrganMembers = true;
     }
-
-    this.userActivity(); // Indicate user activity
   }
 
   organMemberRequired() {
@@ -442,8 +429,6 @@ export default class ProductOverview extends Vue {
     this.showOrganMembers = false;
     // @ts-ignore
     this.$refs.checkoutBar.organMemberSelected(user);
-
-    this.userActivity(); // Indicate user activity
   }
 
   openPickMember() {
@@ -780,8 +765,11 @@ $scroll-bar-width: 40px;
   height: 62px;
 
   .nav-link {
-    padding: 1rem !important;
+    padding: 16px !important;
     height: 62px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   svg {
