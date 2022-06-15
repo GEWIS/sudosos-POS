@@ -27,8 +27,14 @@ export default class UserModule extends VuexModule {
 
   borrelModeOrgan: Organ = {} as Organ;
 
+  automaticRestart: boolean = true;
+
   get isInBorrelMode() {
     return this.borrelModeOrgan.organName != undefined;
+  }
+
+  get willAutomaticRestart() {
+    return this.isInBorrelMode && this.automaticRestart;
   }
 
   @Mutation
@@ -44,6 +50,11 @@ export default class UserModule extends VuexModule {
   @Mutation
   setBorrelModeOrgan(organ: Organ) {
     this.borrelModeOrgan = organ;
+  }
+
+  @Mutation
+  setAutomaticRestart(value: boolean) {
+    this.automaticRestart = value;
   }
 
   @Mutation

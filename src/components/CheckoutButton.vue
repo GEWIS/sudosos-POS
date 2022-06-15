@@ -37,6 +37,10 @@ export default class CheckoutButton extends Vue {
   organMemberSelected(selectedMember: User) {
     this.finishTransaction(selectedMember, this.searchState.chargingUser, true);
     this.borrelModeCheckout = false;
+
+    if(this.userState.willAutomaticRestart) {
+      this.searchState.setUserSearching(true);
+    }
   }
 
   checkout() {

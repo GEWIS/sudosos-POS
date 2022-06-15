@@ -1,14 +1,19 @@
 <template>
   <div class="settings-component pos-card" id="settings-component">
     <div class="header">Settings</div>
-    <div class="setting-row">
+    <div class="setting-row" v-if="userState.allOrgans.length > 0">
       <input type="checkbox" id="borrelmode-checkbox" v-model="borrelMode" @change="modeChanged">
       <label for="borrelmode-checkbox">Activate borrelmode for</label>
-      <select v-model="chosenOrgan" name="organselect" @change="modeChanged">
+      <select v-model="chosenOrgan" name="organselect" @model="modeChanged" v-if="userState.allOrgans.length > 1">
         <option v-for="organ in userState.allOrgans" v-bind:key="organ.organName" :value="organ">
           {{ organ.organName }}
         </option>
       </select>
+      <div v-else>{{ userState.allOrgans[0].organName }}</div>
+    </div>
+    <div class="setting-row" v-if="userState.isInBorrelMode">
+      <input type="checkbox" id="restart-checkbox" v-model="automaticRestart" @change="automaticRestartChange">
+      <label for="restart-checkbox">Pick new user to charge after checkout</label>
     </div>
   </div>
 </template>
@@ -29,6 +34,8 @@ export default class SettingsComponent extends Vue {
 
   private boundedListener: any;
 
+  private automaticRestart: boolean = this.userState.automaticRestart;
+
   @Prop() visible: boolean;
 
   mounted() {
@@ -48,7 +55,19 @@ export default class SettingsComponent extends Vue {
     setTimeout(() => document.addEventListener("click", this.boundedListener), 1);
   }
 
+  updated() {
+    (this.$el as HTMLElement).style.top = `-${this.$el.clientHeight-62}px`;
+  }
+
+  automaticRestartChange() {
+    this.userState.setAutomaticRestart(this.automaticRestart);
+  }
+
   modeChanged() {
+    if(this.userState.allOrgans.length == 1) {
+      this.chosenOrgan = this.userState.allOrgans[0];
+    }
+
     if (this.borrelMode === true && this.chosenOrgan.organName !== undefined) {
       this.userState.setBorrelModeOrgan(this.chosenOrgan);
       // @ts-ignore
@@ -113,7 +132,7 @@ export default class SettingsComponent extends Vue {
       }
 
       label {
-        margin: 0 16px;
+        margin: 0 8px 0 16px;
       }
     }
   }
