@@ -10,6 +10,7 @@ import { getOrganMembers, getUsers } from '@/api/users';
 import UserTransformer from '@/transformers/UserTransformer';
 import { NFCDevice } from '@/entities/NFCDevice';
 import jwtDecode from 'jwt-decode';
+import { BasePointOfSale } from '@/entities/PointOfSale';
 
 @Module({
   dynamic: true, namespaced: true, store, name: 'UserModule',
@@ -19,42 +20,24 @@ export default class UserModule extends VuexModule {
 
   userRoles: string[] = [];
 
+  userPOSs: BasePointOfSale[] = [];
+
   allUsers: User[] = [];
 
   allOrgans: Organ[] = [];
 
   permissions: UserPermissions = {} as UserPermissions;
 
-  borrelModeOrgan: Organ = {} as Organ;
-
   automaticRestart: boolean = true;
-
-  get isInBorrelMode() {
-    return this.borrelModeOrgan.organName != undefined;
-  }
-
-  get willAutomaticRestart() {
-    return this.isInBorrelMode && this.automaticRestart;
-  }
 
   @Mutation
   reset() {
     this.user = {} as User;
     this.userRoles = [];
+    this.userPOSs = [];
     this.allUsers = [];
     this.allOrgans = [];
     this.permissions = {} as UserPermissions;
-    this.borrelModeOrgan = {} as Organ;
-  }
-
-  @Mutation
-  setBorrelModeOrgan(organ: Organ) {
-    this.borrelModeOrgan = organ;
-  }
-
-  @Mutation
-  setAutomaticRestart(value: boolean) {
-    this.automaticRestart = value;
   }
 
   @Mutation
@@ -68,6 +51,11 @@ export default class UserModule extends VuexModule {
     allUsers.forEach((user: User) => {
       user.gewisID = Math.round(Math.random() * 10000);
     });
+  }
+
+  @Mutation
+  setUserPOSs(pointsOfSale: BasePointOfSale[]) {
+    this.userPOSs = pointsOfSale.sort((a, b) => (a.name.localeCompare(b.name)));
   }
 
   @Mutation
@@ -237,6 +225,9 @@ export default class UserModule extends VuexModule {
       APIHelper.getResource('balances').then((saldoResponse) => {
         this.context.commit('updateSaldo', saldoResponse);
       });
+      APIHelper.getResource(`users/${token.user.id}/pointsofsale`).then((pointOfSaleResponse) => {
+        this.context.commit('setUserPOSs', pointOfSaleResponse.records);
+      });
     }
   }
 
@@ -257,8 +248,10 @@ export default class UserModule extends VuexModule {
   })
   async fetchAllOrganMembers() {
     // TODO: Replace with actual fetch code
-    this.allOrgans.forEach(async (organ) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const organ of this.allOrgans) {
+      // eslint-disable-next-line no-await-in-loop
       organ.organMembers = await getOrganMembers(organ.organUser.id);
-    });
+    }
   }
 }

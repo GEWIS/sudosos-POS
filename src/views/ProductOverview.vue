@@ -2,14 +2,14 @@
   <div class="wrapper">
     <div class="product-overview">
       <div class="product-overview-container shadow">
-        <b-nav v-if="state == State.CATEGORIES"
+        <b-nav v-if="state === State.CATEGORIES"
           class="align-items-center">
           <home-menu-button :name="'Alcoholic drinks'" :category="1" />
           <home-menu-button :name="'Non-alcoholic'" :category="2"/>
           <home-menu-button :name="'Snacks'" :category="3"/>
           <home-menu-button :name="'Other'" :category="4" />
         </b-nav>
-        <div v-if="state == State.SEARCH || state == State.USER_SEARCH"
+        <div v-if="state === State.SEARCH || state === State.USER_SEARCH"
           class="nav align-items-center">
           <div class="nav-item active exit-search-button" @click="exitSearch()">
             <div class="nav-link">
@@ -18,13 +18,24 @@
           </div>
           <div class="nav-item search-text" @click="focusOnSearch()">
             <font-awesome-icon icon="search"/>
-            <span class="text">{{state == State.SEARCH ? query : userQuery}}</span>
+            <span class="text">{{state === State.SEARCH ? query : userQuery}}</span>
             <div class="indicator"></div>
-            <input type="text" id="search-input1" v-model="query" @input="updateSearchFromInput" v-if="state == State.SEARCH" />
-            <input type="text" id="search-input2" v-model="userQuery" @input="updateSearchFromInput" v-if="state == State.USER_SEARCH" />
+            <input
+              type="text" id="search-input1"
+              v-model="query"
+              @input="updateSearchFromInput"
+              v-if="state === State.SEARCH"
+            />
+            <input
+              type="text"
+              id="search-input2"
+              v-model="userQuery"
+              @input="updateSearchFromInput"
+              v-if="state === State.USER_SEARCH"
+            />
           </div>
-          <div class="nav-item active" v-if="state == State.USER_SEARCH" @click="orderSelf()">
-            <div class="nav-link" v-if="userState.isInBorrelMode">
+          <div class="nav-item active" v-if="state === State.USER_SEARCH" @click="orderSelf()">
+            <div class="nav-link" v-if="!this.pointOfSaleState.pointOfSale.useAuthentication">
               Charge no-one
             </div>
             <div class="nav-link" v-else>
@@ -32,31 +43,43 @@
             </div>
           </div>
         </div>
-        <main class="products custom-scrollbar" v-if="state == State.CATEGORIES || state == State.SEARCH">
+        <main
+          class="products custom-scrollbar"
+          v-if="state === State.CATEGORIES || state === State.SEARCH"
+        >
           <div class="product-row">
             <ProductComponent
               v-for="item in filteredProducts"
               :product="item"
               :key="`${item.id}-${item.containerId}`"
             />
-            <div class="no-components" v-if="filteredProducts.length == 0">
+            <div class="no-components" v-if="filteredProducts.length === 0">
               <div v-if="searchState.searching">There are no products for this query.</div>
               <div v-else>There are no products in this category.</div>
             </div>
           </div>
         </main>
-        <div class="users custom-scrollbar" v-if="state == State.USER_SEARCH">
+        <div class="users custom-scrollbar" v-if="state === State.USER_SEARCH">
           <div class="users-row">
-            <div class="user" v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
+            <div
+              class="user"
+              v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
               <div class="user-button">Select</div>
               <div class="user-text">{{item.firstName}} {{item.lastName}} - {{item.gewisID}}</div>
             </div>
           </div>
         </div>
-        <div class="keyboard-container" v-show="state == State.SEARCH || state == State.USER_SEARCH">
-          <keyboard ref="keyboard" :onChange="updateSearchFromKeyboard" :allowNumbers="state == State.USER_SEARCH"/>
+        <div
+          class="keyboard-container"
+          v-show="state === State.SEARCH || state === State.USER_SEARCH"
+        >
+          <keyboard
+            ref="keyboard"
+            :onChange="updateSearchFromKeyboard"
+            :allowNumbers="state === State.USER_SEARCH"
+          />
         </div>
-        <div class="bottom-bar" v-if="state == State.CATEGORIES">
+        <div class="bottom-bar" v-if="state === State.CATEGORIES">
           <div class="options-button" id="options-button" @click="toggleSettings">
             <font-awesome-icon icon="ellipsis-h"/>
           </div>
@@ -64,27 +87,35 @@
           <div class="search-bar" @click="openProductSearch()">
             <font-awesome-icon icon="search"/> Search...
           </div>
-          <div class="activity-timeout" v-if="!userState.isInBorrelMode && !checkingOut">
+          <div
+            class="activity-timeout"
+            v-if="this.pointOfSaleState.pointOfSale.useAuthentication && !checkingOut"
+          >
             Automatically logging out in {{activityTimeoutTimeSeconds}} seconds.
           </div>
-          <div class="activity-timeout" v-else-if="!userState.isInBorrelMode">
+          <div
+            class="activity-timeout"
+            v-else-if="this.pointOfSaleState.pointOfSale.useAuthentication"
+          >
             No automatic logout during checkout.
           </div>
         </div>
-        <div class="organ-members" v-if="state == State.ORGAN_MEMBER_SELECT">
+        <div class="organ-members" v-if="state === State.ORGAN_MEMBER_SELECT">
           <div class="top-bar">
             <div class="close-button" @click="exitPickMember()">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
             </div>
-            <div class="title">Select a member of {{userState.borrelModeOrgan.organName}} to charge as:</div>
+            <div class="title">
+              Select a member of {{pointOfSaleState.pointOfSale.owner.name}} to charge as:
+            </div>
           </div>
-          <div class="organ-member" v-for="user in userState.borrelModeOrgan.organMembers"
+          <div class="organ-member" v-for="user in pointOfSaleState.pointOfSaleOwners"
             v-bind:key="user.id" @click="organMemberSelected(user)">
             <span>{{ user.firstName }} {{ user.lastName }}</span>
           </div>
         </div>
       </div>
-      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch" 
+      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"
         :openPickMember="openPickMember" :updateRows="updateRows" :loggedOut="loggedOut"/>
     </div>
     <div class="background-logo">
@@ -97,7 +128,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Dinero from 'dinero.js';
 import { getModule } from 'vuex-module-decorators';
-import { Product } from '@/entities/Product';
+import { Product, ProductInContainer } from '@/entities/Product';
 import SettingsComponent from '@/components/SettingsComponent.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
 import HomeMenuButton from '@/components/HomeMenuButton.vue';
@@ -106,13 +137,14 @@ import SearchModule from '@/store/modules/search';
 
 import { getPointOfSale } from '@/api/pointOfSale';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
-import { PointOfSale } from '@/entities/PointOfSale';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 
 import FuzzySearch from 'fuzzy-search';
 import Keyboard from '@/components/Keyboard.vue';
 import 'simple-keyboard/build/css/index.css';
+import PointOfSaleModule from '@/store/modules/point-of-sale';
+import { Container } from '@/entities/Container';
 
 enum State {
   CATEGORIES,
@@ -135,11 +167,9 @@ export default class ProductOverview extends Vue {
 
   private userState = getModule(UserModule);
 
-  private products: Product[] = [];
+  private pointOfSaleState = getModule(PointOfSaleModule);
 
   public rows: SubTransactionRow[] = [];
-
-  public pointOfSale: PointOfSale | null = null;
 
   public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
@@ -169,37 +199,43 @@ export default class ProductOverview extends Vue {
     window.addEventListener('resize', () => {
       this.checkWindowSize();
     });
-    this.pointOfSale = await getPointOfSale(1);
-    this.pointOfSale.containers.forEach((con) => {
-      const containerId = con.id;
-      (con as any).products.forEach((prod: any) => {
-        prod.containerId = containerId;
-        this.products.push(prod);
-      });
-    });
+    this.pointOfSaleState.setPointOfSale(await getPointOfSale(1));
     this.searchState.updateFilterCategory(1);
 
     // @ts-ignore
-    this.$refs.checkoutBar.$refs.checkoutButton.$watch('checkingOut', value => {
+    this.$refs.checkoutBar.$refs.checkoutButton.$watch('checkingOut', (value) => {
       this.checkingOut = value;
 
-      if(value) {
+      if (value) {
         this.clearTimeouts();
-      }
-      else {
+      } else {
         this.userActivity();
       }
     });
 
-    window.addEventListener("mouseup", () => {
+    window.addEventListener('mouseup', () => {
       this.userActivity();
-    })
+    });
 
-    document.addEventListener('contextmenu', event =>  {
-      event.preventDefault()
+    document.addEventListener('contextmenu', (event) => {
+      event.preventDefault();
     });
 
     this.userActivity();
+  }
+
+  get products(): ProductInContainer[] {
+    const products: ProductInContainer[] = [];
+    if (this.pointOfSaleState.pointOfSale.containers) {
+      this.pointOfSaleState.pointOfSale.containers.forEach((con) => {
+        const containerId = con.id;
+        (con as any as Container).products.forEach((prod: ProductInContainer) => {
+          prod.containerId = containerId;
+          products.push(prod);
+        });
+      });
+    }
+    return products;
   }
 
   get activityTimeoutTimeSeconds() {
@@ -207,12 +243,12 @@ export default class ProductOverview extends Vue {
   }
 
   userActivity() {
-    if(this.activityTimeoutHandle != undefined) {
+    if (this.activityTimeoutHandle !== undefined) {
       clearTimeout(this.activityTimeoutHandle);
       this.activityTimeoutHandle = undefined;
     }
 
-    if(this.userState.isInBorrelMode) {
+    if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
       return;
     }
 
@@ -227,22 +263,22 @@ export default class ProductOverview extends Vue {
   }
 
   activityTimeoutTimer() {
-    if(this.activityTimeoutTime <= 0) {
+    if (this.activityTimeoutTime <= 0) {
       return;
     }
 
-    if(this.activityTimeoutTimerHandle != undefined) {
+    if (this.activityTimeoutTimerHandle !== undefined) {
       clearTimeout(this.activityTimeoutTimerHandle);
       this.activityTimeoutTimerHandle = undefined;
     }
 
-    if(this.userState.isInBorrelMode) {
+    if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
       return;
     }
 
     // @ts-ignore
     this.activityTimeoutTimerHandle = setTimeout(() => {
-      this.activityTimeoutTime = this.activityTimeoutTime - this.activityTimeoutStep;
+      this.activityTimeoutTime -= this.activityTimeoutStep;
       this.activityTimeoutTimer();
     }, this.activityTimeoutStep);
   }
@@ -252,28 +288,28 @@ export default class ProductOverview extends Vue {
   }
 
   clearTimeouts() {
-    if(this.activityTimeoutHandle != undefined) {
+    if (this.activityTimeoutHandle !== undefined) {
       clearTimeout(this.activityTimeoutHandle);
       this.activityTimeoutHandle = undefined;
     }
 
-    if(this.activityTimeoutTimerHandle != undefined) {
+    if (this.activityTimeoutTimerHandle !== undefined) {
       clearTimeout(this.activityTimeoutTimerHandle);
       this.activityTimeoutTimerHandle = undefined;
     }
   }
 
   get state() {
-    if(this.showOrganMembers) {
+    if (this.showOrganMembers) {
       return State.ORGAN_MEMBER_SELECT;
     }
-    else if(this.searchState.userSearching) {
+    if (this.searchState.userSearching) {
       return State.USER_SEARCH;
     }
-    else if(this.searchState.searching) {
+    if (this.searchState.searching) {
       return State.SEARCH;
     }
-    
+
     return State.CATEGORIES;
   }
 
@@ -288,33 +324,32 @@ export default class ProductOverview extends Vue {
   openProductSearch() {
     this.searchState.updateSearching(true);
     // @ts-ignore
-    this.$refs.keyboard.setInput("");
+    this.$refs.keyboard.setInput('');
   }
 
   openUserSearch() {
     this.searchState.updateUserSearching(true);
     // @ts-ignore
-    this.$refs.keyboard.setInput("");
+    this.$refs.keyboard.setInput('');
   }
 
   exitSearch() {
-    if(this.state == State.SEARCH) {
+    if (this.state === State.SEARCH) {
       this.searchState.updateSearching(false);
-    }
-    else if(this.state == State.USER_SEARCH) {
+    } else if (this.state === State.USER_SEARCH) {
       this.searchState.updateUserSearching(false);
 
       this.exitBorrelModeCheckout();
     }
 
-    if(this.state == State.SEARCH) {
+    if (this.state === State.SEARCH) {
       // @ts-ignore
       this.$refs.keyboard.setInput(this.query);
     }
   }
 
   exitBorrelModeCheckout() {
-    if(this.userState.borrelModeOrgan.organName == undefined) {
+    if (this.pointOfSaleState.pointOfSale.useAuthentication) {
       return;
     }
 
@@ -324,12 +359,10 @@ export default class ProductOverview extends Vue {
   }
 
   focusOnSearch() {
-    if(this.state == State.SEARCH) {
-      document.getElementById("search-input1").focus();
-      
-    }
-    else if(this.state == State.USER_SEARCH) {
-      document.getElementById("search-input2").focus();
+    if (this.state === State.SEARCH) {
+      document.getElementById('search-input1').focus();
+    } else if (this.state === State.USER_SEARCH) {
+      document.getElementById('search-input2').focus();
     }
   }
 
@@ -338,19 +371,17 @@ export default class ProductOverview extends Vue {
   }
 
   updateSearchFromKeyboard(text) {
-    if(this.state == State.SEARCH) {
+    if (this.state === State.SEARCH) {
       this.query = text;
-    }
-    else if(this.state == State.USER_SEARCH) {
+    } else if (this.state === State.USER_SEARCH) {
       this.userQuery = text;
     }
   }
 
   updateSearchFromInput(e) {
-    if(this.state == State.SEARCH) {
+    if (this.state === State.SEARCH) {
       this.query = e.target.value;
-    }
-    else if(this.state == State.USER_SEARCH) {
+    } else if (this.state === State.USER_SEARCH) {
       this.userQuery = e.target.value;
     }
   }
@@ -375,50 +406,51 @@ export default class ProductOverview extends Vue {
   }
 
   // Filter the products by the desired criteria
-  get filteredProducts() {
+  get filteredProducts(): ProductInContainer[] {
+    const { products } = this;
     if (this.searchState.searching) {
       return new FuzzySearch(
-        this.products, 
-        ["name", "category.name"], 
-        {caseSensitive: false, sort: true}
+        products,
+        ['name', 'category.name'],
+        { caseSensitive: false, sort: true },
       ).search(this.query);
     }
     // @ts-ignore
     const currentCategory = this.searchState.filterCategory;
     if (currentCategory === 0) {
-      return this.products;
+      return products;
     }
-    return this.products.filter(
+    return products.filter(
       (product: Product) => product.category.id === currentCategory,
     );
   }
 
   get filteredUsers() {
     return new FuzzySearch(
-      this.userState.allUsers, 
-      ["firstName", "lastName", "gewisID"], 
-      {caseSensitive: false, sort: true}
-    ).search(this.userQuery).filter((v, i, a) => a.findIndex(l => v.gewisID === l.gewisID) === i);
+      this.userState.allUsers,
+      ['firstName', 'lastName', 'gewisID'],
+      { caseSensitive: false, sort: true },
+    ).search(this.userQuery).filter((v, i, a) => a.findIndex((l) => v.gewisID === l.gewisID) === i);
   }
 
   userSelected(user: User): void {
-    if(user === undefined) {
+    if (user === undefined) {
       this.searchState.clearChargingUser();
-    }
-    else {
+    } else {
       this.searchState.setChargingUser(user);
     }
 
     this.searchState.setUserSearching(false);
 
-    if(this.organMemberRequired()) {
+    if (this.organMemberRequired()) {
       this.showOrganMembers = true;
     }
   }
 
   organMemberRequired() {
     // @ts-ignore
-    return this.userState.borrelModeOrgan.organName && this.$refs.checkoutBar.$refs.checkoutButton.isBorrelModeCheckout();
+    return this.$refs.checkoutBar.$refs.checkoutButton.isBorrelModeCheckout()
+      && !this.pointOfSaleState.pointOfSale.useAuthentication;
   }
 
   orderSelf(): void {
@@ -427,7 +459,7 @@ export default class ProductOverview extends Vue {
 
   organMemberSelected(user: User): void {
     this.showOrganMembers = false;
-    this.userQuery = "";
+    this.userQuery = '';
     // @ts-ignore
     this.$refs.checkoutBar.organMemberSelected(user);
   }
@@ -528,7 +560,6 @@ $scroll-bar-width: 40px;
   flex-direction: column;
   align-items: center;
   margin: 16px 0;
-  
 
   .users-row {
     flex: 1 1 100%;
@@ -583,7 +614,7 @@ $scroll-bar-width: 40px;
       border-radius: $border-radius;
       background-color: $gewis-red;
       padding: 1rem;
-      
+
       svg {
         fill: white;
         width: 30px;

@@ -36,6 +36,7 @@
     "vuex-module-decorators": "^1.0.1"
   },
   "devDependencies": {
+    "@types/fuzzy-search": "^2.1.2",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-router": "^4.1.0",

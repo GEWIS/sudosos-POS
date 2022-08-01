@@ -16,3 +16,7 @@ export interface Product extends BaseProduct {
   alcoholPercentage: number;
   updatePending?: boolean;
 }
+
+export interface ProductInContainer extends Product {
+  containerId?: number;
+}

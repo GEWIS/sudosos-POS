@@ -1,12 +1,12 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
+import VueRouter, { RouteConfig } from 'vue-router';
 import Home from '../views/Home.vue';
 import ProductOverview from '../views/ProductOverview.vue';
 import Login from '../views/Login.vue';
 
 Vue.use(VueRouter);
 
-const routes = [
+const routes: RouteConfig[] = [
   {
     path: '/productOverview',
     name: 'productOverview',

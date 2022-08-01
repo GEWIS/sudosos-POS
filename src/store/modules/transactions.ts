@@ -21,6 +21,13 @@ export default class TransactionModule extends VuexModule {
   currentTransaction: Transaction = {} as Transaction;
 
   @Mutation
+  reset() {
+    this.transactions = [];
+    this.currentTransaction = {} as Transaction;
+    this.posTransactions = [];
+  }
+
+  @Mutation
   addProduct({ product, amount } : {product: Product, amount: number}) {
     // First, find if there is already a relevant subtransaction
     let subTrans = this.currentTransaction.subTransactions

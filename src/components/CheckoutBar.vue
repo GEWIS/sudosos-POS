@@ -5,7 +5,7 @@
           Order for
       </b-col>
       <b-col class="user-button" @click="chargeOtherPerson">
-        <div v-if="!searchState.isChargingUser && userState.isInBorrelMode">
+        <div v-if="!searchState.isChargingUser && !pointOfSaleState.pointOfSale.useAuthentication">
           no one
         </div>
         <div v-else-if="!searchState.isChargingUser">
@@ -18,7 +18,12 @@
         <font-awesome-icon icon="angle-down"/>
         </div>
       </b-col>
-      <b-col class="logout-button" @click="logout" align-v="center">
+      <b-col
+        class="logout-button"
+        @click="logout"
+        align-v="center"
+        v-if="pointOfSaleState.pointOfSale.useAuthentication"
+      >
         <font-awesome-icon icon="sign-out-alt"/>
       </b-col>
     </b-row>
@@ -28,7 +33,7 @@
         <div class="total-text">Total</div>
         <div class="total-value">€{{ (transactionTotal / 100).toFixed(2) }}</div>
       </div>
-      <div class="balance-row" v-if="!searchState.isChargingUser && !userState.isInBorrelMode">
+      <div class="balance-row" v-if="!searchState.isChargingUser && pointOfSaleState.pointOfSale.useAuthentication">
         <div class="balance-text">Balance after</div>
         <div class="balance-value warn" v-if="balanceAfter.getAmount() < 0">
           {{ balanceAfter.toFormat() }}
@@ -41,8 +46,8 @@
       </div>
     </b-row>
     <checkout-button ref="checkoutButton" :openPickMember="openPickMember" />
-    <div class="borrelmode-text" v-if="userState.isInBorrelMode">
-      Borrelmode is active for {{ userState.borrelModeOrgan.organName }}
+    <div class="borrelmode-text" v-if="!pointOfSaleState.pointOfSale.useAuthentication">
+      Borrelmode is active for {{ pointOfSaleState.pointOfSale.owner.name }}
     </div>
   </div>
 </template>
@@ -57,6 +62,7 @@ import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import SearchModule from '@/store/modules/search';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
+import PointOfSaleModule from '@/store/modules/point-of-sale';
 
 @Component({
   components: { ProductsTable, CheckoutButton },
@@ -78,6 +84,8 @@ export default class CheckoutBar extends Formatters {
   private userState = getModule(UserModule);
 
   private searchState = getModule(SearchModule);
+
+  private pointOfSaleState = getModule(PointOfSaleModule);
 
   subTransactionRows: SubTransactionRow[];
 
@@ -115,6 +123,7 @@ export default class CheckoutBar extends Formatters {
   }
 
   logout() {
+    if (!this.pointOfSaleState.pointOfSale.useAuthentication) return;
     this.userState.reset();
     this.searchState.reset();
     this.loggedOut();

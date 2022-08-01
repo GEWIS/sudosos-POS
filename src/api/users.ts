@@ -1,6 +1,7 @@
 import UserTransformer from '@/transformers/UserTransformer';
 import PaginationTransformer from '@/transformers/PaginationTransformer';
 import APIHelper from '@/mixins/APIHelper';
+import { User } from '@/entities/User';
 
 export function getUsers(take: number | null = null, skip: number | null = null) {
   const body = {
@@ -34,7 +35,7 @@ export function deleteUser(id: number) {
   return APIHelper.delResource(`users/${id}`);
 }
 
-export function getOrganMembers(id: number) {
+export function getOrganMembers(id: number): Promise<User[]> {
   return APIHelper.getResource(`/users/${id}/members`)
     .then((response) => response.records.map((res: any) => UserTransformer.makeUser(res)));
 }

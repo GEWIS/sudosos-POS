@@ -1,94 +1,80 @@
 <template>
   <div class="settings-component pos-card" id="settings-component">
     <div class="header">Settings</div>
-    <div class="setting-row" v-if="userState.allOrgans.length > 0">
-      <input type="checkbox" id="borrelmode-checkbox" v-model="borrelMode" @change="modeChanged">
-      <label for="borrelmode-checkbox">Activate borrelmode for</label>
-      <select v-model="chosenOrgan" name="organselect" @model="modeChanged" v-if="userState.allOrgans.length > 1">
-        <option v-for="organ in userState.allOrgans" v-bind:key="organ.organName" :value="organ">
-          {{ organ.organName }}
+    <div class="setting-row" v-if="userOwnsCurrentPOS() && userState.userPOSs.length > 0">
+      <label for="posselect">Switch POS to</label>
+      <select v-model="chosenPOS" name="posselect"
+              v-on:change="posChanged" v-if="userState.userPOSs.length > 1">
+        <option v-for="pointOfSale in userState.userPOSs"
+                v-bind:key="pointOfSale.name" :value="pointOfSale">
+          {{ pointOfSale.name }}
         </option>
       </select>
-      <div v-else>{{ userState.allOrgans[0].organName }}</div>
+      <div v-else>{{ userState.userPOSs[0].name }}</div>
     </div>
-    <div class="setting-row" v-if="userState.isInBorrelMode">
-      <input type="checkbox" id="restart-checkbox" v-model="automaticRestart" @change="automaticRestartChange">
-      <label for="restart-checkbox">Pick new user to charge after checkout</label>
-    </div>
+<!--    <div class="setting-row" v-if="userState.isInBorrelMode">-->
+<!--      <input type="checkbox" id="restart-checkbox"-->
+<!--             v-model="automaticRestart" @change="automaticRestartChange">-->
+<!--      <label for="restart-checkbox">Pick new user to charge after checkout</label>-->
+<!--    </div>-->
   </div>
 </template>
 <script lang="ts">
-import { Organ } from '@/entities/Organ';
 import UserModule from '@/store/modules/user';
-import { Component, Vue, Prop, PropSync, } from 'vue-property-decorator';
+import {
+  Component, Vue, Prop,
+} from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
+import PointOfSaleModule from '@/store/modules/point-of-sale';
+import { BasePointOfSale } from '@/entities/PointOfSale';
 
 @Component
 export default class SettingsComponent extends Vue {
-
   private userState = getModule(UserModule);
 
-  private borrelMode: boolean = false;
-
-  private chosenOrgan: Organ = {} as Organ;
+  private posState = getModule(PointOfSaleModule);
 
   private boundedListener: any;
 
-  private automaticRestart: boolean = this.userState.automaticRestart;
+  private chosenPOS: BasePointOfSale;
 
   @Prop() visible: boolean;
 
-  mounted() {
-    if (this.userState.isInBorrelMode) {
-      this.chosenOrgan = this.userState.borrelModeOrgan;
-      this.borrelMode = true;
-      // @ts-ignore
-      document.querySelector(':root').style.setProperty('--gewis-red', 'green');
-    }
-    else {
-      // @ts-ignore
-      document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
-    }
+  constructor() {
+    super();
+    this.chosenPOS = this.userState.userPOSs.find((p) => p.id === this.posState.pointOfSale.id);
+  }
 
+  mounted() {
     this.boundedListener = this.outsideClickListener.bind(this);
 
-    setTimeout(() => document.addEventListener("click", this.boundedListener), 1);
+    setTimeout(() => document.addEventListener('click', this.boundedListener), 1);
   }
 
   updated() {
-    (this.$el as HTMLElement).style.top = `-${this.$el.clientHeight-62}px`;
+    (this.$el as HTMLElement).style.top = `-${this.$el.clientHeight - 62}px`;
   }
 
-  automaticRestartChange() {
-    this.userState.setAutomaticRestart(this.automaticRestart);
+  userOwnsCurrentPOS() {
+    return this.userState.userPOSs.map((pos) => pos.id)
+      .indexOf(this.posState.pointOfSale.id) >= 0;
   }
 
-  modeChanged() {
-    if(this.userState.allOrgans.length == 1) {
-      this.chosenOrgan = this.userState.allOrgans[0];
-    }
+  posChanged() {
+    if (!this.userOwnsCurrentPOS()) return;
 
-    if (this.borrelMode === true && this.chosenOrgan.organName !== undefined) {
-      this.userState.setBorrelModeOrgan(this.chosenOrgan);
-      // @ts-ignore
-      document.querySelector(':root').style.setProperty('--gewis-red', 'green');
-    }
-    else {
-      this.userState.setBorrelModeOrgan({} as Organ);
-      // @ts-ignore
-      document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
-    }
+    this.posState.fetchPointOfSale(this.chosenPOS.id);
   }
 
   outsideClickListener(e) {
-    if (e.composedPath().includes(document.getElementById("options-button"))
-     || e.composedPath().includes(document.getElementById("settings-component")) 
+    if (e.composedPath().includes(document.getElementById('options-button'))
+     || e.composedPath().includes(document.getElementById('settings-component'))
      || !this.$parent.$data.showSettings) {
       return;
     }
 
     this.$parent.$data.showSettings = false;
-    document.removeEventListener("click", this.boundedListener);
+    document.removeEventListener('click', this.boundedListener);
   }
 }
 </script>

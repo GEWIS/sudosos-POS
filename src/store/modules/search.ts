@@ -1,10 +1,12 @@
 import {
-  VuexModule, Module, Mutation, Action, 
+  VuexModule, Module, Mutation, Action,
 } from 'vuex-module-decorators';
 import store from '@/store';
 import { User } from '@/entities/User';
 
-@Module({ dynamic: true, store, name: 'SearchModule' })
+@Module({
+  dynamic: true, store, namespaced: true, name: 'SearchModule',
+})
 export default class SearchModule extends VuexModule {
   searching: boolean = false; // Searching for a product
 
@@ -17,7 +19,7 @@ export default class SearchModule extends VuexModule {
   chargingUser: User = {} as User;
 
   get isChargingUser() {
-    return this.chargingUser.firstName != undefined;
+    return this.chargingUser !== undefined && this.chargingUser.firstName !== undefined;
   }
 
   @Mutation
@@ -41,8 +43,7 @@ export default class SearchModule extends VuexModule {
     if (searching) {
       this.filterName = '';
       this.filterCategory = 0;
-    }
-    else {
+    } else {
       this.filterCategory = 1;
     }
   }

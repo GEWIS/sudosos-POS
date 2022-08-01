@@ -17,6 +17,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { postTransaction } from '@/api/transactions';
 import SearchModule from '@/store/modules/search';
+import PointOfSaleModule from '@/store/modules/point-of-sale';
 
 @Component
 export default class CheckoutButton extends Vue {
@@ -32,22 +33,24 @@ export default class CheckoutButton extends Vue {
 
   private borrelModeCheckout: boolean = false;
 
-  userState = getModule(UserModule);
+  private userState = getModule(UserModule);
 
-  searchState = getModule(SearchModule);
+  private searchState = getModule(SearchModule);
+
+  private pointOfSaleState = getModule(PointOfSaleModule);
 
   organMemberSelected(selectedMember: User) {
     this.finishTransaction(selectedMember, this.searchState.chargingUser, true);
     this.borrelModeCheckout = false;
 
-    // TODO: Unclear that the searchState is reset after the transaction is finished
-    if(this.userState.willAutomaticRestart) {
-      this.searchState.setUserSearching(true);
-    }
+    // // TODO: Unclear that the searchState is reset after the transaction is finished
+    // if(this.userState.willAutomaticRestart) {
+    //   this.searchState.setUserSearching(true);
+    // }
   }
 
   get unfinished(): boolean {
-    return this.userState.isInBorrelMode && !this.searchState.isChargingUser;
+    return !this.pointOfSaleState.pointOfSale.useAuthentication && !this.searchState.isChargingUser;
   }
 
   checkout() {
@@ -173,9 +176,9 @@ export default class CheckoutButton extends Vue {
         this.userState.reset();
         this.$router.push('/');
       }
-      else if(this.userState.willAutomaticRestart) {
-        this.searchState.setUserSearching(true);
-      }
+      // else if (this.userState.willAutomaticRestart) {
+      //   this.searchState.setUserSearching(true);
+      // }
     } catch (error: any) {
       // TODO: Catch error
     }
@@ -191,9 +194,9 @@ export default class CheckoutButton extends Vue {
 
   buttonClicked() {
     // Borrelmode checkout
-    if (this.userState.isInBorrelMode && !this.searchState.isChargingUser) {
-      return;
-    } else if (this.userState.isInBorrelMode) {
+    if (!this.pointOfSaleState.pointOfSale.useAuthentication && !this.searchState.isChargingUser) {
+
+    } else if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
       this.openPickMember();
     } else if (this.checkingOut) {
       clearTimeout(this.timeout);

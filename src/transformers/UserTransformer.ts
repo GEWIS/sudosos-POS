@@ -11,7 +11,7 @@ export default {
     if (!Object.keys(data).includes('active')) {
       return {
         ...BaseTransformer.makeBaseEntity(data),
-        name: data.name,
+        name: `${data.firstName} ${data.lastName}`.trim(),
       } as BaseUser;
     }
 
