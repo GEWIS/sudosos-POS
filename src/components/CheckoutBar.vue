@@ -64,7 +64,7 @@ import UserModule from '@/store/modules/user';
 import SearchModule from '@/store/modules/search';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
-import TransactionHistory from '@/components/TransactionHistory-old.vue';
+import TransactionHistory from '@/components/TransactionHistory.vue';
 
 @Component({
   components: { TransactionHistory, ProductsTable, CheckoutButton },
@@ -126,10 +126,7 @@ export default class CheckoutBar extends Formatters {
 
   logout() {
     if (!this.pointOfSaleState.pointOfSale.useAuthentication) return;
-    this.userState.reset();
-    this.searchState.reset();
     this.loggedOut();
-    this.$router.push('/');
     // @ts-ignore
     document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
   }

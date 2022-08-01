@@ -1,5 +1,9 @@
 <template>
   <div class="wrapper">
+    <div v-if="this.userState.user !== undefined && this.userState.user.id !== undefined">
+      <t-o-s-not-required :initially-open="this.userState.user.acceptedTOS === 'NOT_REQUIRED'"
+        :logged-out="this.loggedOut"/>
+    </div>
     <div class="product-overview">
       <div class="product-overview-container shadow">
         <b-nav v-if="state === State.CATEGORIES"
@@ -151,6 +155,7 @@ import Keyboard from '@/components/Keyboard.vue';
 import 'simple-keyboard/build/css/index.css';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import { Container } from '@/entities/Container';
+import TOSNotRequired from '@/components/TOSNotRequired.vue';
 
 enum State {
   CATEGORIES,
@@ -161,6 +166,7 @@ enum State {
 
 @Component({
   components: {
+    TOSNotRequired,
     ProductComponent,
     HomeMenuButton,
     CheckoutBar,
@@ -293,7 +299,10 @@ export default class ProductOverview extends Vue {
   }
 
   loggedOut() {
+    this.userState.reset();
+    this.searchState.reset();
     this.clearTimeouts();
+    this.$router.push('/');
   }
 
   clearTimeouts() {
