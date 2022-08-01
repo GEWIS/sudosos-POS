@@ -199,7 +199,10 @@ export default class ProductOverview extends Vue {
     window.addEventListener('resize', () => {
       this.checkWindowSize();
     });
-    this.pointOfSaleState.setPointOfSale(await getPointOfSale(1));
+    if (this.pointOfSaleState.pointOfSale === undefined
+      || this.pointOfSaleState.pointOfSale.id === undefined) {
+      this.pointOfSaleState.setPointOfSale(await getPointOfSale(1));
+    }
     this.searchState.updateFilterCategory(1);
 
     // @ts-ignore
