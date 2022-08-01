@@ -438,12 +438,13 @@ export default class ProductOverview extends Vue {
 
   userSelected(user: User): void {
     if (user === undefined) {
-      this.searchState.clearChargingUser();
+      this.searchState.removeChargingUser();
     } else {
-      this.searchState.setChargingUser(user);
+      this.searchState.updateChargingUser(user);
     }
 
     this.searchState.setUserSearching(false);
+    this.searchState.fetchTransactionHistory();
 
     if (this.organMemberRequired()) {
       this.showOrganMembers = true;

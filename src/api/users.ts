@@ -2,6 +2,8 @@ import UserTransformer from '@/transformers/UserTransformer';
 import PaginationTransformer from '@/transformers/PaginationTransformer';
 import APIHelper from '@/mixins/APIHelper';
 import { User } from '@/entities/User';
+import { TransactionFilter } from '@/entities/Transaction';
+import TransactionTransformer from '@/transformers/TransactionTransformer';
 
 export function getUsers(take: number | null = null, skip: number | null = null) {
   const body = {

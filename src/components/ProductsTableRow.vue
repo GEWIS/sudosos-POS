@@ -8,7 +8,7 @@
   </b-row>
 </template>
 <script lang="ts">
-import { Component, Prop, } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import Formatters from '@/mixins/Formatters';
@@ -30,11 +30,15 @@ export default class ProductsTableRow extends Formatters {
   transactionsState = getModule(TransactionModule);
 
   private holdDefaultDelay: number = 400;
+
   private holdMinimalDelay: number = 80;
+
   private holdDecreaseFactor: number = 1.5;
 
   private holdDelay: number = 1000;
+
   private held: boolean = false;
+
   private timeoutHandle: number;
 
   get productTotal() {
@@ -99,11 +103,11 @@ export default class ProductsTableRow extends Formatters {
   }
 
   increaseHold() {
-    if(!this.held) return;
+    if (!this.held) return;
 
     // @ts-ignore
     this.timeoutHandle = setTimeout(() => {
-      if(!this.held) return;
+      if (!this.held) return;
 
       this.increaseItem();
       this.decreaseDelay();
@@ -112,11 +116,11 @@ export default class ProductsTableRow extends Formatters {
   }
 
   decreaseHold() {
-    if(!this.held) return;
+    if (!this.held) return;
 
     // @ts-ignore
     this.timeoutHandle = setTimeout(() => {
-      if(!this.held) return;
+      if (!this.held) return;
 
       this.decreaseItem();
       this.decreaseDelay();
@@ -127,7 +131,7 @@ export default class ProductsTableRow extends Formatters {
   decreaseDelay() {
     this.holdDelay = Math.round(this.holdDelay / this.holdDecreaseFactor);
 
-    if(this.holdDelay < this.holdMinimalDelay) {
+    if (this.holdDelay < this.holdMinimalDelay) {
       this.holdDelay = this.holdMinimalDelay;
     }
   }

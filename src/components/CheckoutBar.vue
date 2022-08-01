@@ -27,7 +27,8 @@
         <font-awesome-icon icon="sign-out-alt"/>
       </b-col>
     </b-row>
-    <products-table :items="subTransactionRows" :updateRows="updateRows"/>
+    <products-table v-if="subTransactionRows.length > 0" :items="subTransactionRows" :updateRows="updateRows"/>
+    <transaction-history v-if="subTransactionRows.length === 0" :transactions="searchState.transactionHistory" />
     <b-row class="transaction-detail-row">
       <div class="total-row">
         <div class="total-text">Total</div>
@@ -63,9 +64,10 @@ import UserModule from '@/store/modules/user';
 import SearchModule from '@/store/modules/search';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
+import TransactionHistory from '@/components/TransactionHistory-old.vue';
 
 @Component({
-  components: { ProductsTable, CheckoutButton },
+  components: { TransactionHistory, ProductsTable, CheckoutButton },
   props: {
     subTransactionRows: {
       type: Array,
@@ -211,6 +213,12 @@ export default class CheckoutBar extends Formatters {
 
   .products-table-container {
     flex: 1;
+    overflow-y: auto;
+  }
+
+  .transaction-history-table-container {
+    flex: 1;
+    overflow-y: auto;
   }
 
   .transaction-detail-row {
