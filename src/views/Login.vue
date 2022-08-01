@@ -4,6 +4,12 @@
       <b-toast id="toast-incorrect-password" variant="danger" solid title="Incorrect login">
         Incorrect ID or PIN. Please try again.
       </b-toast>
+      <b-toast id="toast-tos-not-accepted" variant="danger"
+        solid title="Terms of Service not accepted"
+      >
+        You have not yet accepted the terms of service of SudoSOS.
+        Please do this first on sudosos.gewis.nl!
+      </b-toast>
       <div class="wrap-container-child login-container shadow">
         <div class="entry-row">
           <div class="keycodes-container">
@@ -143,17 +149,22 @@ export default class Login extends Vue {
     const loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
 
     if (loginResponse && loginResponse !== {} && !('message' in loginResponse)) {
-      APIHelper.setToken(loginResponse.token);
-      this.userState.fetchUser(true);
-      this.userState.fetchAllUsers();
-      this.$router.push('/productOverview');
+      if (loginResponse.user.acceptedTOS === 'NOT_ACCEPTED') {
+        this.$bvToast.show('toast-tos-not-accepted');
+      } else {
+        APIHelper.setToken(loginResponse.token);
+        this.userState.fetchUser(true);
+        this.userState.fetchAllUsers();
+        this.$router.push('/productOverview');
+        return;
+      }
     } else {
       this.$bvToast.show('toast-incorrect-password');
-      this.userId = '';
-      this.passcode = '';
-      this.enteringUserId = true;
       this.loginError = loginResponse.message;
     }
+    this.userId = '';
+    this.passcode = '';
+    this.enteringUserId = true;
   }
 
   mounted() {
