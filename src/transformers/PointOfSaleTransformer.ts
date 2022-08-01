@@ -31,7 +31,8 @@ export default {
       endDate: new Date(data.endDate),
       containers,
       productOrder,
-      useAuthentication: data.useAuthentication,
+      // TODO: Remove this backwards compatibility with old backend version
+      useAuthentication: data.useAuthentication === undefined ? true : data.useAuthentication,
     } as PointOfSale;
   },
 };
