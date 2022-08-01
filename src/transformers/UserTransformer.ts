@@ -38,6 +38,7 @@ export default {
       email: data.email,
       active: data.active,
       type: data.type,
+      acceptedTOS: data.acceptedTOS,
       saldo,
       ean,
       nfcDevices,

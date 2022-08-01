@@ -65,7 +65,14 @@
               class="user"
               v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
               <div class="user-button">Select</div>
-              <div class="user-text">{{item.firstName}} {{item.lastName}} - {{item.gewisID}}</div>
+              <div class="user-icon">
+                <font-awesome-icon icon="exclamation-triangle" size="lg" v-if="item.acceptedTOS === 'NOT_ACCEPTED'"/>
+              </div>
+              <div class="user-text"
+                   v-bind:class="(item.acceptedTOS === 'NOT_ACCEPTED') ? 'tos-not-accepted' : ''"
+              >
+                {{item.firstName}} {{item.lastName}} - {{item.gewisID}}
+              </div>
             </div>
           </div>
         </div>
@@ -588,6 +595,10 @@ $scroll-bar-width: 40px;
       line-height: 40px;
     }
 
+    .tos-not-accepted {
+      color: lightgray;
+    }
+
     .user-button {
       background: $gewis-red;
       color: white;
@@ -595,6 +606,14 @@ $scroll-bar-width: 40px;
       cursor: pointer;
       padding: 8px 16px;
       margin-right: 8px;
+    }
+
+    .user-icon {
+      color: lightgrey;
+      margin-right: 8px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
     }
   }
 }

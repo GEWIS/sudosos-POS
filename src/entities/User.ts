@@ -23,6 +23,7 @@ export interface BaseUser extends BaseEntity {
   lastName: string;
   name: string;
   deleted: boolean;
+  acceptedTOS: string;
 }
 
 export interface User extends BaseUser {
