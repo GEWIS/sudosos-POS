@@ -3,8 +3,8 @@
     <div class="date">{{this.date}}</div>
     <div class="time">{{this.time}}</div>
     <div class="value">€{{this.value}}</div>
-    <div v-if="createdBySomeoneElse()" class="created-by">
-      Created by {{this.transaction.createdBy.firstName}}
+    <div v-if="isCreatedBySomeoneElse()" class="created-by">
+      {{createdBy()}}
     </div>
   </b-row>
 </template>
@@ -40,10 +40,18 @@ export default class ProductsTableRow extends Formatters {
     return (this.transaction.price.amount / 100).toFixed(2);
   }
 
-  createdBySomeoneElse(): boolean {
+  isCreatedBySomeoneElse(): boolean {
     return this.transaction.createdBy !== undefined
       && this.transaction.createdBy.id !== undefined
       && this.transaction.createdBy.id === this.userState.user.id;
+  }
+
+  createdBy(): string {
+    if (this.transaction.createdBy === undefined) return '';
+    if (this.transaction.createdBy.id === this.userState.user.id) {
+      return `Created by you for ${this.transaction.from.firstName}`;
+    }
+    return `Created by ${this.transaction.createdBy.firstName}`;
   }
 }
 </script>
