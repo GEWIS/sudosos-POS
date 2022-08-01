@@ -1,6 +1,9 @@
 <template>
   <div class="wrapper">
     <div class="wrap-container">
+      <b-toast id="toast-incorrect-password" variant="danger" solid title="Incorrect login">
+        Incorrect ID or PIN. Please try again.
+      </b-toast>
       <div class="wrap-container-child login-container shadow">
         <div class="entry-row">
           <div class="keycodes-container">
@@ -145,6 +148,7 @@ export default class Login extends Vue {
       this.userState.fetchAllUsers();
       this.$router.push('/productOverview');
     } else {
+      this.$bvToast.show('toast-incorrect-password');
       this.userId = '';
       this.passcode = '';
       this.enteringUserId = true;
@@ -348,6 +352,5 @@ export default class Login extends Vue {
     justify-content: center;
   }
 }
-
 
 </style>
