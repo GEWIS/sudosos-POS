@@ -201,7 +201,7 @@ export default class ProductOverview extends Vue {
     });
     if (this.pointOfSaleState.pointOfSale === undefined
       || this.pointOfSaleState.pointOfSale.id === undefined) {
-      this.pointOfSaleState.setPointOfSale(await getPointOfSale(1));
+      this.pointOfSaleState.fetchPointOfSale(1);
     }
     this.searchState.updateFilterCategory(1);
 

@@ -42,11 +42,6 @@ export default class CheckoutButton extends Vue {
   organMemberSelected(selectedMember: User) {
     this.finishTransaction(selectedMember, this.searchState.chargingUser, true);
     this.borrelModeCheckout = false;
-
-    // // TODO: Unclear that the searchState is reset after the transaction is finished
-    // if(this.userState.willAutomaticRestart) {
-    //   this.searchState.setUserSearching(true);
-    // }
   }
 
   get unfinished(): boolean {
@@ -126,7 +121,8 @@ export default class CheckoutButton extends Vue {
   }
 
   async finishTransaction(user: User, chargingUser: User, borrelMode = false) {
-    const { rows, pointOfSale } = this.$parent.$parent as any;
+    const { rows } = this.$parent.$parent as any;
+    const { pointOfSale } = this.pointOfSaleState;
 
     const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
 
