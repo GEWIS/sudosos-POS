@@ -135,12 +135,11 @@ import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
 
-import { getPointOfSale } from '@/api/pointOfSale';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 
-import FuzzySearch from 'fuzzy-search';
+import Fuse from 'fuse.js';
 import Keyboard from '@/components/Keyboard.vue';
 import 'simple-keyboard/build/css/index.css';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
@@ -412,11 +411,10 @@ export default class ProductOverview extends Vue {
   get filteredProducts(): ProductInContainer[] {
     const { products } = this;
     if (this.searchState.searching) {
-      return new FuzzySearch(
+      return new Fuse(
         products,
-        ['name', 'category.name'],
-        { caseSensitive: false, sort: true },
-      ).search(this.query);
+        { keys: ['name', 'category.name'], isCaseSensitive: false, minMatchCharLength: 3 },
+      ).search(this.query).map((r) => r.item);
     }
     // @ts-ignore
     const currentCategory = this.searchState.filterCategory;
@@ -429,11 +427,14 @@ export default class ProductOverview extends Vue {
   }
 
   get filteredUsers() {
-    return new FuzzySearch(
+    return new Fuse(
       this.userState.allUsers,
-      ['firstName', 'lastName', 'gewisID'],
-      { caseSensitive: false, sort: true },
-    ).search(this.userQuery).filter((v, i, a) => a.findIndex((l) => v.gewisID === l.gewisID) === i);
+      {
+        keys: ['firstName', 'lastName', 'gewisID'], isCaseSensitive: false, minMatchCharLength: 3,
+      },
+    ).search(this.userQuery)
+      .map((r) => r.item)
+      .filter((v, i, a) => a.findIndex((l) => v.gewisID === l.gewisID) === i);
   }
 
   userSelected(user: User): void {
