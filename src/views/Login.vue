@@ -142,11 +142,24 @@ export default class Login extends Vue {
   }
 
   async login() {
-    const userDetails = {
-      gewisId: parseInt(this.userId, 10),
-      pin: this.passcode.toString(),
-    };
-    const loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
+    let loginResponse;
+
+    // If the userId starts with an e, it is an external userId, removing the e gives the SudoSOS ID
+    if (this.userId.startsWith('e')) {
+      const userDetails = {
+        userId: parseInt(this.userId.substring(1), 10),
+        pin: this.passcode.toString(),
+      };
+
+      loginResponse = await APIHelper.postResource('authentication/pin', userDetails);
+    } else {
+      const userDetails = {
+        gewisId: parseInt(this.userId, 10),
+        pin: this.passcode.toString(),
+      };
+
+      loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
+    }
 
     if (loginResponse && loginResponse !== {} && !('message' in loginResponse)) {
       if (loginResponse.user.acceptedTOS === 'NOT_ACCEPTED') {

@@ -3,6 +3,9 @@
     <div v-for="key in keys" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
       <div class="key-text">{{ key }}</div>
     </div>
+    <div class="key-external" @click.stop="keyClicked('e')">
+      <div class="key-external-text">External</div>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -39,6 +42,25 @@ export default class Keypad extends Vue {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 12px;
+
+  .key-external {
+    flex: 1 1 30%;
+    cursor: pointer;
+    background: $gewis-red;
+    border-radius: $border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 50px;
+    min-height: 50px;
+    max-width: 324px;
+    min-width: 324px;
+
+    .key-external-text {
+      font-size: 1.5rem;
+      color: white;
+    }
+  }
 
   .key {
     flex: 1 1 30%;
