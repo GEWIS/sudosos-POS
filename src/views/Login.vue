@@ -79,7 +79,7 @@ export default class Login extends Vue {
   ];
 
   private banners: string[] = [
-    'https://i.imgur.com/Ku3bLab.png',
+    'https://i.imgur.com/OjrVa6c.png',
     'https://i.imgur.com/S9dsgzl.png',
   ];
 
