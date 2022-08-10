@@ -155,6 +155,10 @@ export default {
       return setResponse(body, route, Transactions, 'transactionPos');
     }
 
+    if (route.includes('ping')) {
+      return body;
+    }
+
     // Because typescript cannot handle throwing the way I want it.
     throw String(`${route} is not specified in devAPI fetchJSON`);
   },

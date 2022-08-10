@@ -6,13 +6,16 @@
     </div>
     <div class="product-overview">
       <div class="product-overview-container shadow">
+        <div class="product-overview-top">
         <b-nav v-if="state === State.CATEGORIES"
-          class="align-items-center">
+          class="align-items-center product-overview-top-menu">
           <home-menu-button :name="'Alcoholic drinks'" :category="1" />
           <home-menu-button :name="'Non-alcoholic'" :category="2"/>
           <home-menu-button :name="'Snacks'" :category="3"/>
           <home-menu-button :name="'Other'" :category="4" />
         </b-nav>
+          <backend-status />
+        </div>
         <div v-if="state === State.SEARCH || state === State.USER_SEARCH"
           class="nav align-items-center">
           <div class="nav-item active exit-search-button" @click="exitSearch()">
@@ -156,6 +159,7 @@ import 'simple-keyboard/build/css/index.css';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import { Container } from '@/entities/Container';
 import TOSNotRequired from '@/components/TOSNotRequired.vue';
+import BackendStatus from '@/components/BackendStatus.vue';
 
 enum State {
   CATEGORIES,
@@ -166,6 +170,7 @@ enum State {
 
 @Component({
   components: {
+    BackendStatus,
     TOSNotRequired,
     ProductComponent,
     HomeMenuButton,
@@ -688,6 +693,14 @@ $scroll-bar-width: 40px;
   border-radius: $border-radius;
   background: rgba(white, 0.8);
   padding: 16px;
+}
+
+.product-overview-top {
+  display: flex;
+
+  div {
+    flex: 1;
+  }
 }
 
 .product-row {

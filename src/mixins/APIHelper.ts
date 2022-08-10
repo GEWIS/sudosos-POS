@@ -161,11 +161,12 @@ export default {
     localStorage.clear();
   },
 
-  getResource(route: string, args: Object | null = null) {
+  getResource(route: string, args: Object | null = null, headers: Object = {}) {
     const constructedRoute = makeRoute(route, args);
 
     const getBody = {
       headers: {
+        ...headers,
         Authorization: `Bearer ${token}`,
       },
     } as ResponseBody;
