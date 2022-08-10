@@ -3,8 +3,10 @@
     <div v-for="key in keys" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
       <div class="key-text">{{ key }}</div>
     </div>
-    <div class="key-external" @click.stop="keyClicked('e')">
-      <div class="key-external-text">External</div>
+    <div class="key-external" @click.stop="toggleExternalState">
+      <div  class="key-external-text">
+        {{this.externalState === 'EXTERNAL' ? 'Change to GEWIS login' : 'Change to external login'}}
+      </div>
     </div>
   </div>
 </template>
@@ -13,6 +15,11 @@ import {
   Component, PropSync, Prop, Vue,
 } from 'vue-property-decorator';
 
+enum ExternalState {
+  GEWIS = 'GEWIS',
+  EXTERNAL = 'EXTERNAL'
+}
+
 @Component
 export default class Keypad extends Vue {
   private keys: (number|string)[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, '🠨', 0, '✔'];
@@ -20,6 +27,16 @@ export default class Keypad extends Vue {
   @Prop({ default: 0 }) readonly value!: number;
 
   @Prop({ default: false }) readonly inline!: boolean;
+
+  @Prop({ default: 'GEWIS' }) externalState: ExternalState;
+
+  toggleExternalState() {
+    if (this.externalState === ExternalState.GEWIS) {
+      this.$emit('update:externalState', ExternalState.EXTERNAL);
+    } else {
+      this.$emit('update:externalState', ExternalState.GEWIS);
+    }
+  }
 
   // eslint-disable-next-line class-methods-use-this
   keyClicked(key: number|string) {
@@ -60,6 +77,10 @@ export default class Keypad extends Vue {
       font-size: 1.5rem;
       color: white;
     }
+  }
+
+  .green {
+    background: green;
   }
 
   .key {
