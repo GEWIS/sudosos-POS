@@ -1,11 +1,14 @@
 <template>
-  <b-row class="transaction-history-row">
+  <b-row class="transaction-history-row" @click="openModal">
+
     <div class="date">{{this.date}}</div>
     <div class="time">{{this.time}}</div>
     <div class="value">{{this.value}}</div>
     <div v-if="isCreatedBySomeoneElse()" class="created-by">
       {{createdBy()}}
     </div>
+
+    <transaction-details-modal :baseTransaction="transaction" ref="modal"/>
   </b-row>
 </template>
 
@@ -15,8 +18,11 @@ import { Transaction } from '@/entities/Transaction';
 import { Component, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import UserModule from '@/store/modules/user';
+import TransactionDetailsModal from '@/components/TransactionDetailsModal.vue';
 
-@Component
+@Component({
+  components: { TransactionDetailsModal },
+})
 export default class ProductsTableRow extends Formatters {
   @Prop() transaction: Transaction;
 
@@ -32,6 +38,11 @@ export default class ProductsTableRow extends Formatters {
 
   get value() {
     return this.transaction.price.toFormat();
+  }
+
+  openModal() {
+    // @ts-ignore
+    this.$refs.modal.show();
   }
 
   isCreatedBySomeoneElse(): boolean {
@@ -59,6 +70,7 @@ export default class ProductsTableRow extends Formatters {
   padding: 4px 0.5rem;
   display: flex;
   flex-wrap: wrap;
+  cursor: pointer;
 
   div {
     flex: 1 1 30%;
