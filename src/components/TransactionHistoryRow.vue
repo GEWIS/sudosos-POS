@@ -24,16 +24,10 @@ export default class ProductsTableRow extends Formatters {
 
   get date() {
     return Formatters.dateFromObj(this.transaction.createdAt);
-    const offset = d.getTimezoneOffset();
-    d = new Date(d.getTime() - (offset * 60 * 1000));
-    return d.toISOString().split('T')[0];
   }
 
   get time() {
     return Formatters.timeFromObj(this.transaction.createdAt);
-    const offset = d.getTimezoneOffset();
-    d = new Date(d.getTime() - (offset * 60 * 1000));
-    return d.toISOString().split('T')[1].split('.')[0];
   }
 
   get value() {
