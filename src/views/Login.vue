@@ -1,5 +1,6 @@
 <template>
   <div class="wrapper">
+    <ean-login :handle-login="eanLogin" />
     <div class="wrap-container">
       <b-toast id="toast-incorrect-password" variant="danger" solid title="Incorrect login">
         Incorrect ID or PIN. Please try again.
@@ -61,6 +62,8 @@ import keypad from '@/components/Keypad.vue';
 import APIHelper from '@/mixins/APIHelper';
 import { getModule } from 'vuex-module-decorators';
 import UserModule from '@/store/modules/user';
+import { LoginResponse } from '@/entities/APIResponses';
+import EanLogin from '@/components/EanLogin.vue';
 
 @Component({
   filters: {
@@ -72,6 +75,7 @@ import UserModule from '@/store/modules/user';
     },
   },
   components: {
+    EanLogin,
     keypad,
   },
 })
@@ -113,7 +117,7 @@ export default class Login extends Vue {
   backspacePressed() {
     if (this.enteringUserId && this.userId.length > 0) {
       this.userId = this.userId.slice(0, -1);
-    } else if (!this.enteringUserId && this.passcode.length == 0) {
+    } else if (!this.enteringUserId && this.passcode.length === 0) {
       this.switchInput();
     } else if (!this.enteringUserId && this.passcode.length > 0) {
       this.passcode = this.passcode.slice(0, -1);
@@ -150,6 +154,11 @@ export default class Login extends Vue {
     }
   }
 
+  async eanLogin(eanCode: string) {
+    const loginResponse = await APIHelper.postResource('authentication/ean', { eanCode });
+    await this.handleLoginResponse(loginResponse);
+  }
+
   async login() {
     let loginResponse;
 
@@ -170,7 +179,15 @@ export default class Login extends Vue {
       loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
     }
 
-    if (loginResponse && loginResponse !== {} && !('message' in loginResponse)) {
+    await this.handleLoginResponse(loginResponse);
+
+    this.userId = '';
+    this.passcode = '';
+    this.enteringUserId = true;
+  }
+
+  async handleLoginResponse(loginResponse?: LoginResponse | any) {
+    if (loginResponse && Object.keys(loginResponse).length > 0 && !('message' in loginResponse)) {
       if (loginResponse.user.acceptedTOS === 'NOT_ACCEPTED') {
         this.$bvToast.show('toast-tos-not-accepted');
       } else {
@@ -178,15 +195,11 @@ export default class Login extends Vue {
         this.userState.fetchUser(true);
         this.userState.fetchAllUsers();
         this.$router.push('/productOverview');
-        return;
       }
     } else {
       this.$bvToast.show('toast-incorrect-password');
       this.loginError = loginResponse.message;
     }
-    this.userId = '';
-    this.passcode = '';
-    this.enteringUserId = true;
   }
 
   mounted() {
@@ -265,7 +278,7 @@ export default class Login extends Vue {
             height: 3rem;
             background: #525659;
             animation: cursor-blink 1.5s steps(2) infinite;
-            display: hidden;
+            display: none;
           }
         }
         svg {
