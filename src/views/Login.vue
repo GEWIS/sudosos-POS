@@ -17,6 +17,12 @@
               <div class="sub-title">Welcome to</div>
               <div class="title-text">SudoSOS</div>
             </div>
+            <b-alert variant="light" show class="login-info">
+              {{external==='GEWIS'
+              ? 'Log in with your GEWIS ID and PIN'
+              : 'Log in with your SudoSOS ID and PIN'
+              }}
+            </b-alert>
             <p v-bind:class="{'active-input': enteringUserId,
              'can-enter':  userId.length < maxUserIdLength}" @click="enteringUserId = true">
                 <font-awesome-icon icon="user" />
@@ -33,7 +39,8 @@
             <keypad :inline="true"
               @backspace="backspacePressed"
               @ok="okPressed"
-              @keyPressed="keyPress"/>
+              @keyPressed="keyPress"
+              v-bind:externalState.sync="external"/>
           </div>
         </div>
       </div>
@@ -101,6 +108,8 @@ export default class Login extends Vue {
 
   private maxUserId = 40000;
 
+  private external: String = 'GEWIS';
+
   backspacePressed() {
     if (this.enteringUserId && this.userId.length > 0) {
       this.userId = this.userId.slice(0, -1);
@@ -142,11 +151,24 @@ export default class Login extends Vue {
   }
 
   async login() {
-    const userDetails = {
-      gewisId: parseInt(this.userId, 10),
-      pin: this.passcode.toString(),
-    };
-    const loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
+    let loginResponse;
+
+    // External login goes straight via SudoSOS
+    if (this.external === 'EXTERNAL') {
+      const userDetails = {
+        userId: parseInt(this.userId, 10),
+        pin: this.passcode.toString(),
+      };
+
+      loginResponse = await APIHelper.postResource('authentication/pin', userDetails);
+    } else {
+      const userDetails = {
+        gewisId: parseInt(this.userId, 10),
+        pin: this.passcode.toString(),
+      };
+
+      loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
+    }
 
     if (loginResponse && loginResponse !== {} && !('message' in loginResponse)) {
       if (loginResponse.user.acceptedTOS === 'NOT_ACCEPTED') {
@@ -280,6 +302,12 @@ export default class Login extends Vue {
         width: 4rem;
         color: $gewis-red;
       }
+    }
+
+    .login-info {
+      font-size: 18px;
+      padding: 0;
+      margin: 0;
     }
 
     .title {
