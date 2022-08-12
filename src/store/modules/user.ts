@@ -233,7 +233,7 @@ export default class UserModule extends VuexModule {
   })
   async fetchAllUsers(force: boolean = false) {
     if (this.allUsers.length === 0 || force) {
-      const take = 10;
+      const take = 100000;
       let usersResponse = await getUsers(take);
       const allUsers = usersResponse.records;
       let totalTaken = usersResponse._pagination.take;

@@ -73,8 +73,11 @@
               class="user"
               v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
               <div class="user-button">Select</div>
-              <div class="user-icon">
-                <font-awesome-icon icon="exclamation-triangle" size="lg" v-if="item.acceptedToS === 'NOT_ACCEPTED'"/>
+              <div class="user-icon" v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'disabled' : ''">
+                <font-awesome-icon icon="exclamation-triangle"
+                                   size="lg" v-if="item.acceptedToS === 'NOT_ACCEPTED'"/>
+                <font-awesome-icon icon="baby"
+                                   size="lg" v-if="!item.ofAge && userIsPerson(item)"/>
               </div>
               <div class="user-text"
                    v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'tos-not-accepted' : ''"
@@ -151,7 +154,7 @@ import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
 
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
-import { User } from '@/entities/User';
+import { User, UserType } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 
 import Fuse from 'fuse.js';
@@ -261,6 +264,11 @@ export default class ProductOverview extends Vue {
 
   get activityTimeoutTimeSeconds() {
     return Math.floor(this.activityTimeoutTime / 1000);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  userIsPerson(user: User): boolean {
+    return [UserType.MEMBER, UserType.LOCAL_USER, UserType.LOCAL_ADMIN].includes(user.type);
   }
 
   userActivity() {
@@ -624,11 +632,17 @@ $scroll-bar-width: 40px;
     }
 
     .user-icon {
-      color: lightgrey;
-      margin-right: 8px;
       display:flex;
       justify-content:center;
       align-items:center;
+
+      * {
+        margin-right: 8px;
+      }
+
+      &.disabled {
+        color: lightgrey;
+      }
     }
   }
 }

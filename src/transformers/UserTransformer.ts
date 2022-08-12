@@ -39,6 +39,7 @@ export default {
       active: data.active,
       type: data.type,
       acceptedToS: data.acceptedToS,
+      ofAge: data.ofAge,
       saldo,
       ean,
       nfcDevices,
