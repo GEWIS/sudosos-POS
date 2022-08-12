@@ -6,12 +6,16 @@ import store from '@/store';
 import { getPointOfSale } from '@/api/pointOfSale';
 import { User } from '@/entities/User';
 import { getOrganMembers } from '@/api/users';
+import { ProductCategory } from '@/entities/ProductCategory';
+import { getProductCategories } from '@/api/productCategories';
 
 @Module({
   dynamic: true, namespaced: true, store, name: 'PointOfSaleModule',
 })
 export default class PointOfSaleModule extends VuexModule {
   pointOfSale: PointOfSale = {} as PointOfSale;
+
+  categories: ProductCategory[] = [];
 
   pointOfSaleOwners: User[] = [];
 
@@ -30,10 +34,19 @@ export default class PointOfSaleModule extends VuexModule {
     this.pointOfSaleOwners = owners.sort((a, b) => a.id - b.id);
   }
 
+  @Mutation
+  setCategories(categories: ProductCategory[]) {
+    this.categories = categories.sort((a, b) => a.id - b.id);
+  }
+
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
   fetchPointOfSale(id: number) {
+    getProductCategories().then((response) => {
+      console.log(response);
+      this.context.commit('setCategories', response.records);
+    });
     getPointOfSale(id).then((pointOfSale) => {
       this.context.commit('setPointOfSale', pointOfSale);
       this.context.commit('SearchModule/reset', null, { root: true });

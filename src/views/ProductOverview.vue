@@ -8,10 +8,12 @@
       <div class="product-overview-container shadow">
         <div class="product-overview-top" v-if="state === State.CATEGORIES">
           <b-nav class="align-items-center product-overview-top-menu">
-            <home-menu-button :name="'Alcoholic drinks'" :category="1" />
-            <home-menu-button :name="'Non-alcoholic'" :category="2"/>
-            <home-menu-button :name="'Snacks'" :category="3"/>
-            <home-menu-button :name="'Other'" :category="4" />
+              <home-menu-button
+                :name="category.name"
+                :category="category.id"
+                v-for="category in pointOfSaleState.categories"
+                :key="category.id"
+              />
           </b-nav>
           <backend-status />
         </div>
