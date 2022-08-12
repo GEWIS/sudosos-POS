@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div v-if="this.userState.user !== undefined && this.userState.user.id !== undefined">
-      <t-o-s-not-required :initially-open="this.userState.user.acceptedTOS === 'NOT_REQUIRED'"
+      <t-o-s-not-required :initially-open="this.userState.user.acceptedToS === 'NOT_REQUIRED'"
         :logged-out="this.loggedOut"/>
     </div>
     <div class="product-overview">
@@ -74,10 +74,10 @@
               v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
               <div class="user-button">Select</div>
               <div class="user-icon">
-                <font-awesome-icon icon="exclamation-triangle" size="lg" v-if="item.acceptedTOS === 'NOT_ACCEPTED'"/>
+                <font-awesome-icon icon="exclamation-triangle" size="lg" v-if="item.acceptedToS === 'NOT_ACCEPTED'"/>
               </div>
               <div class="user-text"
-                   v-bind:class="(item.acceptedTOS === 'NOT_ACCEPTED') ? 'tos-not-accepted' : ''"
+                   v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'tos-not-accepted' : ''"
               >
                 {{item.firstName}} {{item.lastName}} - {{item.gewisID}}
               </div>

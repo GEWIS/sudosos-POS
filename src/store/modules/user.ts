@@ -48,9 +48,6 @@ export default class UserModule extends VuexModule {
   @Mutation
   setAllUsers(allUsers: User[]) {
     this.allUsers = allUsers;
-    allUsers.forEach((user: User) => {
-      user.gewisID = Math.round(Math.random() * 10000);
-    });
   }
 
   @Mutation
@@ -236,7 +233,7 @@ export default class UserModule extends VuexModule {
   })
   async fetchAllUsers(force: boolean = false) {
     if (this.allUsers.length === 0 || force) {
-      const take = 1000000;
+      const take = 10;
       let usersResponse = await getUsers(take);
       const allUsers = usersResponse.records;
       let totalTaken = usersResponse._pagination.take;
@@ -244,7 +241,7 @@ export default class UserModule extends VuexModule {
       while (totalTaken < usersResponse._pagination.count) {
         // eslint-disable-next-line no-await-in-loop
         usersResponse = await getUsers(take, totalTaken);
-        allUsers.push(usersResponse.records);
+        allUsers.push(...usersResponse.records);
         totalTaken += usersResponse._pagination.take;
       }
       this.context.commit('setAllUsers', allUsers);

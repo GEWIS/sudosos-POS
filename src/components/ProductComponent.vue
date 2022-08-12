@@ -23,7 +23,7 @@ export default class ProductComponent extends Formatters {
     if (!this.product.picture) {
       this.image = 'https://imgur.com/CS0aauU.png';
     } else {
-      this.image = `https://sudosos.gewis.nl/static/products/${this.product.picture}`;
+      this.image = `/static/products/${this.product.picture}`;
     }
   }
 

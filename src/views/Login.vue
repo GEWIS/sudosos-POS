@@ -373,13 +373,13 @@ export default class Login extends Vue {
   display: flex;
   flex-direction: row;
   align-items: center;
-  flex: 0 0 20vh;
-  height: 20vh;
+  flex: 0 0 12.82vw;
   overflow: hidden;
 
   img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
   }
 }
 
