@@ -97,7 +97,6 @@ function checkResponse(fetchResponse: Response) {
     } else if (fetchResponse.status === 9999) {
       console.warn('This local file cannot be found by the dev API');
     }
-    console.log(JSON.stringify(fetchResponse));
   }
 }
 

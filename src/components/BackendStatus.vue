@@ -34,10 +34,8 @@ export default class BackendStatus extends Vue {
     }).then((res) => {
       if (res === 'Pong!') {
         this.online = true;
-        console.log('SudoSOS online!!!');
       } else {
         this.online = false;
-        console.log('SudoSOS offline :(');
       }
     });
   }
