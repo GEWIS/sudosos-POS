@@ -46,8 +46,7 @@
         </div>
       </div>
       <div class="wrap-container-child sponsor-container shadow">
-<!--        TODO Fix nginx so that we can remove sudosos.gewis.nl -->
-        <img v-if="banners.length > 0" :src="`/static/banners/${banners[bannerIndex]}`" />
+        <img :src="banners[bannerIndex]" />
       </div>
     </div>
     <div class="background-logo">
@@ -205,7 +204,7 @@ export default class Login extends Vue {
     getAllActiveBanners().then((banners) => {
       this.banners = [];
       banners.forEach((b) => {
-        this.banners.push(b.picture);
+        this.banners.push(`${process.env.VUE_APP_IMAGE_BASE}banners/${b.picture}`);
       });
     });
     setInterval(() => {
