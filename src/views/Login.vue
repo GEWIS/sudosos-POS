@@ -46,7 +46,8 @@
         </div>
       </div>
       <div class="wrap-container-child sponsor-container shadow">
-        <img :src="banners[bannerIndex]" />
+<!--        TODO Fix nginx so that we can remove sudosos.gewis.nl -->
+        <img v-if="banners.length > 0" :src="`/static/banners/${banners[bannerIndex]}`" />
       </div>
     </div>
     <div class="background-logo">
@@ -64,6 +65,7 @@ import { getModule } from 'vuex-module-decorators';
 import UserModule from '@/store/modules/user';
 import { LoginResponse } from '@/entities/APIResponses';
 import EanLogin from '@/components/EanLogin.vue';
+import { getAllActiveBanners } from '@/api/banners';
 
 @Component({
   filters: {
@@ -89,10 +91,7 @@ export default class Login extends Vue {
     'SudoSOS zoekt coder!',
   ];
 
-  private banners: string[] = [
-    'https://i.imgur.com/OjrVa6c.png',
-    'https://i.imgur.com/S9dsgzl.png',
-  ];
+  private banners: string[] = [];
 
   public motdIndex = 0;
 
@@ -203,6 +202,12 @@ export default class Login extends Vue {
   }
 
   mounted() {
+    getAllActiveBanners().then((banners) => {
+      this.banners = [];
+      banners.forEach((b) => {
+        this.banners.push(b.picture);
+      });
+    });
     setInterval(() => {
       if (this.motdIndex < this.messagesOfTheDay.length - 1) {
         this.motdIndex += 1;
