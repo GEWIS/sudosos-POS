@@ -18,7 +18,7 @@ import {
   faLock,
   faAngleDown,
   faExclamationTriangle,
-  faStop,
+  faStop, faBaby,
 } from '@fortawesome/free-solid-svg-icons';
 import languages from '@/locales';
 import App from './App.vue';
@@ -45,6 +45,7 @@ library.add(
   faAngleDown,
   faExclamationTriangle,
   faStop,
+  faBaby,
 );
 
 // Default settings for Dinero

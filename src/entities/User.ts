@@ -3,11 +3,11 @@ import { BaseEntity } from '@/entities/BaseEntity';
 import { NFCDevice } from '@/entities/NFCDevice';
 
 export enum UserType {
-  MEMBER = 1,
-  ORGAN = 2,
-  BORRELKAART = 3,
-  LOCAL_USER = 4,
-  LOCAL_ADMIN = 5,
+  MEMBER = 'MEMBER',
+  ORGAN = 'ORGAN',
+  BORRELKAART = 'BORRELKAART',
+  LOCAL_USER = 'LOCAL_USER',
+  LOCAL_ADMIN = 'LOCAL_ADMIN',
 }
 
 export interface UserPermissions {
@@ -23,7 +23,6 @@ export interface BaseUser extends BaseEntity {
   lastName: string;
   name: string;
   deleted: boolean;
-  acceptedTOS: string;
 }
 
 export interface User extends BaseUser {
@@ -31,9 +30,10 @@ export interface User extends BaseUser {
   email?: string;
   active: boolean;
   type: UserType;
-  saldo?: Dinero;
   ean?: string;
   nfcDevices: NFCDevice[];
+  acceptedToS: string;
+  ofAge: boolean;
 }
 
 export function checkPermissions(permissions: UserPermissions, type: string) {

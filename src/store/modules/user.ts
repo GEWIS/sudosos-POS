@@ -18,6 +18,8 @@ import { BasePointOfSale } from '@/entities/PointOfSale';
 export default class UserModule extends VuexModule {
   user: User = {} as User;
 
+  userBalance: Dinero.Dinero = null;
+
   userRoles: string[] = [];
 
   userPOSs: BasePointOfSale[] = [];
@@ -48,9 +50,6 @@ export default class UserModule extends VuexModule {
   @Mutation
   setAllUsers(allUsers: User[]) {
     this.allUsers = allUsers;
-    allUsers.forEach((user: User) => {
-      user.gewisID = Math.round(Math.random() * 10000);
-    });
   }
 
   @Mutation
@@ -77,8 +76,8 @@ export default class UserModule extends VuexModule {
   }
 
   @Mutation
-  updateSaldo(newSaldo: number) {
-    this.user.saldo = Dinero({ amount: newSaldo, currency: 'EUR' });
+  updateBalance(balance: Dinero.Dinero) {
+    this.userBalance = balance;
   }
 
   @Mutation
@@ -204,27 +203,25 @@ export default class UserModule extends VuexModule {
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
-  fetchBalance(force: boolean = false) {
-    if (this.user.saldo === undefined || force) {
-      APIHelper.getResource('balances').then((saldoResponse) => {
-        this.context.commit('updateSaldo', saldoResponse);
-      });
-    }
+  async fetchBalance() {
+    const balanceResponse = await APIHelper.getResource(`balances/${this.user.id}`);
+    const balance = Dinero(balanceResponse.amount);
+    this.context.commit('updateBalance', balance);
   }
 
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
-  fetchUser(force: boolean = false) {
+  async fetchUser(force: boolean = false) {
     if (this.user.id === undefined || force) {
       const token = jwtDecode(APIHelper.getToken().jwtToken as string) as any;
 
-      APIHelper.getResource(`users/${token.user.id}`).then((userResponse) => {
-        this.context.commit('setUser', UserTransformer.makeUser(userResponse));
-      });
-      APIHelper.getResource('balances').then((saldoResponse) => {
-        this.context.commit('updateSaldo', saldoResponse);
-      });
+      const userResponse = await APIHelper.getResource(`users/${token.user.id}`);
+      const user = UserTransformer.makeUser(userResponse);
+
+      this.context.commit('setUser', user);
+
+      await this.fetchBalance();
       APIHelper.getResource(`users/${token.user.id}/pointsofsale`).then((pointOfSaleResponse) => {
         this.context.commit('setUserPOSs', pointOfSaleResponse.records);
       });
@@ -236,7 +233,7 @@ export default class UserModule extends VuexModule {
   })
   async fetchAllUsers(force: boolean = false) {
     if (this.allUsers.length === 0 || force) {
-      const take = 1000000;
+      const take = 100000;
       let usersResponse = await getUsers(take);
       const allUsers = usersResponse.records;
       let totalTaken = usersResponse._pagination.take;
@@ -244,7 +241,7 @@ export default class UserModule extends VuexModule {
       while (totalTaken < usersResponse._pagination.count) {
         // eslint-disable-next-line no-await-in-loop
         usersResponse = await getUsers(take, totalTaken);
-        allUsers.push(usersResponse.records);
+        allUsers.push(...usersResponse.records);
         totalTaken += usersResponse._pagination.take;
       }
       this.context.commit('setAllUsers', allUsers);

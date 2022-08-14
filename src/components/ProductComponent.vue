@@ -23,7 +23,7 @@ export default class ProductComponent extends Formatters {
     if (!this.product.picture) {
       this.image = 'https://imgur.com/CS0aauU.png';
     } else {
-      this.image = `https://sudosos.gewis.nl/static/products/${this.product.picture}`;
+      this.image = `${process.env.VUE_APP_IMAGE_BASE}products/${this.product.picture}`;
     }
   }
 
@@ -59,7 +59,8 @@ export default class ProductComponent extends Formatters {
   font-size: 16px;
   height: 22px;
   overflow: hidden;
-  word-wrap: break-word;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .product-price {

@@ -160,6 +160,20 @@ export default {
     localStorage.clear();
   },
 
+  async readPagination(route: string, step = 100, args: Object | null = null) {
+    let response = await this.getResource(route, { take: step });
+    const { records } = response;
+    let totalTaken = response._pagination.take;
+    // Pagination is a thing, so we need to do multiple requests to fetch everything
+    while (totalTaken < response._pagination.count) {
+      // eslint-disable-next-line no-await-in-loop
+      response = await this.getResource(route, { take: step, skip: totalTaken });
+      records.push(...response.records);
+      totalTaken += response._pagination.take;
+    }
+    return records;
+  },
+
   getResource(route: string, args: Object | null = null, headers: Object = {}) {
     const constructedRoute = makeRoute(route, args);
 
