@@ -59,7 +59,8 @@ export default class ProductComponent extends Formatters {
   font-size: 16px;
   height: 22px;
   overflow: hidden;
-  word-wrap: break-word;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .product-price {

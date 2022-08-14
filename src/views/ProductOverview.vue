@@ -73,7 +73,8 @@
               class="user"
               v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
               <div class="user-button">Select</div>
-              <div class="user-icon" v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'disabled' : ''">
+              <div class="user-icon"
+                   v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'disabled' : ''">
                 <font-awesome-icon icon="exclamation-triangle"
                                    size="lg" v-if="item.acceptedToS === 'NOT_ACCEPTED'"/>
                 <font-awesome-icon icon="baby"
@@ -135,9 +136,6 @@
       </div>
       <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"
         :openPickMember="openPickMember" :updateRows="updateRows" :loggedOut="loggedOut"/>
-    </div>
-    <div class="background-logo">
-<!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
     </div>
   </div>
 </template>
@@ -220,11 +218,6 @@ export default class ProductOverview extends Vue {
     window.addEventListener('resize', () => {
       this.checkWindowSize();
     });
-    if (this.pointOfSaleState.pointOfSale === undefined
-      || this.pointOfSaleState.pointOfSale.id === undefined) {
-      this.pointOfSaleState.fetchPointOfSale(1);
-    }
-    this.searchState.updateFilterCategory(1);
 
     // @ts-ignore
     this.$refs.checkoutBar.$refs.checkoutButton.$watch('checkingOut', (value) => {

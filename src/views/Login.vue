@@ -190,9 +190,9 @@ export default class Login extends Vue {
         this.$bvToast.show('toast-tos-not-accepted');
       } else {
         APIHelper.setToken(loginResponse.token);
-        this.userState.fetchUser(true);
-        this.userState.fetchAllUsers();
-        this.$router.push('/productOverview');
+        await this.userState.fetchUser(true);
+        await this.userState.fetchAllUsers();
+        await this.$router.push('/productOverview');
       }
     } else {
       this.$bvToast.show('toast-incorrect-password');

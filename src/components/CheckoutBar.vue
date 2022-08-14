@@ -103,15 +103,15 @@ export default class CheckoutBar extends Formatters {
   }
 
   get balanceAfter() {
-    if (this.userState.user.saldo) {
-      return this.userState.user.saldo.subtract(DineroType({
+    if (this.userState.userBalance) {
+      return this.userState.userBalance.subtract(DineroType({
         amount: this.transactionTotal,
         currency: 'EUR',
       }));
     }
 
     return DineroType({
-      amount: this.transactionTotal,
+      amount: -this.transactionTotal,
       currency: 'EUR',
     });
   }

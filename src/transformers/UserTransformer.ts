@@ -16,13 +16,7 @@ export default {
     }
 
     const { ean } = data;
-    let saldo;
     let nfcDevices = [];
-
-    if ('saldo' in data) {
-      // saldo = dinero({ amount: Number(data.saldo), currency: 'EUR' });
-      saldo = data.saldo;
-    }
 
     if ('nfcDevices' in data) {
       nfcDevices = data.nfcDevices.map((nfcDevice: { name: any; address: any; }) => (
@@ -40,7 +34,6 @@ export default {
       type: data.type,
       acceptedToS: data.acceptedToS,
       ofAge: data.ofAge,
-      saldo,
       ean,
       nfcDevices,
     } as User;

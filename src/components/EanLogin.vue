@@ -1,3 +1,7 @@
+<template>
+  <div class="ean-scanner" />
+</template>
+
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 

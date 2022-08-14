@@ -30,7 +30,6 @@ export interface User extends BaseUser {
   email?: string;
   active: boolean;
   type: UserType;
-  saldo?: Dinero;
   ean?: string;
   nfcDevices: NFCDevice[];
   acceptedToS: string;
