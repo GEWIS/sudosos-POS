@@ -8,5 +8,5 @@ export interface SubTransaction extends BaseEntity {
   to: BaseUser | User;
   container: Container;
   subTransactionRows: SubTransactionRow[];
-  price: Dinero;
+  priceInclVat: Dinero;
 }

@@ -19,7 +19,7 @@ export function parseTransaction(transaction: Transaction) {
         product: subTransRow.product,
         container: subTrans.container,
         amount: subTransRow.amount,
-        totalPrice: subTransRow.price,
+        totalPrice: subTransRow.priceInclVat,
       };
       transEdits.push(transEdit);
     });

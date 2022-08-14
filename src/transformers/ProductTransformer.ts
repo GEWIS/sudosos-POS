@@ -4,6 +4,7 @@ import { ProductOrder } from '@/entities/ProductOrder';
 import UserTransformer from '@/transformers/UserTransformer';
 import BaseTransformer from '@/transformers/BaseTransformer';
 import ProductCategoryTransformer from '@/transformers/ProductCategoryTransformer';
+import VatTransformer from '@/transformers/VatTransformer';
 
 export default {
   makeProduct(data: any) : BaseProduct | Product {
@@ -13,11 +14,14 @@ export default {
       precision: data.priceInclVat.precision,
     });
 
+    const vat = VatTransformer.makeBaseVatGroup(data.vat);
+
     if (!Object.keys(data).includes('owner')) {
       return {
         ...BaseTransformer.makeBaseEntity(data),
         name: data.name,
-        price,
+        vat,
+        priceInclVat: price,
       } as BaseProduct;
     }
 
@@ -25,8 +29,8 @@ export default {
       ...BaseTransformer.makeBaseEntity(data),
       revision: data.revision,
       name: data.name,
-      price,
-      vat: data.vat.percentage,
+      vat,
+      priceInclVat: price,
       owner: UserTransformer.makeUser(data.owner),
       category: ProductCategoryTransformer.makeProductCategory(data.category),
       picture: data.image,

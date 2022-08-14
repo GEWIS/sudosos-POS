@@ -6,21 +6,20 @@ import BaseTransformer from '@/transformers/BaseTransformer';
 export default {
   makeSubTransactionRow(data: any) {
     const product = ProductTransformer.makeProduct(data.product);
-    let price;
+    let priceInclVat;
 
     if (typeof data.totalPriceInclVat === 'object') {
       // This is to satisfy ESLint, yay
-      const dineroPrice = data.totalPriceInclVat;
-      price = dineroPrice;
+      priceInclVat = Dinero(data.totalPriceInclVat);
     } else {
-      price = Dinero({ amount: Number(product.price.getAmount() * data.amount), currency: 'EUR' });
+      priceInclVat = Dinero({ amount: Number(product.priceInclVat.getAmount() * data.amount), currency: 'EUR' });
     }
 
     return {
       ...BaseTransformer.makeBaseEntity(data),
       product,
       amount: data.amount,
-      price,
+      priceInclVat,
     } as SubTransactionRow;
   },
 };

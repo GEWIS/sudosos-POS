@@ -53,9 +53,9 @@ export default class TransactionModule extends VuexModule {
       .find((row) => row.product === product);
     if (subTransRow) {
       subTransRow.amount += amount;
-      subTransRow.price.add(subTransRow.price.multiply(amount));
+      subTransRow.priceInclVat.add(subTransRow.priceInclVat.multiply(amount));
     } else {
-      const price = Dinero({ amount: product.price.getAmount() }).multiply(amount);
+      const price = Dinero({ amount: product.priceInclVat.getAmount() }).multiply(amount);
       subTransRow = {
         product,
         amount,

@@ -83,7 +83,7 @@ export default class CheckoutButton extends Vue {
     const subTransactions: any[] = [];
 
     rows.forEach((row) => {
-      delete row.price;
+      delete row.priceInclVat;
       // Find if there is a subtransaction for this container
       const transactionIndex = subTransactions
         .findIndex((sub) => sub.container === row.product.id);
@@ -100,9 +100,9 @@ export default class CheckoutButton extends Vue {
       }
 
       row.totalPriceInclVat = {
-        amount: row.product.price.getAmount(),
-        precision: row.product.price.getPrecision(),
-        currency: row.product.price.getCurrency(),
+        amount: row.product.priceInclVat.getAmount(),
+        precision: row.product.priceInclVat.getPrecision(),
+        currency: row.product.priceInclVat.getCurrency(),
       };
       row.totalPriceInclVat.amount *= row.amount;
     });

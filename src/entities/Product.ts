@@ -2,10 +2,12 @@ import { Dinero } from 'dinero.js';
 import { BaseUser, User } from '@/entities/User';
 import { ProductCategory } from '@/entities/ProductCategory';
 import { BaseEntity } from '@/entities/BaseEntity';
+import { BaseVatGroup } from '@/entities/VatGroup';
 
 export interface BaseProduct extends BaseEntity {
   name: string;
-  price: Dinero;
+  vat: BaseVatGroup;
+  priceInclVat: Dinero;
 }
 
 export interface Product extends BaseProduct {

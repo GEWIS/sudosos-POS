@@ -420,11 +420,11 @@ export default class ProductOverview extends Vue {
     if (productIndex > -1) {
       this.rows[productIndex].amount += amount;
     } else {
-      const price = Dinero({ amount: product.price.getAmount() });
+      const price = Dinero({ amount: product.priceInclVat.getAmount() });
       const row = {
         product,
         amount,
-        price: product.price,
+        priceInclVat: product.priceInclVat,
       } as SubTransactionRow;
       this.rows.push(row);
     }
