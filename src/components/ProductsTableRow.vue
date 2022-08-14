@@ -1,40 +1,14 @@
 <template>
-  <b-row class="products-table-row" :class="{editing}" @click="rowClicked">
-    <keypad
-      v-show="openKeypad"
-      :value="item.amount"
-      @backspace="backspacePressed"
-      @ok="openKeypad = false"
-      @keyPressed="keyPressed"
-    />
-    <b-col cols="2">
-      <p class="first-col">{{ item.amount }}</p>
-    </b-col>
-    <b-col cols="6">
-      <p>{{ item.product.name }}</p>
-    </b-col>
-    <b-col cols="4">
-      <p>€{{ (productTotal / 100).toFixed(2) }}</p>
-    </b-col>
-    <b-col cols="12" v-if="editing" class="edit-buttons">
-      <b-row>
-        <b-col class="edit-button" cols="4" @click.stop="decreaseItem">
-          <span>−</span>
-        </b-col>
-        <b-col class="edit-button" cols="4" @click.stop="openKeypad = true">
-          <span>✎</span>
-        </b-col>
-        <b-col class="edit-button" cols="4" @click.stop="deleteItem">
-          <span>✖</span>
-        </b-col>
-      </b-row>
-    </b-col>
+  <b-row class="products-table-row">
+    <b-button class="row-button" @mouseup="decreaseClick" @mousedown="startDecreaseHold" @mouseleave="stopHold">-</b-button>
+    <div class="row-amount">{{amount}}</div>
+    <b-button class="row-button" @mouseup="increaseClick" @mousedown="startIncreaseHold" @mouseleave="stopHold">+</b-button>
+    <div class="row-name">{{ item.product.name }}</div>
+    <div class="row-price">€{{ (productTotal / 100).toFixed(2) }}</div>
   </b-row>
 </template>
 <script lang="ts">
-import {
-  Component, Prop, PropSync, Vue,
-} from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import Formatters from '@/mixins/Formatters';
@@ -47,108 +21,157 @@ import TransactionModule from '@/store/modules/transactions';
   },
 })
 export default class ProductsTableRow extends Formatters {
+  @Prop() updateRows: Function;
+
   @Prop() item!: SubTransactionRow;
+
+  @Prop() rows: SubTransactionRow[];
 
   transactionsState = getModule(TransactionModule);
 
-  private editing: boolean = false;
+  private holdDefaultDelay: number = 400;
 
-  private openKeypad: boolean = false;
+  private holdMinimalDelay: number = 80;
 
-  mounted() {
-    this.$parent.$on('productsTable/itemClicked', (clickedItem: SubTransactionRow) => {
-      if (clickedItem !== this.item) {
-        this.editing = false;
-      }
-    });
-  }
+  private holdDecreaseFactor: number = 1.5;
+
+  private holdDelay: number = 1000;
+
+  private held: boolean = false;
+
+  private timeoutHandle: number;
 
   get productTotal() {
-    console.log(this.item);
-    return this.item.price.amount * this.item.amount;
+    return (this.item.priceInclVat.getAmount() as any) * this.item.amount;
   }
 
-  rowClicked() {
-    this.editing = !this.editing;
-    this.$parent.$emit('productsTable/itemClicked', this.item);
+  get amount() {
+    const itemIndex = this.rows.findIndex((row) => row.product.id === this.item.product.id);
+
+    return this.rows[itemIndex].amount;
+  }
+
+  set amount(value: number) {
+    const itemIndex = this.rows.findIndex((row) => row.product.id === this.item.product.id);
+
+    this.rows[itemIndex].amount = value;
   }
 
   deleteItem() {
-    const { rows } = this.$parent.$parent.$parent;
-    this.$parent.$parent.$parent.rows = rows
-      .filter((row) => row.product.id !== this.item.product.id);
+    this.updateRows(this.rows.filter((row) => row.product.id !== this.item.product.id));
+    this.held = false;
   }
 
-  keyPressed(keyValue: string) {
-    this.item.amount = parseInt(this.item.amount.toString(10) + keyValue, 10);
+  increaseClick() {
+    this.held = false;
+    this.increaseItem();
   }
 
-  backspacePressed() {
-    if (this.item.amount > 10) {
-      this.item.amount = parseInt(this.item.amount.toString(10).slice(0, -1), 10);
-    } else {
-      this.item.amount = 0;
-    }
+  decreaseClick() {
+    this.held = false;
+    this.decreaseItem();
   }
 
-  closeKeypad() {
-    if (this.item.amount === 0) {
-      this.deleteItem();
-    }
-    this.openKeypad = false;
-    const itemIndex = this.$parent.$parent.$parent.rows
-      .findIndex((row) => row.product.id === this.item.product.id);
-
-    this.$parent.$parent.$parent.rows[itemIndex].amount = this.item.amount;
+  increaseItem() {
+    this.amount += 1;
   }
 
   decreaseItem() {
-    if (this.item.amount > 1) {
-      const itemIndex = this.$parent.$parent.$parent.rows
-        .findIndex((row) => row.product.id === this.item.product.id);
-
-      this.$parent.$parent.$parent.rows[itemIndex].amount -= 1;
+    if (this.amount > 1) {
+      this.amount -= 1;
     } else {
       this.deleteItem();
+    }
+  }
+
+  stopHold() {
+    this.held = false;
+  }
+
+  startDecreaseHold() {
+    this.held = true;
+    clearTimeout(this.timeoutHandle);
+    this.holdDelay = this.holdDefaultDelay;
+    this.decreaseHold();
+  }
+
+  startIncreaseHold() {
+    this.held = true;
+    clearTimeout(this.timeoutHandle);
+    this.holdDelay = this.holdDefaultDelay;
+    this.increaseHold();
+  }
+
+  increaseHold() {
+    if (!this.held) return;
+
+    // @ts-ignore
+    this.timeoutHandle = setTimeout(() => {
+      if (!this.held) return;
+
+      this.increaseItem();
+      this.decreaseDelay();
+      this.increaseHold();
+    }, this.holdDelay);
+  }
+
+  decreaseHold() {
+    if (!this.held) return;
+
+    // @ts-ignore
+    this.timeoutHandle = setTimeout(() => {
+      if (!this.held) return;
+
+      this.decreaseItem();
+      this.decreaseDelay();
+      this.decreaseHold();
+    }, this.holdDelay);
+  }
+
+  decreaseDelay() {
+    this.holdDelay = Math.round(this.holdDelay / this.holdDecreaseFactor);
+
+    if (this.holdDelay < this.holdMinimalDelay) {
+      this.holdDelay = this.holdMinimalDelay;
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 .products-table-row {
-  border-bottom: 4px solid white;
-  margin: 0;
-  &.editing {
-    background-color: #525659;
-    p {
-      color: white;
+  width: 100%;
+  margin: 0 0 4px 0;
+  align-items: center;
+
+  .row-button {
+    width: 40px;
+    height: 40px;
+    line-height: 20px;
+    color: white;
+    font-size: 20px;
+    background: $gewis-red;
+    border: none;
+
+    &:active {
+      background-color: $gewis-red !important;
+      border: none;
     }
   }
 
-  div {
-    padding: 0;
-    p {
-      // align the first item center
-      &.first-col {
-        text-align: center;
-      }
-      margin-bottom: 0.5em;
-      margin-top: 0.5em;
-      font-weight: 700;
-    }
+  .row-amount {
+    margin: 0 8px;
+    width: 20px;
+    text-align: center;
   }
-  .edit-buttons {
-    .row {
-      margin: 0;
-      .edit-button {
-        cursor: pointer;
-        text-align: center;
-        background-color: white;
-        span {
-          font-size: 1.5rem;
-        }
-      }
-    }
+
+  .row-name {
+    margin-left: 8px;
+    flex: 1;
+  }
+
+  .row-price {
+    justify-self: right;
+    margin-right: 12px;
   }
 }
 </style>

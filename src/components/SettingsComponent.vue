@@ -1,59 +1,124 @@
 <template>
-  <div class="settings-component pos-card">
-    <div class="setting-row">
-      <input type="checkbox" id="borrelmode-checkbox" v-model="borrelMode" @change="modeChanged">
-      <label for="borrelmode-checkbox">Activeer borrelmode</label>
-      <select v-model="chosenOrgan" name="organselect" @change="modeChanged">
-        <option v-for="organ in userState.allOrgans" v-bind:key="organ.organName" :value="organ">
-          {{ organ.organName }}
+  <div class="settings-component pos-card" id="settings-component">
+    <div class="header">Settings</div>
+    <div class="setting-row" v-if="userOwnsCurrentPOS() && userState.userPOSs.length > 0">
+      <label for="posselect">Switch POS to</label>
+      <select v-model="chosenPOS" name="posselect"
+              v-on:change="posChanged" v-if="userState.userPOSs.length > 1">
+        <option v-for="pointOfSale in userState.userPOSs"
+                v-bind:key="pointOfSale.name" :value="pointOfSale">
+          {{ pointOfSale.name }}
         </option>
       </select>
+      <div v-else>{{ userState.userPOSs[0].name }}</div>
     </div>
+<!--    <div class="setting-row" v-if="userState.isInBorrelMode">-->
+<!--      <input type="checkbox" id="restart-checkbox"-->
+<!--             v-model="automaticRestart" @change="automaticRestartChange">-->
+<!--      <label for="restart-checkbox">Pick new user to charge after checkout</label>-->
+<!--    </div>-->
   </div>
 </template>
 <script lang="ts">
-import { Organ } from '@/entities/Organ';
 import UserModule from '@/store/modules/user';
-import { Component, Vue } from 'vue-property-decorator';
+import {
+  Component, Vue, Prop,
+} from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
+import PointOfSaleModule from '@/store/modules/point-of-sale';
+import { BasePointOfSale } from '@/entities/PointOfSale';
 
 @Component
 export default class SettingsComponent extends Vue {
   private userState = getModule(UserModule);
 
-  private borrelMode: boolean = false;
+  private posState = getModule(PointOfSaleModule);
 
-  private chosenOrgan: Organ = {} as Organ;
+  private boundedListener: any;
 
-  mounted() {
-    if (this.userState.borrelModeOrgan.organName) {
-      this.chosenOrgan = this.userState.borrelModeOrgan;
-      this.borrelMode = true;
-    }
+  private chosenPOS: BasePointOfSale;
+
+  @Prop() visible: boolean;
+
+  constructor() {
+    super();
+    this.chosenPOS = this.userState.userPOSs.find((p) => p.id === this.posState.pointOfSale.id);
   }
 
-  modeChanged() {
-    if (this.borrelMode === true && this.chosenOrgan.organName !== undefined) {
-      this.userState.setBorrelModeOrgan(this.chosenOrgan);
+  mounted() {
+    this.boundedListener = this.outsideClickListener.bind(this);
+
+    setTimeout(() => document.addEventListener('click', this.boundedListener), 1);
+  }
+
+  updated() {
+    (this.$el as HTMLElement).style.top = `-${this.$el.clientHeight - 62}px`;
+  }
+
+  userOwnsCurrentPOS() {
+    return this.userState.userPOSs.map((pos) => pos.id)
+      .indexOf(this.posState.pointOfSale.id) >= 0;
+  }
+
+  posChanged() {
+    if (!this.userOwnsCurrentPOS()) return;
+
+    this.posState.fetchPointOfSale(this.chosenPOS.id);
+  }
+
+  outsideClickListener(e) {
+    if (e.composedPath().includes(document.getElementById('options-button'))
+     || e.composedPath().includes(document.getElementById('settings-component'))
+     || !this.$parent.$data.showSettings) {
+      return;
     }
+
+    this.$parent.$data.showSettings = false;
+    document.removeEventListener('click', this.boundedListener);
   }
 }
 </script>
 <style lang="scss" scoped>
+  @import "./src/styles/common.scss";
+
   .settings-component {
+    position: absolute;
+    top: -75%;
+    left: 75px;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    background: white;
+    border-radius: $border-radius;
+    border: 1px solid $gewis-red;
+    height: auto;
+    gap: 16px;
+    padding-bottom: 16px;
+    width: fit-content;
+
+    .header {
+      background: $gewis-red;
+      color: white;
+      padding: 8px 0;
+      font-size: 1.2em;
+      border-top-left-radius: $border-radius - 2px;
+      border-top-right-radius: $border-radius - 2px;
+      text-align: center;
+    }
+
     .setting-row {
-      margin-right: auto;
-      margin-left: auto;
       width: fit-content;
-      font-size: 2rem;
+      display: flex;
+      font-size: 20px;
+      padding: 0 16px;
 
       input[type=checkbox] {
-        height: 2rem;
-        width: 2rem;
+        height: 28px;
+        width: 28px;
       }
 
       label {
-        margin: 1rem 2rem;
+        margin: 0 8px 0 16px;
       }
     }
   }

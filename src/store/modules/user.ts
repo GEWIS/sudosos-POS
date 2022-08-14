@@ -10,6 +10,7 @@ import { getOrganMembers, getUsers } from '@/api/users';
 import UserTransformer from '@/transformers/UserTransformer';
 import { NFCDevice } from '@/entities/NFCDevice';
 import jwtDecode from 'jwt-decode';
+import { BasePointOfSale } from '@/entities/PointOfSale';
 
 @Module({
   dynamic: true, namespaced: true, store, name: 'UserModule',
@@ -17,7 +18,11 @@ import jwtDecode from 'jwt-decode';
 export default class UserModule extends VuexModule {
   user: User = {} as User;
 
+  userBalance: Dinero.Dinero = null;
+
   userRoles: string[] = [];
+
+  userPOSs: BasePointOfSale[] = [];
 
   allUsers: User[] = [];
 
@@ -25,21 +30,16 @@ export default class UserModule extends VuexModule {
 
   permissions: UserPermissions = {} as UserPermissions;
 
-  borrelModeOrgan: Organ = {} as Organ;
+  automaticRestart: boolean = true;
 
   @Mutation
   reset() {
     this.user = {} as User;
     this.userRoles = [];
+    this.userPOSs = [];
     this.allUsers = [];
     this.allOrgans = [];
     this.permissions = {} as UserPermissions;
-    this.borrelModeOrgan = {} as Organ;
-  }
-
-  @Mutation
-  setBorrelModeOrgan(organ: Organ) {
-    this.borrelModeOrgan = organ;
   }
 
   @Mutation
@@ -50,9 +50,11 @@ export default class UserModule extends VuexModule {
   @Mutation
   setAllUsers(allUsers: User[]) {
     this.allUsers = allUsers;
-    allUsers.forEach((user: User) => {
-      user.gewisID = Math.round(Math.random() * 10000);
-    });
+  }
+
+  @Mutation
+  setUserPOSs(pointsOfSale: BasePointOfSale[]) {
+    this.userPOSs = pointsOfSale.sort((a, b) => (a.name.localeCompare(b.name)));
   }
 
   @Mutation
@@ -74,8 +76,8 @@ export default class UserModule extends VuexModule {
   }
 
   @Mutation
-  updateSaldo(newSaldo: number) {
-    this.user.saldo = Dinero({ amount: newSaldo, currency: 'EUR' });
+  updateBalance(balance: Dinero.Dinero) {
+    this.userBalance = balance;
   }
 
   @Mutation
@@ -160,8 +162,8 @@ export default class UserModule extends VuexModule {
     email: string,
     }) {
     const userResponse = APIHelper.putResource('user/updateUserInfo', data);
-    this.user.firstname = data.firstname;
-    this.user.lastname = data.lastname;
+    this.user.firstName = data.firstname;
+    this.user.lastName = data.lastname;
     this.user.email = data.email;
   }
 
@@ -177,8 +179,8 @@ export default class UserModule extends VuexModule {
     const userIndex = this.allUsers.findIndex((user) => user.id === data.userID);
     const user = this.allUsers[userIndex];
 
-    user.firstname = data.firstname;
-    user.lastname = data.lastname;
+    user.firstName = data.firstname;
+    user.lastName = data.lastname;
     user.name = `${data.firstname} ${data.lastname}`;
     user.email = data.email;
     user.active = data.active;
@@ -201,26 +203,27 @@ export default class UserModule extends VuexModule {
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
-  fetchBalance(force: boolean = false) {
-    if (this.user.saldo === undefined || force) {
-      APIHelper.getResource('balances').then((saldoResponse) => {
-        this.context.commit('updateSaldo', saldoResponse);
-      });
-    }
+  async fetchBalance() {
+    const balanceResponse = await APIHelper.getResource(`balances/${this.user.id}`);
+    const balance = Dinero(balanceResponse.amount);
+    this.context.commit('updateBalance', balance);
   }
 
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
-  fetchUser(force: boolean = false) {
+  async fetchUser(force: boolean = false) {
     if (this.user.id === undefined || force) {
       const token = jwtDecode(APIHelper.getToken().jwtToken as string) as any;
 
-      APIHelper.getResource(`users/${token.user.id}`).then((userResponse) => {
-        this.context.commit('setUser', UserTransformer.makeUser(userResponse));
-      });
-      APIHelper.getResource('balances').then((saldoResponse) => {
-        this.context.commit('updateSaldo', saldoResponse);
+      const userResponse = await APIHelper.getResource(`users/${token.user.id}`);
+      const user = UserTransformer.makeUser(userResponse);
+
+      this.context.commit('setUser', user);
+
+      await this.fetchBalance();
+      APIHelper.getResource(`users/${token.user.id}/pointsofsale`).then((pointOfSaleResponse) => {
+        this.context.commit('setUserPOSs', pointOfSaleResponse.records);
       });
     }
   }
@@ -230,8 +233,18 @@ export default class UserModule extends VuexModule {
   })
   async fetchAllUsers(force: boolean = false) {
     if (this.allUsers.length === 0 || force) {
-      const allUsers = await getUsers(1000000); // Get all users
-      this.context.commit('setAllUsers', allUsers.records);
+      const take = 100000;
+      let usersResponse = await getUsers(take);
+      const allUsers = usersResponse.records;
+      let totalTaken = usersResponse._pagination.take;
+      // Pagination is a thing, so we need to do multiple requests to fetch everything
+      while (totalTaken < usersResponse._pagination.count) {
+        // eslint-disable-next-line no-await-in-loop
+        usersResponse = await getUsers(take, totalTaken);
+        allUsers.push(...usersResponse.records);
+        totalTaken += usersResponse._pagination.take;
+      }
+      this.context.commit('setAllUsers', allUsers);
       this.context.commit('setAllOrgans');
       this.fetchAllOrganMembers();
     }
@@ -242,8 +255,10 @@ export default class UserModule extends VuexModule {
   })
   async fetchAllOrganMembers() {
     // TODO: Replace with actual fetch code
-    this.allOrgans.forEach(async (organ) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const organ of this.allOrgans) {
+      // eslint-disable-next-line no-await-in-loop
       organ.organMembers = await getOrganMembers(organ.organUser.id);
-    });
+    }
   }
 }

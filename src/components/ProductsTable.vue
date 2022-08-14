@@ -1,12 +1,11 @@
 <template>
   <div class="products-table-container">
-    <products-table-header/>
-    <products-table-row v-for="item in items" :key="item.product.id" :item="item" />
+    <products-table-row v-for="item in items" :key="item.product.id" :item="item" :rows="items" :updateRows="updateRows"/>
   </div>
 </template>
 <script lang="ts">
 import {
-  Component, Prop, PropSync, Vue,
+  Component, Prop, Vue,
 } from 'vue-property-decorator';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import ProductsTableHeader from '@/components/ProductsTableHeader.vue';
@@ -20,5 +19,7 @@ import ProductsTableRow from '@/components/ProductsTableRow.vue';
 })
 export default class ProductsTable extends Vue {
   @Prop() items!: SubTransactionRow[];
+
+  @Prop() updateRows: Function;
 }
 </script>

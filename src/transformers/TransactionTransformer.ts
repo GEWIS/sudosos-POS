@@ -6,21 +6,21 @@ import PointOfSaleTransformer from '@/transformers/PointOfSaleTransformer';
 import SubTransactionTransformer from '@/transformers/SubTransactionTransformer';
 import BaseTransformer from '@/transformers/BaseTransformer';
 import { SubTransaction } from '@/entities/SubTransaction';
-import { SubTransactionRow } from '@/entities/SubTransactionRow';
 
 export default {
   makeTransaction(data: any) : Transaction {
-    const subTransactions = data.subTransactions.map((subTrans: any) => SubTransactionTransformer.makeSubTransaction(subTrans));
-    let price;
+    const subTransactions = data.subTransactions ? data.subTransactions.map((subTrans: any) => SubTransactionTransformer.makeSubTransaction(subTrans)) : undefined;
+    let priceInclVat: Dinero.Dinero;
 
-    if (typeof data.price === 'object') {
+    if (typeof data.totalPriceInclVat === 'object') {
       // This is to satisfy ESLint, yay
-      const dineroPrice = data.price;
-      price = dineroPrice;
-    } else {
+      priceInclVat = Dinero(data.totalPriceInclVat);
+    } else if (typeof data.value === 'object') {
+      priceInclVat = Dinero(data.value);
+    } else if (subTransactions !== undefined) {
       let tempPrice = 0;
-      subTransactions.forEach((subTrans: SubTransaction) => { tempPrice += subTrans.price.getAmount(); });
-      price = Dinero({ amount: Number(tempPrice), currency: 'EUR' });
+      subTransactions.forEach((subTrans: SubTransaction) => { tempPrice += subTrans.priceInclVat.getAmount(); });
+      priceInclVat = Dinero({ amount: Number(tempPrice), currency: 'EUR' });
     }
 
     return {
@@ -29,7 +29,7 @@ export default {
       createdBy: UserTransformer.makeUser(data.createdBy),
       pointOfSale: PointOfSaleTransformer.makePointOfSale(data.pointOfSale),
       subTransactions,
-      price,
+      priceInclVat,
     } as Transaction;
   },
 };

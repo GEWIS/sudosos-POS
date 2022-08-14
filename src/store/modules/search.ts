@@ -3,8 +3,12 @@ import {
 } from 'vuex-module-decorators';
 import store from '@/store';
 import { User } from '@/entities/User';
+import { Transaction } from '@/entities/Transaction';
+import { getTransactions, getUserTransactions } from '@/api/transactions';
 
-@Module({ dynamic: true, store, name: 'SearchModule' })
+@Module({
+  dynamic: true, store, namespaced: true, name: 'SearchModule',
+})
 export default class SearchModule extends VuexModule {
   searching: boolean = false; // Searching for a product
 
@@ -16,13 +20,20 @@ export default class SearchModule extends VuexModule {
 
   chargingUser: User = {} as User;
 
+  transactionHistory: Transaction[] = [];
+
+  get isChargingUser() {
+    return this.chargingUser !== undefined && this.chargingUser.firstName !== undefined;
+  }
+
   @Mutation
   reset() {
     this.searching = false;
     this.userSearching = false;
     this.filterName = '';
-    this.filterCategory = 0;
+    this.filterCategory = 1;
     this.chargingUser = {} as User;
+    this.transactionHistory = [];
   }
 
   @Mutation
@@ -37,13 +48,14 @@ export default class SearchModule extends VuexModule {
     if (searching) {
       this.filterName = '';
       this.filterCategory = 0;
+    } else {
+      this.filterCategory = 1;
     }
   }
 
   @Mutation
   setFilterCategory(category: number): void {
     this.searching = false;
-    console.log(category);
     this.filterCategory = category;
   }
 
@@ -57,11 +69,23 @@ export default class SearchModule extends VuexModule {
     this.chargingUser = {} as User;
   }
 
+  @Mutation
+  setTransactionHistory(transactions: Transaction[]) {
+    this.transactionHistory = transactions;
+  }
+
   @Action({
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
   })
   updateSearching(searching: boolean) {
     this.context.commit('setSearching', searching);
+  }
+
+  @Action({
+    rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
+  })
+  updateUserSearching(searching: boolean) {
+    this.context.commit('setUserSearching', searching);
   }
 
   @Action({
@@ -76,5 +100,46 @@ export default class SearchModule extends VuexModule {
   })
   updateFilterCategory(category: number) {
     this.context.commit('setFilterCategory', category);
+  }
+
+  @Action({
+    rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
+  })
+  updateChargingUser(user: User) {
+    this.context.commit('setChargingUser', user);
+    this.fetchTransactionHistory();
+  }
+
+  @Action({
+    rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
+  })
+  removeChargingUser() {
+    this.context.commit('clearChargingUser');
+    this.fetchTransactionHistory();
+  }
+
+  @Action({
+    rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
+  })
+  fetchTransactionHistory() {
+    let id;
+    if (this.chargingUser !== undefined && this.chargingUser.id !== undefined
+      && this.context.rootState.PointOfSaleModule.pointOfSale
+      && !this.context.rootState.PointOfSaleModule.pointOfSale.useAuthentication
+    ) {
+      id = this.chargingUser.id;
+    } else if (this.context.rootState.PointOfSaleModule.pointOfSale
+      && this.context.rootState.PointOfSaleModule.pointOfSale.useAuthentication
+    ) {
+      id = this.context.rootState.UserModule.user.id;
+    }
+    if (id) {
+      getUserTransactions(id, {}, 5, 0)
+        .then((transactions) => {
+          this.context.commit('setTransactionHistory', transactions.records);
+        });
+    } else {
+      this.context.commit('setTransactionHistory', []);
+    }
   }
 }

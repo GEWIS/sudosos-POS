@@ -1,27 +1,28 @@
 <template>
   <b-row class="checkout-button"
-    :class="{'checking-out': checkingOut}"
+    :class="{'checking-out': checkingOut, 'unfinished': unfinished}"
     @click="buttonClicked">
-    <p>{{ buttonText }}</p>
+    <font-awesome-icon icon="lock" v-if="unfinished" />
+    <p v-if="unfinished">Charge someone</p>
+    <p v-else>{{ buttonText }}</p>
   </b-row>
 </template>
 <script lang="ts">
 import { PointOfSale } from '@/entities/PointOfSale';
-import { SubTransaction } from '@/entities/SubTransaction';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { Container } from '@/entities/Container';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
-import SubTransactionTransformer from '@/transformers/SubTransactionTransformer';
-import TransactionTransformer from '@/transformers/TransactionTransformer';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { postTransaction } from '@/api/transactions';
 import SearchModule from '@/store/modules/search';
-import ProductOverview from '@/views/ProductOverview.vue';
+import PointOfSaleModule from '@/store/modules/point-of-sale';
 
 @Component
 export default class CheckoutButton extends Vue {
+  @Prop() openPickMember: Function;
+
   private countdown: number = 3;
 
   private buttonText: string = 'Checkout';
@@ -30,24 +31,21 @@ export default class CheckoutButton extends Vue {
 
   private timeout: number = 0;
 
-  userState = getModule(UserModule);
+  private borrelModeCheckout: boolean = false;
 
-  searchState = getModule(SearchModule);
+  private userState = getModule(UserModule);
 
-  mounted() {
-    this.$parent.$parent.$on('userSelected', () => {
-      const { organName } = this.userState.borrelModeOrgan;
-      // Make sure we are in borrel mode
-      if (organName) {
-        (this.$parent.$parent as ProductOverview).showOrganMembers = true;
-      }
-    });
+  private searchState = getModule(SearchModule);
 
-    this.$parent.$parent.$on('organMemberSelected', (selectedMember: User) => {
-      (this.$parent.$parent as ProductOverview).showOrganMembers = false;
-      const { chargingUser } = this.searchState;
-      this.finishTransaction(selectedMember, chargingUser, true);
-    });
+  private pointOfSaleState = getModule(PointOfSaleModule);
+
+  organMemberSelected(selectedMember: User) {
+    this.finishTransaction(selectedMember, this.searchState.chargingUser, true);
+    this.borrelModeCheckout = false;
+  }
+
+  get unfinished(): boolean {
+    return !this.pointOfSaleState.pointOfSale.useAuthentication && !this.searchState.isChargingUser;
   }
 
   checkout() {
@@ -77,12 +75,15 @@ export default class CheckoutButton extends Vue {
         };
       }
     });
+
     return rowContainer;
   }
 
   static makeSubTransactions(rows: SubTransactionRow[], user: User, pos: any) {
     const subTransactions: any[] = [];
+
     rows.forEach((row) => {
+      delete row.priceInclVat;
       // Find if there is a subtransaction for this container
       const transactionIndex = subTransactions
         .findIndex((sub) => sub.container === row.product.id);
@@ -90,7 +91,6 @@ export default class CheckoutButton extends Vue {
         subTransactions[transactionIndex].subTransactionRows.push(row);
       } else {
         const container = CheckoutButton.getContainerForRow(row, pos);
-        console.log(container);
         const sub = {
           to: pos.owner.id,
           container,
@@ -98,31 +98,39 @@ export default class CheckoutButton extends Vue {
         };
         subTransactions.push(sub);
       }
-      row.price.amount *= row.amount;
+
+      row.totalPriceInclVat = {
+        amount: row.product.priceInclVat.getAmount(),
+        precision: row.product.priceInclVat.getPrecision(),
+        currency: row.product.priceInclVat.getCurrency(),
+      };
+      row.totalPriceInclVat.amount *= row.amount;
     });
 
     // Calculate transaction price
     subTransactions.forEach((sub) => {
-      console.log(sub);
-      sub.price = {
+      sub.totalPriceInclVat = {
         amount: sub.subTransactionRows
-          .reduce((total, row) => total + row.price.amount, 0),
+          .reduce((total, row) => total + row.totalPriceInclVat.amount, 0),
         currency: 'EUR',
         precision: 2,
       };
     });
+
     return subTransactions;
   }
 
   async finishTransaction(user: User, chargingUser: User, borrelMode = false) {
-    const { rows, pointOfSale } = this.$parent.$parent;
+    const { rows } = this.$parent.$parent as any;
+    const { pointOfSale } = this.pointOfSaleState;
 
     const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
 
     let chargingId = 0;
+
     if (chargingUser.firstName !== undefined) {
       chargingId = chargingUser.id;
-      this.searchState.clearChargingUser();
+      this.searchState.removeChargingUser();
     } else {
       chargingId = user.id;
     }
@@ -138,9 +146,9 @@ export default class CheckoutButton extends Vue {
     };
 
     const price = transaction.subTransactions
-      .reduce((total, sub) => total + sub.price.amount, 0);
+      .reduce((total, sub) => total + sub.totalPriceInclVat.amount, 0);
 
-    transaction.price = {
+    (transaction as any).totalPriceInclVat = {
       amount: price,
       currency: 'EUR',
       precision: 2,
@@ -154,24 +162,38 @@ export default class CheckoutButton extends Vue {
         };
       });
     });
+
     try {
-      const transactionResponse = await postTransaction(transaction);
+      await postTransaction(transaction);
       this.searchState.reset();
-      this.$parent.$parent.rows = [];
+      (this.$parent.$parent as any).rows = [];
+
       if (!borrelMode) {
         this.userState.reset();
-        this.$router.push('/login');
+        this.$router.push('/');
       }
+      // else if (this.userState.willAutomaticRestart) {
+      //   this.searchState.setUserSearching(true);
+      // }
     } catch (error: any) {
-      alert(error.message);
+      // TODO: Catch error
     }
   }
 
+  isBorrelModeCheckout() {
+    return this.borrelModeCheckout;
+  }
+
+  clearBorrelModeCheckout() {
+    this.borrelModeCheckout = false;
+  }
+
   buttonClicked() {
-    const { organName } = this.userState.borrelModeOrgan;
     // Borrelmode checkout
-    if (organName) {
-      this.searchState.setUserSearching(true);
+    if (!this.pointOfSaleState.pointOfSale.useAuthentication && !this.searchState.isChargingUser) {
+
+    } else if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
+      this.openPickMember();
     } else if (this.checkingOut) {
       clearTimeout(this.timeout);
       this.countdown = 3;
@@ -185,32 +207,46 @@ export default class CheckoutButton extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-  .checkout-button {
-    cursor: pointer;
-    height: 12%;
-    background-color: #93e78e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+@import "@/styles/global/variables.scss";
 
-    &.checking-out {
-      background-color: #ed5a5a;
-      animation: checkout-background 1s 3;
+.checkout-button {
+  cursor: pointer;
+  height: $nav-height;
+  background-color: #93e78e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: $border-radius;
 
-      p {
-        color: white;
-      }
-    }
+  svg {
+    color: #525659;
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+  }
+
+  &.unfinished {
+    background-color: lightgray;
+  }
+
+  &.checking-out {
+    background-color: #ed5a5a;
+    animation: checkout-background 1s 3;
+
     p {
-      font-size: 2rem;
-      color: #525659;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    @keyframes checkout-background {
-      from { background-color: #ed5a5a;}
-      to { background-color: #F40000;}
+      color: white;
     }
   }
+  p {
+    font-size: 26px;
+    color: #525659;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  @keyframes checkout-background {
+    from { background-color: #ed5a5a;}
+    to { background-color: #F40000;}
+  }
+}
 </style>

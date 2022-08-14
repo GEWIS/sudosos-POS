@@ -1,62 +1,73 @@
 <template>
-  <div class="checkoutbar">
-    <b-row class="user-data-header">
-      <b-col cols="8" class="user-data-container">
-        <p class="user-data-line">
-          <font-awesome-icon icon="user" />
-          {{ userState.user.firstName }} {{ userState.user.lastName }}
-        </p>
-        <p class="user-data-line">
-          <font-awesome-icon icon="wallet" />
-          <span :class="saldoClass" v-if="userState.user.saldo">
-            {{ userState.user.saldo.toFormat() }}
-          </span>
-        </p>
+  <div class="checkoutbar shadow">
+    <b-row class="order-for">
+      <b-col class="for-text">
+          Order for
       </b-col>
-      <b-col class="logout-button" @click="logout">
-        <font-awesome-icon icon="sign-out-alt" />
+      <b-col class="user-button" @click="chargeOtherPerson">
+        <div v-if="!searchState.isChargingUser && !pointOfSaleState.pointOfSale.useAuthentication">
+          no one
+        </div>
+        <div v-else-if="!searchState.isChargingUser">
+          {{ userState.user.firstName }}
+        </div>
+        <div v-else>
+          {{ searchState.chargingUser.firstName }}
+        </div>
+        <div class="angle-down-icon">
+        <font-awesome-icon icon="angle-down"/>
+        </div>
+      </b-col>
+      <b-col
+        class="logout-button"
+        @click="logout"
+        align-v="center"
+        v-if="pointOfSaleState.pointOfSale.useAuthentication"
+      >
+        <font-awesome-icon icon="sign-out-alt"/>
       </b-col>
     </b-row>
-    <products-table :items="subTransactionRows" />
+    <products-table v-if="subTransactionRows.length > 0" :items="subTransactionRows" :updateRows="updateRows"/>
+    <transaction-history v-if="subTransactionRows.length === 0" :transactions="searchState.transactionHistory" />
     <b-row class="transaction-detail-row">
-      <b-col cols="6" offset="2"><p>Total</p></b-col>
-      <b-col cols="4">
-          <p>
-            €{{ (transactionTotal / 100).toFixed(2) }}
-          </p>
-        </b-col>
+      <div class="total-row">
+        <div class="total-text">Total</div>
+        <div class="total-value">€{{ (transactionTotal / 100).toFixed(2) }}</div>
+      </div>
+      <div class="balance-row" v-if="!searchState.isChargingUser && pointOfSaleState.pointOfSale.useAuthentication">
+        <div class="balance-text">Balance after</div>
+        <div class="balance-value warn" v-if="balanceAfter.getAmount() < 0">
+          {{ balanceAfter.toFormat() }}
+        </div>
+        <div class="balance-value" v-else>{{ balanceAfter.toFormat() }}</div>
+      </div>
+      <div class="warning-row" v-if="searchState.isChargingUser">
+        <font-awesome-icon icon="exclamation-triangle"/>
+        You are charging {{ searchState.chargingUser.firstName }}!
+      </div>
     </b-row>
-    <b-row class="transaction-detail-row">
-      <b-col cols="6" offset="2"><p>Balance after</p></b-col>
-      <b-col cols="4"><p>{{ balanceAfter.toFormat() }}</p></b-col>
-    </b-row>
-    <checkout-button />
-    <b-row class="charge-other-button" @click="chargeOtherPerson">
-      <p v-if="searchState.chargingUser.firstName === undefined">
-        <font-awesome-icon icon="user-friends"/> Charge someone else
-      </p>
-      <p v-else>
-        Charging {{ searchState.chargingUser.firstName }} {{ searchState.chargingUser.lastName }}
-      </p>
-    </b-row>
+    <checkout-button ref="checkoutButton" :openPickMember="openPickMember" />
+    <div class="borrelmode-text" v-if="!pointOfSaleState.pointOfSale.useAuthentication">
+      Borrelmode is active for {{ pointOfSaleState.pointOfSale.owner.name }}
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import Dinero from 'dinero.js';
+import DineroType from 'dinero.js';
 import Formatters from '@/mixins/Formatters';
 import ProductsTable from '@/components/ProductsTable.vue';
 import CheckoutButton from '@/components/CheckoutButton.vue';
-import { SubTransaction } from '@/entities/SubTransaction';
-import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
-import TransactionModule from '@/store/modules/transactions';
 import SearchModule from '@/store/modules/search';
+import { SubTransactionRow } from '@/entities/SubTransactionRow';
+import PointOfSaleModule from '@/store/modules/point-of-sale';
+import TransactionHistory from '@/components/TransactionHistory.vue';
 
 @Component({
-  components: { ProductsTable, CheckoutButton },
+  components: { TransactionHistory, ProductsTable, CheckoutButton },
   props: {
     subTransactionRows: {
       type: Array,
@@ -64,106 +75,199 @@ import SearchModule from '@/store/modules/search';
   },
 })
 export default class CheckoutBar extends Formatters {
+  @Prop() openUserSearch: Function;
+
+  @Prop() openPickMember: Function;
+
+  @Prop() updateRows: Function;
+
+  @Prop() loggedOut: Function;
+
   private userState = getModule(UserModule);
 
   private searchState = getModule(SearchModule);
 
-  // Other user to charge
-  private charging: User|null = null;
+  private pointOfSaleState = getModule(PointOfSaleModule);
 
-  get saldoClass() {
-    if (this.userState.user.saldo instanceof Number) {
-      const saldo = this.dinero({ amount: this.userState.user.saldo });
-      console.log(saldo.isPositive());
-      return saldo.isPositive() ? 'positive' : 'negative';
-    }
-    return this.userState.user.saldo.isPositive() ? 'positive' : 'negative';
-  }
+  subTransactionRows: SubTransactionRow[];
 
   get transactionTotal() {
     let total = 0;
-    this.subTransactionRows.forEach((row) => {
-      const rowTotal = row.price.amount * row.amount;
+
+    this.subTransactionRows.forEach((row: SubTransactionRow) => {
+      const rowTotal = row.priceInclVat.getAmount() * row.amount;
       total += rowTotal;
     });
+
     return total;
   }
 
   get balanceAfter() {
-    if (this.userState.user.saldo) {
-      return this.userState.user.saldo.subtract(Dinero({
+    if (this.userState.userBalance) {
+      return this.userState.userBalance.subtract(DineroType({
         amount: this.transactionTotal,
         currency: 'EUR',
       }));
     }
-    return Dinero({
-      amount: this.transactionTotal,
+
+    return DineroType({
+      amount: -this.transactionTotal,
       currency: 'EUR',
     });
   }
 
   chargeOtherPerson() {
-    this.searchState.setUserSearching(true);
+    this.openUserSearch();
+  }
+
+  organMemberSelected(user: User): void {
+    (this.$refs.checkoutButton as CheckoutButton).organMemberSelected(user);
   }
 
   logout() {
-    this.userState.reset();
-    this.searchState.reset();
-    this.$router.push('/login');
+    if (!this.pointOfSaleState.pointOfSale.useAuthentication) return;
+    this.loggedOut();
+    // @ts-ignore
+    document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
   }
 }
 </script>
 <style lang="scss" scoped>
+@import "@/styles/global/variables.scss";
+
 .checkoutbar {
-  background-color: #dadada;
-  height: 100vh;
   display: flex;
   flex-direction: column;
+  flex: 0 0 380px;
+  padding-left: 8px;
+  border-radius: $border-radius;
+  background: rgba(white, 0.8);
+  padding: 16px;
+
   .row {
     margin: 0;
   }
-  .user-data-header {
-    .user-data-container {
-      padding-top: 0.5rem;
-      background-color: #525659;
-      .user-data-line {
-        white-space: nowrap;
-        overflow: hidden;
-        display: block;
-        text-overflow: ellipsis;
-        color: white;
-        span.positive {
-          color: #93e78e;
-        }
-        span.negative {
-          color: #ed5a5a;
+
+  .order-for {
+    flex-wrap: nowrap;
+    margin-bottom: 16px;
+
+    .for-text {
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: fit-content;
+      vertical-align: middle;
+      line-height: 62px;
+      font-size: 20px;
+      margin-right: 10px;
+      padding: 0;
+    }
+
+    .user-button {
+      border: 1px solid $gewis-red;
+      border-radius: $border-radius;
+      flex-grow: 1;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      margin-right: 10px;
+
+      .angle-down-icon {
+        margin-left: 10px;
+
+        svg {
+          width: 20px;
+          height: 20px;
         }
       }
     }
-  }
-  .logout-button {
-    background-color: red;
-    padding: 15px;
-    svg {
-      width: 100%;
-      height: 100%;
+
+    .logout-button {
+      background-color: $gewis-red;
+      border-radius: $border-radius;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: $nav-height;
+      flex-grow: 0;
+      flex-shrink: 0;
+      cursor: pointer;
+      height: $nav-height;
+      text-align: center;
+      flex-basis: 62px;
       color: white;
+
+      svg {
+        width: 24px;
+        height: 24px;
+      }
     }
   }
+
   .products-table-container {
     flex: 1;
+    overflow-y: auto;
   }
+
+  .transaction-history-table-container {
+    flex: 1;
+    overflow-y: auto;
+  }
+
   .transaction-detail-row {
-    border-bottom: 4px solid white;
-    div {
-      padding: 0;
-      p {
-        margin-bottom: 0.5em;
-        margin-top: 0.5em;
-        font-weight: 700;
+    margin: 8px 0;
+    background: white;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    border-radius: $border-radius;
+
+    .total-row {
+      display: flex;
+      flex-direction: row;
+      font-size: 20px;
+
+      .total-text {
+        flex: 1;
+      }
+
+      .total-value {
+        align-self: flex-end;
+      }
+    }
+
+    .balance-row {
+      display: flex;
+      flex-direction: row;
+      font-size: 16px;
+
+      .balance-text {
+        flex: 1;
+      }
+
+      .balance-value {
+        align-self: flex-end;
+
+        &.warn {
+          color: $gewis-red;
+          font-weight: 800;
+        }
+      }
+    }
+
+    .warning-row {
+      font-size: 13px;
+
+      svg {
+        color: red;
       }
     }
   }
+
   .charge-other-button {
     cursor: pointer;
     height: 8%;
@@ -176,6 +280,19 @@ export default class CheckoutBar extends Formatters {
       font-weight: 700;
       margin: 0;
     }
+  }
+
+  .borrelmode-text {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: white;
+    background: $gewis-red;
+    margin: 12px -16px -16px -16px;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+    padding: 8px 16px;
+    text-align: center;
   }
 }
 </style>

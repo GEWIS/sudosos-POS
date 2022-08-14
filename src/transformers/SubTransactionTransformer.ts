@@ -11,16 +11,15 @@ import { SubTransactionRow } from '@/entities/SubTransactionRow';
 export default {
   makeSubTransaction(data: any) : SubTransaction {
     const subTransactionRows = data.subTransactionRows.map((subTransRow: any) => SubTransactionRowTransformer.makeSubTransactionRow(subTransRow));
-    let price;
+    let priceInclVat;
 
-    if (typeof data.price === 'object') {
+    if (typeof data.totalPriceInclVat === 'object') {
       // This is to satisfy ESLint, yay
-      const dineroPrice = data.price;
-      price = dineroPrice;
+      priceInclVat = Dinero(data.totalPriceInclVat);
     } else {
       let tempPrice = 0;
-      subTransactionRows.forEach((subTransRow: SubTransactionRow) => { tempPrice += subTransRow.price.amount; });
-      price = Dinero({ amount: Number(tempPrice), currency: 'EUR' });
+      subTransactionRows.forEach((subTransRow: SubTransactionRow) => { tempPrice += (subTransRow.priceInclVat as any).amount; });
+      priceInclVat = Dinero({ amount: Number(tempPrice), currency: 'EUR' });
     }
 
     return {
@@ -28,7 +27,7 @@ export default {
       to: UserTransformer.makeUser(data.to),
       container: ContainerTransformer.makeContainer(data.container),
       subTransactionRows,
-      price,
+      priceInclVat,
     } as SubTransaction;
   },
 };

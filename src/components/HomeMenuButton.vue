@@ -1,6 +1,6 @@
 <template>
   <b-nav-item @click="buttonClicked" :class="{active}">
-    <font-awesome-icon :icon="name" />
+    {{name}}
   </b-nav-item>
 </template>
 <script lang="ts">

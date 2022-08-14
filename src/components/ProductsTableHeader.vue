@@ -20,7 +20,6 @@ export default class ProductsTableHeader extends Vue {}
   div{
     padding: 0;
     p {
-      // align the first item center
       &.first-col {
         text-align: center;
       }

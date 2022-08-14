@@ -1,23 +1,24 @@
 <template>
-  <b-col class="keypad" :class="{inline}">
-    <b-row v-if="!inline">
-      <b-col cols="6" offset="3" class="value-container">
-        <p>
-          {{ value }}
-        </p>
-      </b-col>
-    </b-row>
-    <b-row class="keys-container">
-      <b-col v-for="key in keys" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
-        <p>{{ key }}</p>
-      </b-col>
-    </b-row>
-  </b-col>
+  <div class="keypad" :class="{inline}">
+    <div v-for="key in keys" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
+      <div class="key-text">{{ key }}</div>
+    </div>
+    <div class="key-external" @click.stop="toggleExternalState">
+      <div  class="key-external-text">
+        {{this.externalState === 'EXTERNAL' ? 'Change to GEWIS login' : 'Change to external login'}}
+      </div>
+    </div>
+  </div>
 </template>
 <script lang="ts">
 import {
   Component, PropSync, Prop, Vue,
 } from 'vue-property-decorator';
+
+enum ExternalState {
+  GEWIS = 'GEWIS',
+  EXTERNAL = 'EXTERNAL'
+}
 
 @Component
 export default class Keypad extends Vue {
@@ -26,6 +27,16 @@ export default class Keypad extends Vue {
   @Prop({ default: 0 }) readonly value!: number;
 
   @Prop({ default: false }) readonly inline!: boolean;
+
+  @Prop({ default: 'GEWIS' }) externalState: ExternalState;
+
+  toggleExternalState() {
+    if (this.externalState === ExternalState.GEWIS) {
+      this.$emit('update:externalState', ExternalState.EXTERNAL);
+    } else {
+      this.$emit('update:externalState', ExternalState.GEWIS);
+    }
+  }
 
   // eslint-disable-next-line class-methods-use-this
   keyClicked(key: number|string) {
@@ -40,42 +51,55 @@ export default class Keypad extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-  .keypad {
-    width: 20%;
-    position: absolute;
-    top: 20%;
-    left: 40%;
-    &.inline {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      background: none;
-      top: 0;
-      left: 0;
-    }
+@import "./src/styles/global/_variables.scss";
 
-    background-color: $gewis-grey-shadow;
+.keypad {
+  display: flex;
+  align-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
 
-    .keys-container {
-      margin: 16px;
-      .key {
-        text-align: center;
-        p {
-          cursor: pointer;
-          font-size: 1.5rem;
-          border: 2px solid black;
-          padding: 1.5rem 0;
-        }
-      }
-    }
-    .value-container{
-      text-align: center;
-      margin-top: 1rem;
-      p {
-        font-size: 4rem;
-        background-color: $gewis-grey;
-        border-radius: 8px;
-      }
+  .key-external {
+    flex: 1 1 30%;
+    cursor: pointer;
+    background: $gewis-red;
+    border-radius: $border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 50px;
+    min-height: 50px;
+    max-width: 324px;
+    min-width: 324px;
+
+    .key-external-text {
+      font-size: 1.5rem;
+      color: white;
     }
   }
+
+  .green {
+    background: green;
+  }
+
+  .key {
+    flex: 1 1 30%;
+    cursor: pointer;
+    background: $gewis-red;
+    border-radius: $border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 100px;
+    min-height: 100px;
+    max-width: 100px;
+    min-width: 100px;
+
+    .key-text {
+      font-size: 1.5rem;
+      color: white;
+    }
+  }
+}
 </style>

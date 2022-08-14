@@ -4,7 +4,8 @@ import PaginationTransformer from '@/transformers/PaginationTransformer';
 import { TransactionFilter } from '@/entities/Transaction';
 
 export function getTransactions(
-  filter: TransactionFilter, take: number | null = null, skip: number | null = null,
+  filter: Partial<TransactionFilter>,
+  take: number | null = null, skip: number | null = null,
 ) {
   const body = {
     ...filter,
@@ -39,7 +40,8 @@ export function deleteTransaction(id: number) {
 }
 
 export function getUserTransactions(
-  id: number, filter: TransactionFilter, take: number | null = null, skip: number | null = null,
+  id: number, filter: Partial<TransactionFilter>,
+  take: number | null = null, skip: number | null = null,
 ) {
   const body = {
     ...filter,
