@@ -94,8 +94,8 @@ export default class CheckoutBar extends Formatters {
   get transactionTotal() {
     let total = 0;
 
-    this.subTransactionRows.forEach((row: any) => {
-      const rowTotal = row.price.getAmount() * row.amount;
+    this.subTransactionRows.forEach((row: SubTransactionRow) => {
+      const rowTotal = row.priceInclVat.getAmount() * row.amount;
       total += rowTotal;
     });
 

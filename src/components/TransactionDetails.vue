@@ -5,7 +5,7 @@
         <p class="font-weight-bold">Total</p>
       </b-col>
       <b-col cols="6" sm="8" class="text-right text-sm-left">
-        <p>{{ transaction.price.toFormat() }}</p>
+        <p>{{ transaction.priceInclVat.toFormat() }}</p>
       </b-col>
     </b-row>
     <b-row>
@@ -50,8 +50,11 @@
             </b-col>
             <b-col cols="7" sm="6" class="text-right">
               <p>
-                {{ `( ${ subTransRow.product.price.toFormat() } ) ` +
-              `= ${ subTransRow.price.toFormat()}` }}
+                {{
+                  `( ${subTransRow.product.priceInclVat.toFormat()} ) ` +
+                  `( ${subTransRow.product.vat.percentage}% VAT ) ` +
+                  `= ${subTransRow.priceInclVat.toFormat()}`
+                }}
               </p>
             </b-col>
           </b-row>
@@ -60,8 +63,8 @@
         <b-row>
           <b-col cols="12" class="text-right">
             <p>
-              <i class="mr-1">Total </i>
-              {{ transaction.price.toFormat() }}</p>
+              <i class="mr-1">Total including VAT</i>
+              {{ transaction.priceInclVat.toFormat() }}</p>
           </b-col>
         </b-row>
       </b-col>

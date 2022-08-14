@@ -3,7 +3,7 @@
     <div class="product">
       <img :src="image" :alt="product.name" />
       <p class="w-100 product-name mb-0">{{ product.name }}</p>
-      <p class="w-100 product-price mb-0">€{{ (product.price.getAmount() / 100).toFixed(2) }}</p>
+      <p class="w-100 product-price mb-0">€{{ (product.priceInclVat.getAmount() / 100).toFixed(2) }}</p>
     </div>
   </div>
 </template>

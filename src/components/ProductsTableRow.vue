@@ -42,7 +42,7 @@ export default class ProductsTableRow extends Formatters {
   private timeoutHandle: number;
 
   get productTotal() {
-    return (this.item.price.getAmount() as any) * this.item.amount;
+    return (this.item.priceInclVat.getAmount() as any) * this.item.amount;
   }
 
   get amount() {

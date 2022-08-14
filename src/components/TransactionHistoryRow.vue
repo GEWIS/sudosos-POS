@@ -8,7 +8,7 @@
       {{createdBy()}}
     </div>
 
-    <transaction-details-modal :baseTransaction="transaction" ref="modal"/>
+    <transaction-details-modal :baseTransaction="transaction"/>
   </b-row>
 </template>
 
@@ -37,12 +37,11 @@ export default class ProductsTableRow extends Formatters {
   }
 
   get value() {
-    return this.transaction.price.toFormat();
+    return this.transaction.priceInclVat.toFormat();
   }
 
   openModal() {
-    // @ts-ignore
-    this.$refs.modal.show();
+    this.$bvModal.show(`details-modal-${this.transaction.id}`);
   }
 
   isCreatedBySomeoneElse(): boolean {

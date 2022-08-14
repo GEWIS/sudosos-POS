@@ -1,20 +1,20 @@
 <template>
   <div>
     <b-modal
-      id="details-modal"
+      :id="`details-modal-${baseTransaction.id}`"
       title="Transaction details"
       centered
       size="lg"
       no-stacking
     >
       <p>
-        {{`${this.date} - ${this.time}`}}
+        {{`${date} - ${time}`}}
       </p>
 
-      <div v-if="this.transaction === undefined">
+      <div v-if="loading">
         <b-spinner />
       </div>
-      <TransactionDetails v-if="this.transaction !== undefined" :transaction="this.transaction" />
+      <TransactionDetails v-if="!loading" :transaction="this.transaction" />
 
       <template v-slot:modal-footer="{ ok, cancel }">
         <b-button
@@ -29,9 +29,7 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop,
-} from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import Formatters from '@/mixins/Formatters';
 import { Transaction } from '@/entities/Transaction';
 import TransactionDetails from '@/components/TransactionDetails.vue';
@@ -45,11 +43,14 @@ import { getTransaction } from '@/api/transactions';
 export default class TransactionDetailsModal extends Formatters {
   @Prop() baseTransaction!: Transaction;
 
-  @Prop() open: boolean;
+  transaction: Transaction = {} as Transaction;
 
-  fullTransaction?: Transaction = undefined;
+  loading = false;
 
-  private loading: boolean = true;
+  async mounted() {
+    this.loading = true;
+    await this.getTrans();
+  }
 
   get date() {
     return Formatters.dateFromObj(this.baseTransaction.createdAt);
@@ -59,30 +60,10 @@ export default class TransactionDetailsModal extends Formatters {
     return Formatters.timeFromObj(this.baseTransaction.createdAt);
   }
 
-  get transaction() {
-    console.log('get transaction');
-    return this.fullTransaction;
-  }
-
-  set transaction(t: Transaction) {
-    console.log('set transaction', t);
-    this.fullTransaction = t;
-  }
-
-  show() {
-    this.loading = true;
-    this.$bvModal.show('details-modal');
-    this.getTrans();
-  }
-
-  getTrans() {
-    if (this.transaction === undefined) {
-      getTransaction(this.baseTransaction.id)
-        .then((t) => {
-          this.transaction = t;
-          this.loading = false;
-        });
-    }
+  async getTrans() {
+    const transaction = await getTransaction(this.baseTransaction.id);
+    Object.assign(this.transaction, transaction);
+    this.loading = false;
   }
 }
 </script>

@@ -9,7 +9,7 @@ export interface Transaction extends BaseEntity {
   createdBy?: BaseUser | User;
   pointOfSale: BasePointOfSale | PointOfSale;
   subTransactions: SubTransaction[];
-  price: Dinero;
+  priceInclVat: Dinero;
 }
 
 export interface POSTransaction {
