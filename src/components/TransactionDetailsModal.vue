@@ -14,7 +14,7 @@
       <div v-if="loading">
         <b-spinner />
       </div>
-      <TransactionDetails v-if="!loading" :transaction="this.transaction" />
+      <TransactionDetails v-else :transaction="this.transaction" />
 
       <template v-slot:modal-footer="{ ok, cancel }">
         <b-button
@@ -45,12 +45,7 @@ export default class TransactionDetailsModal extends Formatters {
 
   transaction: Transaction = {} as Transaction;
 
-  loading = false;
-
-  async mounted() {
-    this.loading = true;
-    await this.getTrans();
-  }
+  loading = true;
 
   get date() {
     return Formatters.dateFromObj(this.baseTransaction.createdAt);
@@ -60,7 +55,13 @@ export default class TransactionDetailsModal extends Formatters {
     return Formatters.timeFromObj(this.baseTransaction.createdAt);
   }
 
+  async show() {
+    this.$bvModal.show(`details-modal-${this.baseTransaction.id}`);
+    await this.getTrans();
+  }
+
   async getTrans() {
+    if (Object.keys(this.transaction).length > 0 || !this.loading) return;
     const transaction = await getTransaction(this.baseTransaction.id);
     Object.assign(this.transaction, transaction);
     this.loading = false;
