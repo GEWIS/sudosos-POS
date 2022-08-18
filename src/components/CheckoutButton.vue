@@ -72,6 +72,7 @@ export default class CheckoutButton extends Vue {
         rowContainer = {
           id: container.id,
           revision: container.revision,
+          owner: container.owner,
         };
       }
     });
@@ -90,9 +91,11 @@ export default class CheckoutButton extends Vue {
       if (transactionIndex > -1) {
         subTransactions[transactionIndex].subTransactionRows.push(row);
       } else {
-        const container = CheckoutButton.getContainerForRow(row, pos);
+        const container = CheckoutButton.getContainerForRow(row, pos) as any;
+        const to = container.owner.id;
+        delete container.owner;
         const sub = {
-          to: pos.owner.id,
+          to,
           container,
           subTransactionRows: [row],
         };
