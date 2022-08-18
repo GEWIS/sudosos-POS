@@ -45,7 +45,7 @@ export default class ProductOverviewWrapper extends Vue {
       || this.pointOfSaleState.pointOfSale.id === undefined) {
       this.pointOfSaleState.fetchPointOfSale(1);
     }
-    this.searchState.updateFilterCategory(1);
+    this.searchState.resetFilterCategory();
     this.searchState.fetchTransactionHistory();
   }
 }

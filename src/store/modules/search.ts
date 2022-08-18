@@ -27,13 +27,31 @@ export default class SearchModule extends VuexModule {
   }
 
   @Mutation
+  resetFilterCategory() {
+    if ((new Date()).getHours() >= 16) {
+      // After 16:00 we can drink beer
+      this.filterCategory = 1;
+    } else {
+      // Before 16:00 we can only drink sodas
+      this.filterCategory = 2;
+    }
+  }
+
+  @Mutation
   reset() {
     this.searching = false;
     this.userSearching = false;
     this.filterName = '';
-    this.filterCategory = 1;
     this.chargingUser = {} as User;
     this.transactionHistory = [];
+
+    if ((new Date()).getHours() >= 16) {
+      // After 16:00 we can drink beer
+      this.filterCategory = 1;
+    } else {
+      // Before 16:00 we can only drink sodas
+      this.filterCategory = 2;
+    }
   }
 
   @Mutation
@@ -48,8 +66,12 @@ export default class SearchModule extends VuexModule {
     if (searching) {
       this.filterName = '';
       this.filterCategory = 0;
-    } else {
+    } else if ((new Date()).getHours() >= 16) {
+      // After 16:00 we can drink beer
       this.filterCategory = 1;
+    } else {
+      // Before 16:00 we can only drink sodas
+      this.filterCategory = 2;
     }
   }
 
