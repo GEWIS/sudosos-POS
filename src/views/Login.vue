@@ -153,31 +153,41 @@ export default class Login extends Vue {
   }
 
   async eanLogin(eanCode: string) {
-    const loginResponse = await APIHelper.postResource('authentication/ean', { eanCode });
-    await this.handleLoginResponse(loginResponse);
+    let loginResponse;
+    try {
+      loginResponse = await APIHelper.postResource('authentication/ean', { eanCode });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      await this.handleLoginResponse(loginResponse);
+    }
   }
 
   async login() {
     let loginResponse;
 
-    // External login goes straight via SudoSOS
-    if (this.external === 'EXTERNAL') {
-      const userDetails = {
-        userId: parseInt(this.userId, 10),
-        pin: this.passcode.toString(),
-      };
+    try {
+      // External login goes straight via SudoSOS
+      if (this.external === 'EXTERNAL') {
+        const userDetails = {
+          userId: parseInt(this.userId, 10),
+          pin: this.passcode.toString(),
+        };
 
-      loginResponse = await APIHelper.postResource('authentication/pin', userDetails);
-    } else {
-      const userDetails = {
-        gewisId: parseInt(this.userId, 10),
-        pin: this.passcode.toString(),
-      };
+        loginResponse = await APIHelper.postResource('authentication/pin', userDetails);
+      } else {
+        const userDetails = {
+          gewisId: parseInt(this.userId, 10),
+          pin: this.passcode.toString(),
+        };
 
-      loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
+        loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      await this.handleLoginResponse(loginResponse);
     }
-
-    await this.handleLoginResponse(loginResponse);
 
     this.userId = '';
     this.passcode = '';
