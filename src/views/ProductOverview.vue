@@ -102,7 +102,12 @@
           <div class="options-button" id="options-button" @click="toggleSettings">
             <font-awesome-icon icon="ellipsis-h"/>
           </div>
-          <settings-component v-if="showSettings" :visible="showSettings"/>
+          <settings-component
+            v-if="showSettings"
+            :visible="showSettings"
+            :force-update-store="updateStore"
+            :toggle-settings="toggleSettings"
+          />
           <div class="search-bar" @click="openProductSearch()">
             <font-awesome-icon icon="search"/> Search...
           </div>
@@ -214,6 +219,8 @@ export default class ProductOverview extends Vue {
 
   private checkingOut: boolean = false;
 
+  private autoRefresh;
+
   async mounted() {
     window.addEventListener('resize', () => {
       this.checkWindowSize();
@@ -239,6 +246,8 @@ export default class ProductOverview extends Vue {
     });
 
     this.userActivity();
+
+    this.autoRefresh = setInterval(this.updateStore.bind(this), 10 * 60 * 1000);
   }
 
   get products(): ProductInContainer[] {
@@ -305,7 +314,13 @@ export default class ProductOverview extends Vue {
     }, this.activityTimeoutStep);
   }
 
+  updateStore() {
+    this.userState.fetchAllUsers(true);
+    this.pointOfSaleState.fetchPointOfSale();
+  }
+
   loggedOut() {
+    clearInterval(this.autoRefresh);
     this.userState.reset();
     this.searchState.reset();
     this.clearTimeouts();

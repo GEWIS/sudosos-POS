@@ -11,7 +11,10 @@ export function getUsers(take: number | null = null, skip: number | null = null)
     ...skip && { skip },
   };
 
-  return APIHelper.getResource('users', body).then((response) => {
+  return APIHelper.getResource('users', body, {
+    pragma: 'no-cache',
+    'cache-control': 'no-cache',
+  }).then((response) => {
     response._pagination = PaginationTransformer.makePagination(response._pagination);
     response.records = response.records.map(
       (user: any) => UserTransformer.makeUser(user),
@@ -39,5 +42,7 @@ export function deleteUser(id: number) {
 
 export function getOrganMembers(id: number): Promise<User[]> {
   return APIHelper.getResource(`users/${id}/members`)
-    .then((response) => response.records.map((res: any) => UserTransformer.makeUser(res)));
+    .then((response) => (response && response.records
+      ? response.records.map((res: any) => UserTransformer.makeUser(res))
+      : []));
 }

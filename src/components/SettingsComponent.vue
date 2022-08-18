@@ -1,7 +1,7 @@
 <template>
-  <div class="settings-component pos-card" id="settings-component">
+  <div class="settings-component pos-card" id="settings-component" v-if="userOwnsCurrentPOS()">
     <div class="header">Settings</div>
-    <div class="setting-row" v-if="userOwnsCurrentPOS() && userState.userPOSs.length > 0">
+    <div class="setting-row" v-if="userState.userPOSs.length > 0">
       <label for="posselect">Switch POS to</label>
       <select v-model="chosenPOS" name="posselect"
               v-on:change="posChanged" v-if="userState.userPOSs.length > 1">
@@ -11,6 +11,11 @@
         </option>
       </select>
       <div v-else>{{ userState.userPOSs[0].name }}</div>
+    </div>
+    <div class="force-reload">
+      <b-button @click="clickForceReload" variant="primary">
+        Force update information
+      </b-button>
     </div>
 <!--    <div class="setting-row" v-if="userState.isInBorrelMode">-->
 <!--      <input type="checkbox" id="restart-checkbox"-->
@@ -39,6 +44,10 @@ export default class SettingsComponent extends Vue {
   private chosenPOS: BasePointOfSale;
 
   @Prop() visible: boolean;
+
+  @Prop() forceUpdateStore: () => void;
+
+  @Prop() toggleSettings: () => void;
 
   constructor() {
     super();
@@ -69,12 +78,17 @@ export default class SettingsComponent extends Vue {
   outsideClickListener(e) {
     if (e.composedPath().includes(document.getElementById('options-button'))
      || e.composedPath().includes(document.getElementById('settings-component'))
-     || !this.$parent.$data.showSettings) {
+     || this.toggleSettings()) {
       return;
     }
 
     this.$parent.$data.showSettings = false;
     document.removeEventListener('click', this.boundedListener);
+  }
+
+  clickForceReload() {
+    this.forceUpdateStore();
+    this.toggleSettings();
   }
 }
 </script>
@@ -83,7 +97,7 @@ export default class SettingsComponent extends Vue {
 
   .settings-component {
     position: absolute;
-    top: -75%;
+    top: -90%;
     left: 75px;
     display: flex;
     flex-direction: column;
@@ -95,6 +109,7 @@ export default class SettingsComponent extends Vue {
     gap: 16px;
     padding-bottom: 16px;
     width: fit-content;
+    transform: translateY(-25%);
 
     .header {
       background: $gewis-red;
@@ -120,6 +135,10 @@ export default class SettingsComponent extends Vue {
       label {
         margin: 0 8px 0 16px;
       }
+    }
+
+    .force-reload {
+      padding: 0 1rem;
     }
   }
 </style>

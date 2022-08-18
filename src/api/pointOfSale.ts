@@ -26,7 +26,10 @@ export function getAllPointsOfSale(take: number | null = null, skip: number | nu
 }
 
 export function getPointOfSale(posID: number) {
-  return APIHelper.getResource(`pointsofsale/${posID}`).then((response) => PointOfSaleTransformer.makePointOfSale(response) as PointOfSale);
+  return APIHelper.getResource(`pointsofsale/${posID}`, undefined, {
+    pragma: 'no-cache',
+    'cache-control': 'no-cache',
+  }).then((response) => PointOfSaleTransformer.makePointOfSale(response) as PointOfSale);
 }
 
 export function patchPointOfSale(posID: number, pos: any) {
