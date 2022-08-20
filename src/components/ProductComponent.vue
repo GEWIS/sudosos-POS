@@ -50,6 +50,7 @@ export default class ProductComponent extends Formatters {
       background-color: $gewis-grey-light;
       border-top-left-radius: $border-radius;
       border-top-right-radius: $border-radius;
+      object-fit: contain;
     }
   }
 }
