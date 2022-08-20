@@ -459,7 +459,9 @@ export default class ProductOverview extends Vue {
     if (this.searchState.searching) {
       return new Fuse(
         products,
-        { keys: ['name', 'category.name'], isCaseSensitive: false, minMatchCharLength: 3 },
+        {
+          keys: ['name', 'category.name'], isCaseSensitive: false, shouldSort: true, threshold: 0.4,
+        },
       ).search(this.query).map((r) => r.item);
     }
     // @ts-ignore
@@ -476,7 +478,7 @@ export default class ProductOverview extends Vue {
     return new Fuse(
       this.userState.allUsers,
       {
-        keys: ['firstName', 'lastName', 'gewisID'], isCaseSensitive: false, minMatchCharLength: 3,
+        keys: ['firstName', 'lastName', 'gewisID'], isCaseSensitive: false, shouldSort: true, threshold: 0.4,
       },
     ).search(this.userQuery)
       .map((r) => r.item)
