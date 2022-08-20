@@ -53,6 +53,27 @@ function makeRoute(route: string, args: any = null) {
 }
 
 /**
+ * Update the given token in storage;
+ * @param jwtToken
+ */
+function setTokenInStorage(jwtToken: string) {
+  localStorage.setItem('jwt_expires', String(Number(jwtDecode<JwtPayload>(jwtToken).exp) * 1000));
+  localStorage.setItem('jwt_token', jwtToken);
+  token = jwtToken;
+}
+
+/**
+ * Check if the response headers contain a new token and update the token in storage
+ * @param response
+ */
+function updateTokenIfNecessary(response: Response) {
+  if (response.headers.has('Set-Authorization')) {
+    const newToken = response.headers.get('Set-Authorization');
+    setTokenInStorage(newToken);
+  }
+}
+
+/**
  * Takes a response and if there is an error it shows this in a nice way to the user
  *
  * @param fetchResponse: response that comes from the fetch method
@@ -128,12 +149,14 @@ function fetchResource(route: string, body: ResponseBody) {
   } else {
     fetchResult = fetch(route, body)
       .then((response) => {
+        updateTokenIfNecessary(response);
         checkResponse(response);
         return response.json();
       })
       .then((data: any) => data)
       .catch((error) => {
         console.error(error);
+        throw new Error(error);
       });
   }
 
@@ -150,11 +173,7 @@ export default {
     };
   },
 
-  setToken(jwtToken: string) {
-    localStorage.setItem('jwt_expires', String(Number(jwtDecode<JwtPayload>(jwtToken).exp) * 1000));
-    localStorage.setItem('jwt_token', jwtToken);
-    token = jwtToken;
-  },
+  setToken: setTokenInStorage,
 
   clearToken() {
     localStorage.clear();

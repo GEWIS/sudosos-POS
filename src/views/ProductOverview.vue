@@ -4,6 +4,14 @@
       <t-o-s-not-required :initially-open="this.userState.user.acceptedToS === 'NOT_REQUIRED'"
         :logged-out="this.loggedOut"/>
     </div>
+    <b-modal
+      id="modal-transaction-failed"
+      title="Saving transaction failed"
+      ok-only
+    >
+      Saving the transaction failed. Please try again,
+      with or without restarting the SudoSOS POS and logging in again.
+    </b-modal>
     <div class="product-overview">
       <div class="product-overview-container shadow">
         <div class="product-overview-top" v-if="state === State.CATEGORIES">

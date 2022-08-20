@@ -1,9 +1,11 @@
 <template>
   <b-row class="checkout-button"
-    :class="{'checking-out': checkingOut, 'unfinished': unfinished}"
+    :class="{'checking-out': checkingOut, 'unfinished': unfinished || transactionProcessing}"
     @click="buttonClicked">
     <font-awesome-icon icon="lock" v-if="unfinished" />
+    <b-spinner class="loading-spinner" v-if="transactionProcessing" />
     <p v-if="unfinished">Charge someone</p>
+    <p v-else-if="transactionProcessing">Processing...</p>
     <p v-else>{{ buttonText }}</p>
   </b-row>
 </template>
@@ -32,6 +34,8 @@ export default class CheckoutButton extends Vue {
   private timeout: number = 0;
 
   private borrelModeCheckout: boolean = false;
+
+  private transactionProcessing: boolean = false;
 
   private userState = getModule(UserModule);
 
@@ -83,7 +87,8 @@ export default class CheckoutButton extends Vue {
   static makeSubTransactions(rows: SubTransactionRow[], user: User, pos: any) {
     const subTransactions: any[] = [];
 
-    rows.forEach((row) => {
+    rows.forEach((originalRow: SubTransactionRow) => {
+      const row: SubTransactionRow = { ...originalRow };
       delete row.priceInclVat;
       // Find if there is a subtransaction for this container
       const transactionIndex = subTransactions
@@ -124,16 +129,20 @@ export default class CheckoutButton extends Vue {
   }
 
   async finishTransaction(user: User, chargingUser: User, borrelMode = false) {
-    const { rows } = this.$parent.$parent as any;
+    this.transactionProcessing = true;
+    const rows = [
+      ...(this.$parent.$parent as any).rows,
+    ];
+    console.log(rows, (this.$parent.$parent as any).rows);
     const { pointOfSale } = this.pointOfSaleState;
 
     const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
+    console.log(rows, (this.$parent.$parent as any).rows);
 
     let chargingId = 0;
 
     if (chargingUser.firstName !== undefined) {
       chargingId = chargingUser.id;
-      this.searchState.removeChargingUser();
     } else {
       chargingId = user.id;
     }
@@ -175,11 +184,10 @@ export default class CheckoutButton extends Vue {
         this.userState.reset();
         this.$router.push('/');
       }
-      // else if (this.userState.willAutomaticRestart) {
-      //   this.searchState.setUserSearching(true);
-      // }
     } catch (error: any) {
-      // TODO: Catch error
+      this.$bvModal.show('modal-transaction-failed');
+    } finally {
+      this.transactionProcessing = false;
     }
   }
 
@@ -220,12 +228,18 @@ export default class CheckoutButton extends Vue {
   justify-content: center;
   align-items: center;
   border-radius: $border-radius;
+  color: #525659;
 
   svg {
-    color: #525659;
     width: 24px;
     height: 24px;
     margin-right: 6px;
+  }
+
+  .loading-spinner {
+    margin-right: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
   }
 
   &.unfinished {
@@ -240,9 +254,9 @@ export default class CheckoutButton extends Vue {
       color: white;
     }
   }
+
   p {
     font-size: 26px;
-    color: #525659;
     font-weight: 700;
     margin: 0;
   }
