@@ -76,7 +76,13 @@
           </div>
         </main>
         <div class="users custom-scrollbar" v-if="state === State.USER_SEARCH">
-          <div class="users-row">
+          <div v-if="!hasValidUserQuery">
+            <p>Start typing to search for someone...</p>
+          </div>
+          <div v-else-if="filteredUsers.length === 0">
+            <p>No users were found for your query</p>
+          </div>
+          <div v-else class="users-row">
             <div
               class="user"
               v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
@@ -460,7 +466,10 @@ export default class ProductOverview extends Vue {
       return new Fuse(
         products,
         {
-          keys: ['name', 'category.name'], isCaseSensitive: false, shouldSort: true, threshold: 0.4,
+          keys: ['name', 'category.name'],
+          isCaseSensitive: false,
+          shouldSort: true,
+          threshold: 0.4,
         },
       ).search(this.query).map((r) => r.item);
     }
@@ -474,11 +483,19 @@ export default class ProductOverview extends Vue {
     );
   }
 
+  get hasValidUserQuery(): boolean {
+    return this.userQuery.length >= 3;
+  }
+
   get filteredUsers() {
+    if (this.userQuery.length < 3) return [];
     return new Fuse(
       this.userState.allUsers,
       {
-        keys: ['firstName', 'lastName', 'gewisID'], isCaseSensitive: false, shouldSort: true, threshold: 0.4,
+        keys: ['firstName', 'lastName', 'gewisID'],
+        isCaseSensitive: false,
+        shouldSort: true,
+        threshold: 0.4,
       },
     ).search(this.userQuery)
       .map((r) => r.item)
