@@ -1,7 +1,7 @@
 import APIHelper from '@/mixins/APIHelper';
 import BannerTransformer from '@/transformers/BannerTransformer';
 import PaginationTransformer from '@/transformers/PaginationTransformer';
-import {Banner} from "@/entities/Banner";
+import { Banner } from '@/entities/Banner';
 
 export function getBanners(take: number | null = null, skip: number | null = null) {
   const body = {
@@ -19,7 +19,7 @@ export function getBanners(take: number | null = null, skip: number | null = nul
 
 export async function getAllActiveBanners() {
   const date = new Date();
-  return APIHelper.readPagination('banners').then((bannersResponse) => {
+  return APIHelper.readPagination('open/banners').then((bannersResponse) => {
     const banners: Banner[] = bannersResponse.map(
       (banner: any) => BannerTransformer.makeBanner(banner),
     );
