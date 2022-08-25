@@ -85,7 +85,7 @@
           <div v-else class="users-row">
             <div
               class="user"
-              v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
+              v-for="item in filteredUsers" :key="`${item.id}`" @click="userSelected(item)">
               <div class="user-button">Select</div>
               <div class="user-icon"
                    v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'disabled' : ''">
@@ -492,14 +492,23 @@ export default class ProductOverview extends Vue {
     return new Fuse(
       this.userState.allUsers,
       {
-        keys: ['firstName', 'lastName', 'gewisID'],
+        keys: ['name', 'gewisID'],
         isCaseSensitive: false,
         shouldSort: true,
-        threshold: 0.4,
+        threshold: 0.2,
       },
     ).search(this.userQuery)
       .map((r) => r.item)
-      .filter((v, i, a) => a.findIndex((l) => v.gewisID === l.gewisID) === i);
+      .sort((a, b) => {
+        if (a.acceptedToS === 'NOT_ACCEPTED' && b.acceptedToS !== 'NOT_ACCEPTED') {
+          return 1;
+        }
+        if (a.acceptedToS !== 'NOT_ACCEPTED' && b.acceptedToS === 'NOT_ACCEPTED') {
+          return -1;
+        }
+        return 0;
+      })
+      .slice(0, 50);
   }
 
   userSelected(user: User): void {
