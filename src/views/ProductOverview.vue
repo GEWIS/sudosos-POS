@@ -330,7 +330,7 @@ export default class ProductOverview extends Vue {
 
   updateStore() {
     this.userState.fetchAllUsers(true);
-    this.pointOfSaleState.fetchPointOfSale();
+    this.pointOfSaleState.refreshPointOfSale();
   }
 
   loggedOut() {
