@@ -1,0 +1,48 @@
+[
+  {
+    "id": 0,
+    "name": "Ruben Brinkman",
+    "gewisID": 8073,
+    "email": "rubenjulianbrinkman@gmail.com",
+    "active": true,
+    "type": 1,
+    "nfcDevices": [
+      {
+        "id": 0,
+        "name": "OV Chipkaart",
+        "address": "33:33:33:33:33:33"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "name": "Marcin's vriendinnetje",
+    "gewisID": 7987,
+    "email": "marcinsvriendinnetje@gmail.com",
+    "active": true,
+    "type": 1,
+    "nfcDevices": [
+      {
+        "id": 0,
+        "name": "OV Chipkaart",
+        "address": "33:33:33:33:33:33"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Sjaars 2",
+    "gewisID": 9001,
+    "email": "sjaars2@gmail.com",
+    "active": true,
+    "type": 1,
+    "nfcDevices": [
+      {
+        "id": 0,
+        "name": "OV Chipkaart",
+        "address": "33:33:33:33:33:33"
+      }
+    ]
+  }
+  
+]

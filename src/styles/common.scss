@@ -1,0 +1,25 @@
+@import "global/variables.scss";
+
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  background-color: #f2f2f2;
+  display: flex;
+  flex-direction: column;
+
+  .background-logo {
+    position: fixed;
+    top: -20vh;
+    right: -20%;
+    height: 200vh;
+    z-index: 1;
+    filter: blur(4px);
+    -webkit-filter: blur(4px);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
