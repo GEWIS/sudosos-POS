@@ -86,7 +86,12 @@
             <div
               class="user"
               v-for="item in filteredUsers" :key="`${item.id}`" @click="userSelected(item)">
-              <div class="user-button">Select</div>
+              <div
+                class="user-button"
+                :class="{ hidden: item.acceptedToS === 'NOT_ACCEPTED' }"
+              >
+                Select
+              </div>
               <div class="user-icon"
                    v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'disabled' : ''">
                 <font-awesome-icon icon="exclamation-triangle"
@@ -473,14 +478,23 @@ export default class ProductOverview extends Vue {
         },
       ).search(this.query).map((r) => r.item);
     }
+
+    const sortFn = (a: Product, b: Product) => {
+      if (a.name[0] === '_' && b.name[0] !== '_') return -1;
+      if (a.name[0] !== '_' && b.name[0] === '_') return 1;
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    };
+
     // @ts-ignore
     const currentCategory = this.searchState.filterCategory;
     if (currentCategory === 0) {
-      return products;
+      return products.sort(sortFn);
     }
     return products.filter(
       (product: Product) => product.category.id === currentCategory,
-    );
+    ).sort(sortFn);
   }
 
   get hasValidUserQuery(): boolean {
@@ -515,6 +529,7 @@ export default class ProductOverview extends Vue {
     if (user === undefined) {
       this.searchState.removeChargingUser();
     } else {
+      if (user.acceptedToS === 'NOT_ACCEPTED') return;
       this.searchState.updateChargingUser(user);
     }
 
@@ -673,6 +688,10 @@ $scroll-bar-width: 40px;
       cursor: pointer;
       padding: 8px 16px;
       margin-right: 8px;
+
+      &.hidden {
+        visibility: hidden;
+      }
     }
 
     .user-icon {
