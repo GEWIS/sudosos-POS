@@ -1,31 +1,29 @@
 <template>
-  <div>
-    <b-modal
-      :id="`details-modal-${baseTransaction.id}`"
-      title="Transaction details"
-      centered
-      size="lg"
-      no-stacking
-    >
-      <p>
-        {{`${date} - ${time}`}}
-      </p>
+  <b-modal
+    :id="`details-modal-${baseTransaction.id}`"
+    title="Transaction details"
+    centered
+    size="lg"
+    no-stacking
+  >
+    <p>
+      {{`${date} - ${time}`}}
+    </p>
 
-      <div v-if="loading">
-        <b-spinner />
-      </div>
-      <TransactionDetails v-else :transaction="this.transaction" />
+    <div v-if="loading">
+      <b-spinner />
+    </div>
+    <TransactionDetails v-else :transaction="this.transaction" />
 
-      <template v-slot:modal-footer="{ ok, cancel }">
-        <b-button
-          variant="primary"
-          id="details-cancel"
-          @click="cancel()"
-        >Close
-        </b-button>
-      </template>
-    </b-modal>
-  </div>
+    <template v-slot:modal-footer="{ ok, cancel }">
+      <b-button
+        variant="primary"
+        id="details-cancel"
+        @click="cancel()"
+      >Close
+      </b-button>
+    </template>
+  </b-modal>
 </template>
 
 <script lang="ts">
