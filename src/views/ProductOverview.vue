@@ -85,8 +85,13 @@
           <div v-else class="users-row">
             <div
               class="user"
-              v-for="item in filteredUsers" :key="`${item.gewisID}`" @click="userSelected(item)">
-              <div class="user-button">Select</div>
+              v-for="item in filteredUsers" :key="`${item.id}`" @click="userSelected(item)">
+              <div
+                class="user-button"
+                :class="{ hidden: item.acceptedToS === 'NOT_ACCEPTED' }"
+              >
+                Select
+              </div>
               <div class="user-icon"
                    v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'disabled' : ''">
                 <font-awesome-icon icon="exclamation-triangle"
@@ -330,7 +335,7 @@ export default class ProductOverview extends Vue {
 
   updateStore() {
     this.userState.fetchAllUsers(true);
-    this.pointOfSaleState.fetchPointOfSale();
+    this.pointOfSaleState.refreshPointOfSale();
   }
 
   loggedOut() {
@@ -473,14 +478,23 @@ export default class ProductOverview extends Vue {
         },
       ).search(this.query).map((r) => r.item);
     }
+
+    const sortFn = (a: Product, b: Product) => {
+      if (a.name[0] === '_' && b.name[0] !== '_') return -1;
+      if (a.name[0] !== '_' && b.name[0] === '_') return 1;
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    };
+
     // @ts-ignore
     const currentCategory = this.searchState.filterCategory;
     if (currentCategory === 0) {
-      return products;
+      return products.sort(sortFn);
     }
     return products.filter(
       (product: Product) => product.category.id === currentCategory,
-    );
+    ).sort(sortFn);
   }
 
   get hasValidUserQuery(): boolean {
@@ -492,20 +506,30 @@ export default class ProductOverview extends Vue {
     return new Fuse(
       this.userState.allUsers,
       {
-        keys: ['firstName', 'lastName', 'gewisID'],
+        keys: ['name', 'gewisID'],
         isCaseSensitive: false,
         shouldSort: true,
-        threshold: 0.4,
+        threshold: 0.2,
       },
     ).search(this.userQuery)
       .map((r) => r.item)
-      .filter((v, i, a) => a.findIndex((l) => v.gewisID === l.gewisID) === i);
+      .sort((a, b) => {
+        if (a.acceptedToS === 'NOT_ACCEPTED' && b.acceptedToS !== 'NOT_ACCEPTED') {
+          return 1;
+        }
+        if (a.acceptedToS !== 'NOT_ACCEPTED' && b.acceptedToS === 'NOT_ACCEPTED') {
+          return -1;
+        }
+        return 0;
+      })
+      .slice(0, 50);
   }
 
   userSelected(user: User): void {
     if (user === undefined) {
       this.searchState.removeChargingUser();
     } else {
+      if (user.acceptedToS === 'NOT_ACCEPTED') return;
       this.searchState.updateChargingUser(user);
     }
 
@@ -664,6 +688,10 @@ $scroll-bar-width: 40px;
       cursor: pointer;
       padding: 8px 16px;
       margin-right: 8px;
+
+      &.hidden {
+        visibility: hidden;
+      }
     }
 
     .user-icon {

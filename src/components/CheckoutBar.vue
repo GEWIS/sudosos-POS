@@ -12,7 +12,7 @@
           {{ userState.user.firstName }}
         </div>
         <div v-else>
-          {{ searchState.chargingUser.firstName }}
+          {{ searchState.chargingUser.name }}
         </div>
         <div class="angle-down-icon">
         <font-awesome-icon icon="angle-down"/>

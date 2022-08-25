@@ -51,7 +51,8 @@ export default class ProductsTableRow extends Formatters {
   isCreatedBySomeoneElse(): boolean {
     return this.transaction.createdBy !== undefined
       && this.transaction.createdBy.id !== undefined
-      && this.transaction.createdBy.id === this.userState.user.id;
+      && this.transaction.createdBy.id === this.userState.user.id
+      && this.transaction.createdBy.id !== this.transaction.from.id;
   }
 
   createdBy(): string {

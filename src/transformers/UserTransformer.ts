@@ -8,10 +8,12 @@ export default {
       return {} as BaseUser;
     }
 
+    const name = `${data.firstName} ${data.lastName}`.trim();
+
     if (!Object.keys(data).includes('active')) {
       return {
         ...BaseTransformer.makeBaseEntity(data),
-        name: `${data.firstName} ${data.lastName}`.trim(),
+        name,
       } as BaseUser;
     }
 
@@ -28,6 +30,7 @@ export default {
       ...BaseTransformer.makeBaseEntity(data),
       firstName: data.firstName,
       lastName: data.lastName,
+      name,
       gewisID: data.gewisId,
       email: data.email,
       active: data.active,
