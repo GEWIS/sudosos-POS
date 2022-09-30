@@ -471,10 +471,10 @@ export default class ProductOverview extends Vue {
       return new Fuse(
         products,
         {
-          keys: ['name', 'category.name'],
+          keys: ['nameWithoutAccents', 'category.name'],
           isCaseSensitive: false,
           shouldSort: true,
-          threshold: 0.4,
+          threshold: 0.2,
         },
       ).search(this.query).map((r) => r.item);
     }
@@ -506,7 +506,7 @@ export default class ProductOverview extends Vue {
     return new Fuse(
       this.userState.allUsers,
       {
-        keys: ['name', 'gewisID'],
+        keys: ['nameWithoutAccents', 'gewisID'],
         isCaseSensitive: false,
         shouldSort: true,
         threshold: 0.2,

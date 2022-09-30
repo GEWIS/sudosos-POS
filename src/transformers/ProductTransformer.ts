@@ -15,11 +15,13 @@ export default {
     });
 
     const vat = VatTransformer.makeBaseVatGroup(data.vat);
+    const nameWithoutAccents = data.name.normalize('NFD');
 
     if (!Object.keys(data).includes('owner')) {
       return {
         ...BaseTransformer.makeBaseEntity(data),
         name: data.name,
+        nameWithoutAccents,
         vat,
         priceInclVat: price,
       } as BaseProduct;
@@ -29,6 +31,7 @@ export default {
       ...BaseTransformer.makeBaseEntity(data),
       revision: data.revision,
       name: data.name,
+      nameWithoutAccents,
       vat,
       priceInclVat: price,
       owner: UserTransformer.makeUser(data.owner),
