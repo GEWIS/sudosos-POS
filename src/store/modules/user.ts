@@ -204,9 +204,13 @@ export default class UserModule extends VuexModule {
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
   async fetchBalance() {
-    const balanceResponse = await APIHelper.getResource('balances/');
-    const balance = Dinero(balanceResponse.amount);
-    this.context.commit('updateBalance', balance);
+    try {
+      const balanceResponse = await APIHelper.getResource('balances/');
+      const balance = Dinero(balanceResponse.amount);
+      this.context.commit('updateBalance', balance);
+    } catch (e) {
+      this.context.commit('updateBalance', null);
+    }
   }
 
   @Action({

@@ -9,11 +9,13 @@ export default {
     }
 
     const name = `${data.firstName} ${data.lastName}`.trim();
+    const nameWithoutAccents = name.normalize('NFD');
 
     if (!Object.keys(data).includes('active')) {
       return {
         ...BaseTransformer.makeBaseEntity(data),
         name,
+        nameWithoutAccents,
       } as BaseUser;
     }
 
@@ -31,6 +33,7 @@ export default {
       firstName: data.firstName,
       lastName: data.lastName,
       name,
+      nameWithoutAccents,
       gewisID: data.gewisId,
       email: data.email,
       active: data.active,

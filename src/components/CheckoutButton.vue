@@ -187,6 +187,10 @@ export default class CheckoutButton extends Vue {
     } catch (error: any) {
       this.$bvModal.show('modal-transaction-failed');
     } finally {
+      if (this.pointOfSaleState.pointOfSale.useAuthentication) {
+        const sound = new Audio('./sounds/rct-cash.wav');
+        sound.play();
+      }
       this.transactionProcessing = false;
     }
   }
