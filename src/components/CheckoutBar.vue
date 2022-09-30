@@ -34,7 +34,7 @@
         <div class="total-text">Total</div>
         <div class="total-value">€{{ (transactionTotal / 100).toFixed(2) }}</div>
       </div>
-      <div class="balance-row" v-if="!searchState.isChargingUser && pointOfSaleState.pointOfSale.useAuthentication">
+      <div class="balance-row" v-if="pointOfSaleState.pointOfSale.useAuthentication ? !searchState.isChargingUser : searchState.isChargingUser">
         <div class="balance-text">Balance after</div>
         <div class="balance-value warn" v-if="balanceAfter.getAmount() < 0">
           {{ balanceAfter.toFormat() }}
