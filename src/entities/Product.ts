@@ -6,6 +6,7 @@ import { BaseVatGroup } from '@/entities/VatGroup';
 
 export interface BaseProduct extends BaseEntity {
   name: string;
+  nameWithoutAccents: string;
   vat: BaseVatGroup;
   priceInclVat: Dinero;
 }
