@@ -15,14 +15,7 @@
     <div class="product-overview">
       <div class="product-overview-container shadow">
         <div class="product-overview-top" v-if="state === State.CATEGORIES">
-          <b-nav class="align-items-center product-overview-top-menu">
-              <home-menu-button
-                :name="category.name"
-                :category="category.id"
-                v-for="category in pointOfSaleState.categories"
-                :key="category.id"
-              />
-          </b-nav>
+          <categorie-buttons :categories="pointOfSaleState.categories" />
           <backend-status />
         </div>
         <div v-if="state === State.SEARCH || state === State.USER_SEARCH"
@@ -171,7 +164,7 @@ import { getModule } from 'vuex-module-decorators';
 import { Product, ProductInContainer } from '@/entities/Product';
 import SettingsComponent from '@/components/SettingsComponent.vue';
 import ProductComponent from '@/components/ProductComponent.vue';
-import HomeMenuButton from '@/components/HomeMenuButton.vue';
+import CategorieButtons from '@/components/CategorieButtons.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
 
@@ -199,7 +192,7 @@ enum State {
     BackendStatus,
     TOSNotRequired,
     ProductComponent,
-    HomeMenuButton,
+    CategorieButtons,
     CheckoutBar,
     SettingsComponent,
     Keyboard,

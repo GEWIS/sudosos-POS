@@ -8,7 +8,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import Dinero from 'dinero.js';
-import HomeMenuButton from '@/components/HomeMenuButton.vue';
 import SearchModule from '@/store/modules/search';
 import UserModule from '@/store/modules/user';
 import CheckoutBar from '@/components/CheckoutBar.vue';
@@ -16,7 +15,6 @@ import { PointOfSale } from './entities/PointOfSale';
 
 @Component({
   components: {
-    HomeMenuButton,
     CheckoutBar,
   },
 })
