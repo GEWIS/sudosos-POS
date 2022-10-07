@@ -5,7 +5,7 @@
         </div>
     </div>
 </template>
-<style lang="scss">
+<style scoped lang="scss">
 @import "~bootstrap/scss/bootstrap";
 @import "./src/styles/Nav.scss";
 .button {

@@ -39,7 +39,7 @@ export default class SearchBar extends Vue {
     }
 }
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 @import "~bootstrap/scss/bootstrap";
 @import "./src/styles/Nav.scss";
 

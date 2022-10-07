@@ -33,19 +33,10 @@
         </div>
         <main
           class="products custom-scrollbar"
-          v-if="state === State.CATEGORIES || state === State.SEARCH"
-        >
-          <div class="product-row">
-            <ProductComponent
-              v-for="item in filteredProducts"
-              :product="item"
-              :key="`${item.id}-${item.containerId}`"
-            />
-            <div class="no-components" v-if="filteredProducts.length === 0">
-              <div v-if="searchState.searching">There are no products for this query.</div>
-              <div v-else>There are no products in this category.</div>
-            </div>
-          </div>
+          v-if="state === State.CATEGORIES || state === State.SEARCH">
+          <Products
+            :products="filteredProducts"
+            :searching="state === State.SEARCH" />
         </main>
         <div class="users custom-scrollbar" v-if="state === State.USER_SEARCH">
           <div v-if="!hasValidUserQuery">
@@ -142,12 +133,12 @@ import Dinero from 'dinero.js';
 import { getModule } from 'vuex-module-decorators';
 import { Product, ProductInContainer } from '@/entities/Product';
 import SettingsComponent from '@/components/SettingsComponent.vue';
-import ProductComponent from '@/components/ProductComponent.vue';
 import CategorieButtons from '@/components/CategorieButtons.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
 import ExitButton from '@/components/ExitButton.vue';
 import SearchBar from '@/components/SearchBar.vue';
+import Products from '@/components/Products.vue';
 
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User, UserType } from '@/entities/User';
@@ -172,13 +163,13 @@ enum State {
   components: {
     BackendStatus,
     TOSNotRequired,
-    ProductComponent,
     CategorieButtons,
     CheckoutBar,
     SettingsComponent,
     Keyboard,
     ExitButton,
     SearchBar,
+    Products
   },
 })
 export default class ProductOverview extends Vue {
@@ -287,7 +278,7 @@ export default class ProductOverview extends Vue {
 
     // @ts-ignore
     this.activityTimeoutHandle = setTimeout(() => {
-      (this.$refs.checkoutBar as CheckoutBar).logout();
+       this.$refs.checkoutBar.logout();
     }, this.activityTimeoutDelay);
 
     this.activityTimeoutTimer();
