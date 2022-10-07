@@ -21,24 +21,7 @@
         <div v-if="state === State.SEARCH || state === State.USER_SEARCH"
           class="nav align-items-center">
           <exit-button @click="exitSearch()" />
-          <div class="nav-item search-text" @click="focusOnSearch()">
-            <font-awesome-icon icon="search"/>
-            <span class="text">{{state === State.SEARCH ? query : userQuery}}</span>
-            <div class="indicator"></div>
-            <input
-              type="text" id="search-input1"
-              v-model="query"
-              @input="updateSearchFromInput"
-              v-if="state === State.SEARCH"
-            />
-            <input
-              type="text"
-              id="search-input2"
-              v-model="userQuery"
-              @input="updateSearchFromInput"
-              v-if="state === State.USER_SEARCH"
-            />
-          </div>
+          <search-bar ref="searchBar" @update="updateSearchFromInput" v-if="state === State.SEARCH"/>
           <div class="nav-item active" v-if="state === State.USER_SEARCH" @click="orderSelf()">
             <div class="nav-link" v-if="!this.pointOfSaleState.pointOfSale.useAuthentication">
               Charge no-one
@@ -154,7 +137,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Ref } from 'vue-property-decorator';
 import Dinero from 'dinero.js';
 import { getModule } from 'vuex-module-decorators';
 import { Product, ProductInContainer } from '@/entities/Product';
@@ -164,6 +147,7 @@ import CategorieButtons from '@/components/CategorieButtons.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
 import ExitButton from '@/components/ExitButton.vue';
+import SearchBar from '@/components/SearchBar.vue';
 
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User, UserType } from '@/entities/User';
@@ -194,6 +178,7 @@ enum State {
     SettingsComponent,
     Keyboard,
     ExitButton,
+    SearchBar,
   },
 })
 export default class ProductOverview extends Vue {
@@ -213,10 +198,6 @@ export default class ProductOverview extends Vue {
 
   State: any = State;
 
-  private userQuery: string = '';
-
-  private query: string = '';
-
   private activityTimeoutDelay: number = 30000;
 
   private activityTimeoutStep: number = 1000;
@@ -230,6 +211,15 @@ export default class ProductOverview extends Vue {
   private checkingOut: boolean = false;
 
   private autoRefresh;
+
+  private userQuery: string = '';
+
+  private query: string = '';
+
+  $refs!: {
+    searchBar: SearchBar
+    checkoutBar: CheckoutBar
+  }
 
   async mounted() {
     window.addEventListener('resize', () => {
@@ -420,19 +410,21 @@ export default class ProductOverview extends Vue {
     this.vertical = window.innerWidth / window.innerHeight >= 1;
   }
 
-  updateSearchFromKeyboard(text) {
+  updateSearchFromKeyboard(value) {
     if (this.state === State.SEARCH) {
-      this.query = text;
+      this.query = value;
     } else if (this.state === State.USER_SEARCH) {
-      this.userQuery = text;
+      this.userQuery = value;
     }
+
+    this.$refs.searchBar.updateQuery(value);
   }
 
-  updateSearchFromInput(e) {
+  updateSearchFromInput(value) {
     if (this.state === State.SEARCH) {
-      this.query = e.target.value;
+      this.query = value;
     } else if (this.state === State.USER_SEARCH) {
-      this.userQuery = e.target.value;
+      this.userQuery = value;
     }
   }
 
