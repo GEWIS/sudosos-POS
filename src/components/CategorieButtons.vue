@@ -1,12 +1,12 @@
 <template>
-    <b-nav>
-        <categorie-button
-        :name="category.name"
-        :category="category.id"
-        v-for="category in categories"
-        :key="category.id"
-        />
-    </b-nav>
+  <b-nav>
+    <categorie-button
+    :name="category.name"
+    :category="category.id"
+    v-for="category in categories"
+    :key="category.id"
+    />
+  </b-nav>
 </template>
 <script lang="ts">
 import Vue from 'vue'
@@ -20,6 +20,6 @@ import {ProductCategory} from '@/entities/ProductCategory'
   },
 })
 export default class CategorieButtons extends Vue {
-    @Prop() categories!: ProductCategory[];
+  @Prop() categories!: ProductCategory[];
 }
 </script>

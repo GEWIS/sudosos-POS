@@ -1,15 +1,15 @@
 <template>
-    <div class="products">
-        <Product
-            v-for="item in products"
-            :product="item"
-            :key="`${item.id}-${item.containerId}`"
-        />
-        <div class="no-components" v-if="products.length === 0">
-            <div v-if="searching">There are no products for this query.</div>
-            <div v-else>There are no products in this category.</div>
-        </div>
+  <div class="products">
+    <Product
+      v-for="item in products"
+      :product="item"
+      :key="`${item.id}-${item.containerId}`"
+    />
+    <div class="no-components" v-if="products.length === 0">
+      <div v-if="searching">There are no products for this query.</div>
+      <div v-else>There are no products in this category.</div>
     </div>
+  </div>
 </template>
 <script lang="ts">
 import { ProductInContainer } from '@/entities/Product';
@@ -17,13 +17,13 @@ import { Vue, Prop, Component } from 'vue-property-decorator';
 import Product from '@/components/Product.vue';
 
 @Component({
-    components: {
-        Product: Product,
-    },
+  components: {
+    Product: Product,
+  },
 })
 export default class Products extends Vue {
-    @Prop() products!: ProductInContainer[];
-    @Prop() searching!: boolean;
+  @Prop() products!: ProductInContainer[];
+  @Prop() searching!: boolean;
 }
 </script>
 <style scoped lang="scss">

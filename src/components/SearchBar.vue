@@ -1,42 +1,44 @@
 <template>
-    <div class="nav-item search-bar" @click="focusOnSearch()">
-        <font-awesome-icon icon="search"/>
-        <span class="text" ref="text"></span>
-        <div class="indicator"></div>
-        <input
-            type="text" class="search-input" ref="searchInput"
-            @input="e => emitUpdate(e)"
-        />
-    </div>
+  <div class="nav-item search-bar" @click="focusOnSearch()">
+    <font-awesome-icon icon="search"/>
+    <span class="text" ref="text"></span>
+    <div class="indicator"></div>
+    <input
+      type="text" class="search-input" ref="searchInput"
+      @input="e => emitUpdate(e)"
+    />
+  </div>
 </template>
 <script lang="ts">
 import { Vue, Ref } from 'vue-property-decorator'
 
 export default class SearchBar extends Vue {
-    $refs!: {
-        searchInput: HTMLInputElement
-        text: HTMLSpanElement
-    }
+  $refs!: {
+    searchInput: HTMLInputElement
+    text: HTMLSpanElement
+  }
 
-    private query: string = "";
+  private query: string = "";
 
-    updateQuery(query: string) {
-        this.query = query;
-        this.$refs.text.innerText = query;
-    }
+  updateQuery(query: string) {
+    this.query = query;
+    console.log(this);
+    // TODO: fix that this does not use model and direct rerendering (currently like this because of weird behavior)
+    this.$refs.text.innerText = query;
+  }
 
-    getQuery(): string {
-        return this.query;
-    }
+  getQuery(): string {
+    return this.query;
+  }
 
-    emitUpdate(e) {
-        this.updateQuery(e.target.value);
-        this.$emit('update', this.query);
-    }
+  emitUpdate(e) {
+    this.updateQuery(e.target.value);
+    this.$emit('update', this.query);
+  }
 
-    focusOnSearch() {
-        this.$refs.searchInput.focus();
-    }
+  focusOnSearch() {
+    this.$refs.searchInput.focus();
+  }
 }
 </script>
 <style scoped lang="scss">

@@ -15,13 +15,13 @@
     <div class="product-overview">
       <div class="product-overview-container shadow">
         <div class="product-overview-top" v-if="state === State.CATEGORIES">
-          <categorie-buttons :categories="pointOfSaleState.categories" />
-          <backend-status />
+          <CategorieButtons :categories="pointOfSaleState.categories" />
+          <BackendStatus />
         </div>
         <div v-if="state === State.SEARCH || state === State.USER_SEARCH"
           class="nav align-items-center">
-          <exit-button @click="exitSearch()" />
-          <search-bar ref="searchBar" @update="updateSearchFromInput" v-if="state === State.SEARCH"/>
+          <ExitButton @click="exitSearch()" />
+          <SearchBar ref="searchBar" @update="e => updateSearchFromInput(e)" />
           <div class="nav-item active" v-if="state === State.USER_SEARCH" @click="orderSelf()">
             <div class="nav-link" v-if="!this.pointOfSaleState.pointOfSale.useAuthentication">
               Charge no-one
@@ -39,42 +39,18 @@
             :searching="state === State.SEARCH" />
         </main>
         <div class="users custom-scrollbar" v-if="state === State.USER_SEARCH">
-          <div v-if="!hasValidUserQuery">
-            <p>Start typing to search for someone...</p>
-          </div>
-          <div v-else-if="filteredUsers.length === 0">
-            <p>No users were found for your query</p>
-          </div>
-          <div v-else class="users-row">
-            <div
-              class="user"
-              v-for="item in filteredUsers" :key="`${item.id}`" @click="userSelected(item)">
-              <div
-                class="user-button"
-                :class="{ hidden: item.acceptedToS === 'NOT_ACCEPTED' }"
-              >
-                Select
-              </div>
-              <div class="user-icon"
-                   v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'disabled' : ''">
-                <font-awesome-icon icon="exclamation-triangle"
-                                   size="lg" v-if="item.acceptedToS === 'NOT_ACCEPTED'"/>
-                <font-awesome-icon icon="baby"
-                                   size="lg" v-if="!item.ofAge && userIsPerson(item)"/>
-              </div>
-              <div class="user-text"
-                   v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'tos-not-accepted' : ''"
-              >
-                {{item.firstName}} {{item.lastName}} - {{item.gewisID}}
-              </div>
-            </div>
-          </div>
+          <Keyboard
+            ref="keyboard"
+            :onChange="updateSearchFromKeyboard"
+            :allowNumbers="state === State.USER_SEARCH"
+          />
+          <Users :users="filteredUsers" :validQuery="hasValidUserQuery" />
         </div>
         <div
           class="keyboard-container"
           v-show="state === State.SEARCH || state === State.USER_SEARCH"
         >
-          <keyboard
+          <Keyboard
             ref="keyboard"
             :onChange="updateSearchFromKeyboard"
             :allowNumbers="state === State.USER_SEARCH"
@@ -84,7 +60,7 @@
           <div class="options-button" id="options-button" @click="toggleSettings">
             <font-awesome-icon icon="ellipsis-h"/>
           </div>
-          <settings-component
+          <SettingsComponent
             v-if="showSettings"
             :visible="showSettings"
             :force-update-store="updateStore"
@@ -121,7 +97,7 @@
           </div>
         </div>
       </div>
-      <checkout-bar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"
+      <CheckoutBar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"
         :openPickMember="openPickMember" :updateRows="updateRows" :loggedOut="loggedOut"/>
     </div>
   </div>
@@ -139,6 +115,7 @@ import SearchModule from '@/store/modules/search';
 import ExitButton from '@/components/ExitButton.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import Products from '@/components/Products.vue';
+import Users from '@/components/Users.vue';
 
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User, UserType } from '@/entities/User';
@@ -169,7 +146,8 @@ enum State {
     Keyboard,
     ExitButton,
     SearchBar,
-    Products
+    Products,
+    Users,
   },
 })
 export default class ProductOverview extends Vue {
@@ -210,6 +188,7 @@ export default class ProductOverview extends Vue {
   $refs!: {
     searchBar: SearchBar
     checkoutBar: CheckoutBar
+    keyboard: Keyboard
   }
 
   async mounted() {
@@ -259,11 +238,6 @@ export default class ProductOverview extends Vue {
     return Math.floor(this.activityTimeoutTime / 1000);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  userIsPerson(user: User): boolean {
-    return [UserType.MEMBER, UserType.LOCAL_USER, UserType.LOCAL_ADMIN].includes(user.type);
-  }
-
   userActivity() {
     if (this.activityTimeoutHandle !== undefined) {
       clearTimeout(this.activityTimeoutHandle);
@@ -278,7 +252,7 @@ export default class ProductOverview extends Vue {
 
     // @ts-ignore
     this.activityTimeoutHandle = setTimeout(() => {
-       this.$refs.checkoutBar.logout();
+      this.$refs.checkoutBar.logout();
     }, this.activityTimeoutDelay);
 
     this.activityTimeoutTimer();
@@ -408,7 +382,7 @@ export default class ProductOverview extends Vue {
       this.userQuery = value;
     }
 
-    this.$refs.searchBar.updateQuery(value);
+    this.$refs.searchBar.updateQuery.bind(this.$refs.searchBar)(value);
   }
 
   updateSearchFromInput(value) {
