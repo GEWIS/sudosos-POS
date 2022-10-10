@@ -81,7 +81,7 @@ export default class CheckoutBar extends Formatters {
 
   @Prop() updateRows: Function;
 
-  @Prop() loggedOut: Function;
+  @Prop() logoutFunc: Function;
 
   private userState = getModule(UserModule);
 
@@ -126,7 +126,7 @@ export default class CheckoutBar extends Formatters {
 
   logout() {
     if (!this.pointOfSaleState.pointOfSale.useAuthentication) return;
-    this.loggedOut();
+    this.logoutFunc();
     // @ts-ignore
     document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
   }

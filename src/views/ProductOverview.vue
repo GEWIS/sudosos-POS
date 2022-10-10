@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div v-if="this.userState.user !== undefined && this.userState.user.id !== undefined">
       <t-o-s-not-required :initially-open="this.userState.user.acceptedToS === 'NOT_REQUIRED'"
-        :logged-out="this.loggedOut"/>
+        :logged-out="this.logout"/>
     </div>
     <b-modal
       id="modal-transaction-failed"
@@ -125,6 +125,7 @@ enum State {
     Products,
     Users,
     ActivityTimer,
+    SearchBarButton,
   },
 })
 export default class ProductOverview extends Vue {
@@ -659,30 +660,7 @@ $scroll-bar-width: 40px;
   flex-wrap: nowrap;
   gap: 16px;
   position: relative;
-
-  .search-bar {
-    border: 1px solid $gewis-red;
-    border-radius: $border-radius;
-    flex: 0 0 200px;
-    width: 200px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 20px;
-    margin-right: 10px;
-
-    .fa-search {
-      margin-right: 10px;
-      width: 20px;
-      height: 20px;
-    }
-  }
-
-  .activity-timeout {
-    align-self: center;
-  }
+  height: 60px;
 }
 
 .search-text {

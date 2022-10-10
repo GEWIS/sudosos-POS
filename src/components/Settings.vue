@@ -79,12 +79,11 @@ export default class SettingsComponent extends Vue {
 
   outsideClickListener(e) {
     if (e.composedPath().includes(document.getElementById('options-button'))
-     || e.composedPath().includes(document.getElementById('settings-component'))
-     || this.toggleSettings()) {
+     || e.composedPath().includes(document.getElementById('settings-component')) && this.showSettings) {
       return;
     }
 
-    this.$parent.$data.showSettings = false;
+    this.showSettings = false;
     document.removeEventListener('click', this.boundedListener);
   }
 
