@@ -10,8 +10,9 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Ref } from 'vue-property-decorator'
+import { Vue, Ref, Component } from 'vue-property-decorator'
 
+@Component
 export default class SearchBar extends Vue {
   $refs!: {
     searchInput: HTMLInputElement
@@ -22,7 +23,6 @@ export default class SearchBar extends Vue {
 
   updateQuery(query: string) {
     this.query = query;
-    console.log(this);
     // TODO: fix that this does not use model and direct rerendering (currently like this because of weird behavior)
     this.$refs.text.innerText = query;
   }
