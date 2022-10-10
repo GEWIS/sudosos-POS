@@ -31,8 +31,7 @@
             </div>
           </div>
         </div>
-        <main
-          class="products custom-scrollbar"
+        <main class="products custom-scrollbar"
           v-if="state === State.CATEGORIES || state === State.SEARCH">
           <Products
             :products="filteredProducts"
@@ -53,15 +52,7 @@
           />
         </div>
         <div class="bottom-bar" v-if="state === State.CATEGORIES">
-          <div class="options-button" id="options-button" @click="toggleSettings">
-            <font-awesome-icon icon="ellipsis-h"/>
-          </div>
-          <SettingsComponent
-            v-if="showSettings"
-            :visible="showSettings"
-            :force-update-store="updateStore"
-            :toggle-settings="toggleSettings"
-          />
+          <Settings :force-update-store="updateStore" />
           <div class="search-bar" @click="openProductSearch()">
             <font-awesome-icon icon="search"/> Search...
           </div>
@@ -104,7 +95,7 @@ import { Component, Vue, Ref } from 'vue-property-decorator';
 import Dinero from 'dinero.js';
 import { getModule } from 'vuex-module-decorators';
 import { Product, ProductInContainer } from '@/entities/Product';
-import SettingsComponent from '@/components/SettingsComponent.vue';
+import Settings from '@/components/Settings.vue';
 import CategorieButtons from '@/components/CategorieButtons.vue';
 import CheckoutBar from '@/components/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
@@ -138,7 +129,7 @@ enum State {
     TOSNotRequired,
     CategorieButtons,
     CheckoutBar,
-    SettingsComponent,
+    Settings,
     Keyboard,
     ExitButton,
     SearchBar,
@@ -750,27 +741,6 @@ $scroll-bar-width: 40px;
   flex-wrap: nowrap;
   gap: 16px;
   position: relative;
-
-  .options-button {
-    background-color: $gewis-red;
-    border-radius: $border-radius;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: $nav-height;
-    flex-grow: 0;
-    flex-shrink: 0;
-    cursor: pointer;
-    height: $nav-height;
-    text-align: center;
-    flex-basis: 62px;
-    color: white;
-
-    svg {
-      width: 24px;
-      height: 24px;
-    }
-  }
 
   .search-bar {
     border: 1px solid $gewis-red;
