@@ -18,7 +18,7 @@
           <CategorieButtons :categories="pointOfSaleState.categories" />
           <BackendStatus />
         </div>
-        <div v-if="state === State.SEARCH || state === State.USER_SEARCH"
+        <div v-if="state === State.SEARCH">
           class="nav align-items-center">
           <ExitButton @click="exitSearch()" />
           <SearchBar ref="searchBar" @update="e => updateSearchFromInput(e)" />
@@ -38,12 +38,9 @@
             :searching="state === State.SEARCH" 
             @selected="item => addProduct(item, 1)" />
         </main>
-        <div class="users custom-scrollbar" v-if="state === State.USER_SEARCH">
-          <Users :users="filteredUsers" :validQuery="hasValidUserQuery" @selected="userSelected" />
-        </div>
         <div
           class="keyboard-container"
-          v-show="state === State.SEARCH || state === State.USER_SEARCH"
+          v-show="state === State.SEARCH"
         >
           <Keyboard
             ref="keyboard"
@@ -54,22 +51,10 @@
         <div class="bottom-bar" v-if="state === State.CATEGORIES">
           <Settings :force-update-store="updateStore" />
           <SearchBarButton @clicked="openProductSearch" /> 
-          <ActivityTimer ref="activityTimer" v-if="this.shouldTrackActivity" :checkingOut="checkingOut" />
+          <ActivityTimer ref="activityTimer" v-if="this.shouldTrackActivity" :checkingOut="checkingOut" @timeout="logout" />
         </div>
-        <div class="organ-members" v-if="state === State.ORGAN_MEMBER_SELECT">
-          <div class="top-bar">
-            <div class="close-button" @click="exitPickMember()">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
-            </div>
-            <div class="title">
-              Select a member of {{pointOfSaleState.pointOfSale.owner.name}} to charge as:
-            </div>
-          </div>
-          <div class="organ-member" v-for="user in pointOfSaleState.pointOfSaleOwners"
-            v-bind:key="user.id" @click="organMemberSelected(user)">
-            <span>{{ user.firstName }} {{ user.lastName }}</span>
-          </div>
-        </div>
+        <MainContentUserSearch v-if="state === State.USER_SEARCH" @exit="exitSearch" @userSelected="userSelected" />
+        <MainContentMembers v-if="state === State.ORGAN_MEMBER_SELECT" @exit="exitPickMember" @selected="organMemberSelected" />
       </div>
       <CheckoutBar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"
         :openPickMember="openPickMember" :updateRows="updateRows" :logoutFunc="logout"/>
@@ -92,6 +77,8 @@ import Products from '@/components/Products.vue';
 import Users from '@/components/Users.vue';
 import ActivityTimer from '@/components/ActivityTimer.vue';
 import SearchBarButton from '@/components/SearchBarButton.vue';
+import MainContentMembers from '@/components/maincontent/MainContentMembers.vue';
+import MainContentUserSearch from '@/components/maincontent/MainContentUserSearch.vue';
 
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User, UserType } from '@/entities/User';
@@ -126,6 +113,8 @@ enum State {
     Users,
     ActivityTimer,
     SearchBarButton,
+    MainContentMembers,
+    MainContentUserSearch,
   },
 })
 export default class ProductOverview extends Vue {
@@ -351,46 +340,7 @@ export default class ProductOverview extends Vue {
     ).sort(sortFn);
   }
 
-  get hasValidUserQuery(): boolean {
-    return this.userQuery.length >= 3;
-  }
-
-  get filteredUsers() {
-    if (this.userQuery.length < 3) return [];
-    return new Fuse(
-      this.userState.allUsers,
-      {
-        keys: ['nameWithoutAccents', 'gewisID'],
-        isCaseSensitive: false,
-        shouldSort: true,
-        threshold: 0.2,
-      },
-    ).search(this.userQuery)
-      .map((r) => r.item)
-      .filter((item, index, self) => self.findIndex((u) => u.id === item.id) === index)
-      .sort((a, b) => {
-        if (a.acceptedToS === 'NOT_ACCEPTED' && b.acceptedToS !== 'NOT_ACCEPTED') {
-          return 1;
-        }
-        if (a.acceptedToS !== 'NOT_ACCEPTED' && b.acceptedToS === 'NOT_ACCEPTED') {
-          return -1;
-        }
-        return 0;
-      })
-      .slice(0, 50);
-  }
-
   userSelected(user: User): void {
-    if (user === undefined) {
-      this.searchState.removeChargingUser();
-    } else {
-      if (user.acceptedToS === 'NOT_ACCEPTED') return;
-      this.searchState.updateChargingUser(user);
-    }
-
-    this.searchState.setUserSearching(false);
-    this.searchState.fetchTransactionHistory();
-
     if (this.organMemberRequired()) {
       this.showOrganMembers = true;
     }
@@ -400,10 +350,6 @@ export default class ProductOverview extends Vue {
     // @ts-ignore
     return this.$refs.checkoutBar.$refs.checkoutButton.isBorrelModeCheckout()
       && !this.pointOfSaleState.pointOfSale.useAuthentication;
-  }
-
-  orderSelf(): void {
-    this.userSelected(undefined);
   }
 
   organMemberSelected(user: User): void {
@@ -452,171 +398,6 @@ export default class ProductOverview extends Vue {
   flex-grow: 1;
   overflow: auto;
   margin: 16px 0;
-}
-
-$scroll-bar-width: 40px;
-
-.custom-scrollbar {
-  scrollbar-width: $scroll-bar-width;
-
-  &::-webkit-scrollbar {
-    width: $scroll-bar-width;
-  }
-  &::-webkit-scrollbar-thumb {
-    border: 1px solid $gewis-red;
-    min-height: $scroll-bar-width;
-    background: white;
-    border-radius: 5px;
-  }
-  &::-webkit-scrollbar-track {
-    width: $scroll-bar-width;
-    background: $gewis-red;
-  }
-  /* Buttons */
-  &::-webkit-scrollbar-button:single-button {
-    background-color: $gewis-red;
-
-    display: block;
-    background-size: 20px;
-    background-repeat: no-repeat;
-  }
-
-  /* Up */
-  &::-webkit-scrollbar-button:single-button:vertical:decrement {
-    height: 32px;
-    width: $scroll-bar-width;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    background-position: center 10px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(255, 255, 255)'><polygon points='50,00 0,50 100,50'/></svg>");
-  }
-
-  /* Down */
-  &::-webkit-scrollbar-button:single-button:vertical:increment {
-    height: 32px;
-    width: $scroll-bar-width;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    background-position: center 10px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(255, 255, 255)'><polygon points='0,0 100,0 50,50'/></svg>");
-  }
-}
-
-.users {
-  flex-grow: 1;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 16px 0;
-
-  .users-row {
-    flex: 1 1 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .user {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    height: 40px;
-
-    .user-text {
-      flex: 1;
-      font-size: 20px;
-      overflow: hidden;
-      word-wrap: break-word;
-      line-height: 40px;
-    }
-
-    .tos-not-accepted {
-      color: lightgray;
-    }
-
-    .user-button {
-      background: $gewis-red;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      padding: 8px 16px;
-      margin-right: 8px;
-
-      &.hidden {
-        visibility: hidden;
-      }
-    }
-
-    .user-icon {
-      display:flex;
-      justify-content:center;
-      align-items:center;
-
-      * {
-        margin-right: 8px;
-      }
-
-      &.disabled {
-        color: lightgrey;
-      }
-    }
-  }
-}
-
-.organ-members {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-
-  .top-bar {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-
-    .close-button {
-      border-radius: $border-radius;
-      background-color: $gewis-red;
-      padding: 1rem;
-
-      svg {
-        fill: white;
-        width: 30px;
-        height: 30px;
-      }
-    }
-
-    .title {
-      flex: 1;
-      font-size: 20px;
-      text-align: center;
-    }
-  }
-
-  .organ-member {
-    flex: 1 0 30%;
-    padding: 8px 4px;
-    font-size: 20px;
-    height: 80px;
-    max-width: 33%;
-    border: 1px solid $gewis-red;
-    border-radius: $border-radius;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    span {
-      line-height: 30px;
-    }
-  }
 }
 
 .product-overview-container {

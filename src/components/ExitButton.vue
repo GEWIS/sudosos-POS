@@ -8,8 +8,10 @@
 <style scoped lang="scss">
 @import "~bootstrap/scss/bootstrap";
 @import "./src/styles/Nav.scss";
+
 .button {
   height: 62px;
+  width: 62px;
 
   .nav-link {
     padding: 16px !important;

@@ -24,25 +24,84 @@
   }
 }
 
+.custom-scrollbar {
+  scrollbar-width: $scroll-bar-width;
+
+  &::-webkit-scrollbar, &::-moz-scrollbar {
+    width: $scroll-bar-width;
+  }
+  &::-webkit-scrollbar-thumb, &::-moz-scrollbar-thumb {
+    border: 1px solid $gewis-red;
+    min-height: $scroll-bar-width;
+    background: white;
+    border-radius: 5px;
+  }
+  &::-webkit-scrollbar-track, &::-moz-scrollbar-track {
+    width: $scroll-bar-width;
+    background: $gewis-red;
+  }
+  /* Buttons */
+  &::-webkit-scrollbar-button:single-button, &::-moz-scrollbar-button:single-button {
+    background-color: $gewis-red;
+
+    display: block;
+    background-size: 20px;
+    background-repeat: no-repeat;
+  }
+
+  /* Up */
+  &::-webkit-scrollbar-button:single-button:vertical:decrement, &::-moz-scrollbar-button:single-button:vertical:decrement {
+    height: 32px;
+    width: $scroll-bar-width;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-position: center 10px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(255, 255, 255)'><polygon points='50,00 0,50 100,50'/></svg>");
+  }
+
+  /* Down */
+  &::-webkit-scrollbar-button:single-button:vertical:increment, &::-moz-scrollbar-button:single-button:vertical:increment {
+    height: 32px;
+    width: $scroll-bar-width;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-position: center 10px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(255, 255, 255)'><polygon points='0,0 100,0 50,50'/></svg>");
+  }
+}
+
 .content-container {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  flex: 0 0 auto;
   z-index: 2;
   position: relative;
-}
 
-.content-top {
-  width: 100%;
-}
-
-.content-center {
-  width: 100%;
-}
-
-.content-bottom {
-  width: 100%;
-  align-self: flex-end;
+  > .content-top {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 16px;
+    flex: 0;
+  }
+  
+  > .content-center {
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  > .content-bottom {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    margin-top: 16px;
+    align-self: flex-end;
+    flex: 0;
+  }
 }
