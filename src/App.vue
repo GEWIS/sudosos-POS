@@ -5,19 +5,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import Dinero from 'dinero.js';
 import SearchModule from '@/store/modules/search';
 import UserModule from '@/store/modules/user';
-import CheckoutBar from '@/components/CheckoutBar.vue';
-import { PointOfSale } from './entities/PointOfSale';
 
-@Component({
-  components: {
-    CheckoutBar,
-  },
-})
 export default class App extends Vue {
   public vertical: boolean = (window.innerWidth / window.innerHeight) >= 1;
 
