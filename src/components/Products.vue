@@ -4,6 +4,7 @@
       v-for="item in products"
       :product="item"
       :key="`${item.id}-${item.containerId}`"
+      @selected="$emit('selected', item)"
     />
     <div class="no-components" v-if="products.length === 0">
       <div v-if="searching">There are no products for this query.</div>

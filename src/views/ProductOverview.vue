@@ -36,7 +36,8 @@
           v-if="state === State.CATEGORIES || state === State.SEARCH">
           <Products
             :products="filteredProducts"
-            :searching="state === State.SEARCH" />
+            :searching="state === State.SEARCH" 
+            @selected="item => addProduct(item, 1)" />
         </main>
         <div class="users custom-scrollbar" v-if="state === State.USER_SEARCH">
           <Users :users="filteredUsers" :validQuery="hasValidUserQuery" @selected="userSelected" />
