@@ -39,12 +39,7 @@
             :searching="state === State.SEARCH" />
         </main>
         <div class="users custom-scrollbar" v-if="state === State.USER_SEARCH">
-          <Keyboard
-            ref="keyboard"
-            :onChange="updateSearchFromKeyboard"
-            :allowNumbers="state === State.USER_SEARCH"
-          />
-          <Users :users="filteredUsers" :validQuery="hasValidUserQuery" />
+          <Users :users="filteredUsers" :validQuery="hasValidUserQuery" @selected="userSelected" />
         </div>
         <div
           class="keyboard-container"
@@ -461,6 +456,7 @@ export default class ProductOverview extends Vue {
       },
     ).search(this.userQuery)
       .map((r) => r.item)
+      .filter((item, index, self) => self.findIndex((u) => u.id === item.id) === index)
       .sort((a, b) => {
         if (a.acceptedToS === 'NOT_ACCEPTED' && b.acceptedToS !== 'NOT_ACCEPTED') {
           return 1;

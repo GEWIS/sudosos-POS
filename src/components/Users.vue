@@ -7,8 +7,7 @@
       <p>No users were found for your query</p>
     </div>
     <div v-else class="content">
-      {{users.length}} users found
-      <!--<User v-for="user in users" :user="user" :key="`${user.id}`" @click="selected(user)" />-->
+      <User v-for="user in users" :user="user" :key="`${user.id}`" @selected="$emit('selected', user)" />
     </div>
   </div>
 </template>
@@ -19,16 +18,12 @@ import {User} from '@/entities/User'
 
 @Component({
   components: {
-    UserComponent,
+    User: UserComponent,
   },
 })
 export default class Users extends Vue {
   @Prop() users!: User[];
   @Prop() validQuery!: boolean;
-
-  selected(user: User) {
-    this.$emit('selected', user);
-  }
 }
 </script>
 <style scoped lang="scss">

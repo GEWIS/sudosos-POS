@@ -1,36 +1,32 @@
 <template>
-  <div class="user">
-    test123
-    <!--<div
-    class="user-button"
-    :class="{ hidden: item.acceptedToS === 'NOT_ACCEPTED' }">
-        Select
+  <div class="user" @click="$emit('selected')">
+    <div class="user-button"
+      :class="{ hidden: user.acceptedToS === 'NOT_ACCEPTED' }">
+      Select
     </div>
     <div class="user-icon"
-        v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'disabled' : ''">
-        <font-awesome-icon icon="exclamation-triangle"
-                        size="lg" v-if="item.acceptedToS === 'NOT_ACCEPTED'"/>
-        <font-awesome-icon icon="baby"
-                        size="lg" v-if="!item.ofAge && userIsPerson(item)"/>
+      v-bind:class="(user.acceptedToS === 'NOT_ACCEPTED') ? 'disabled' : ''">
+      <font-awesome-icon icon="exclamation-triangle"
+                        size="lg" v-if="user.acceptedToS === 'NOT_ACCEPTED'"/>
+      <font-awesome-icon icon="baby"
+                        size="lg" v-if="!user.ofAge && isPerson()"/>
     </div>
     <div class="user-text"
-        v-bind:class="(item.acceptedToS === 'NOT_ACCEPTED') ? 'tos-not-accepted' : ''"
-    >
-        {{item.firstName}} {{item.lastName}} - {{item.gewisID}}
-    </div>-->
+      v-bind:class="(user.acceptedToS === 'NOT_ACCEPTED') ? 'tos-not-accepted' : ''">
+      {{user.firstName}} {{user.lastName}} - {{user.gewisID}}
+    </div>
   </div>
 </template>
 <script lang="ts">
-import {Vue, Prop} from 'vue-property-decorator'
+import {Vue, Prop, Component} from 'vue-property-decorator'
 import { User, UserType } from '@/entities/User';
 
+@Component
 export default class UserComponent extends Vue {
-  //@Prop() user!: User;
+  @Prop() user!: User;
   
-  // eslint-disable-next-line class-methods-use-this
   isPerson(): boolean {
-    return true;
-    //return [UserType.MEMBER, UserType.LOCAL_USER, UserType.LOCAL_ADMIN].includes(this.user.type);
+    return [UserType.MEMBER, UserType.LOCAL_USER, UserType.LOCAL_ADMIN].includes(this.user.type);
   }
 }
 </script>
