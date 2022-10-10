@@ -53,21 +53,8 @@
         </div>
         <div class="bottom-bar" v-if="state === State.CATEGORIES">
           <Settings :force-update-store="updateStore" />
-          <div class="search-bar" @click="openProductSearch()">
-            <font-awesome-icon icon="search"/> Search...
-          </div>
-          <div
-            class="activity-timeout"
-            v-if="this.pointOfSaleState.pointOfSale.useAuthentication && !checkingOut"
-          >
-            Automatically logging out in {{activityTimeoutTimeSeconds}} seconds.
-          </div>
-          <div
-            class="activity-timeout"
-            v-else-if="this.pointOfSaleState.pointOfSale.useAuthentication"
-          >
-            No automatic logout during checkout.
-          </div>
+          <SearchBarButton @clicked="openProductSearch" /> 
+          <ActivityTimer ref="activityTimer" v-if="this.shouldTrackActivity" :checkingOut="checkingOut" />
         </div>
         <div class="organ-members" v-if="state === State.ORGAN_MEMBER_SELECT">
           <div class="top-bar">
@@ -85,7 +72,7 @@
         </div>
       </div>
       <CheckoutBar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"
-        :openPickMember="openPickMember" :updateRows="updateRows" :loggedOut="loggedOut"/>
+        :openPickMember="openPickMember" :updateRows="updateRows" :logoutFunc="logout"/>
     </div>
   </div>
 </template>
@@ -103,6 +90,8 @@ import ExitButton from '@/components/ExitButton.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import Products from '@/components/Products.vue';
 import Users from '@/components/Users.vue';
+import ActivityTimer from '@/components/ActivityTimer.vue';
+import SearchBarButton from '@/components/SearchBarButton.vue';
 
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User, UserType } from '@/entities/User';
@@ -135,6 +124,7 @@ enum State {
     SearchBar,
     Products,
     Users,
+    ActivityTimer,
   },
 })
 export default class ProductOverview extends Vue {
@@ -152,19 +142,9 @@ export default class ProductOverview extends Vue {
 
   public showOrganMembers: boolean = false;
 
+  public checkingOut: boolean = false;
+
   State: any = State;
-
-  private activityTimeoutDelay: number = 30000;
-
-  private activityTimeoutStep: number = 1000;
-
-  private activityTimeoutHandle: number;
-
-  private activityTimeoutTimerHandle: number;
-
-  private activityTimeoutTime: number = 0;
-
-  private checkingOut: boolean = false;
 
   private autoRefresh;
 
@@ -176,6 +156,7 @@ export default class ProductOverview extends Vue {
     searchBar: SearchBar
     checkoutBar: CheckoutBar
     keyboard: Keyboard
+    activityTimer: ActivityTimer
   }
 
   async mounted() {
@@ -188,21 +169,15 @@ export default class ProductOverview extends Vue {
       this.checkingOut = value;
 
       if (value) {
-        this.clearTimeouts();
+        this.$refs.activityTimer.clearTimeouts();
       } else {
-        this.userActivity();
+        this.$refs.activityTimer.userActivity();
       }
-    });
-
-    window.addEventListener('mouseup', () => {
-      this.userActivity();
     });
 
     document.addEventListener('contextmenu', (event) => {
       event.preventDefault();
     });
-
-    this.userActivity();
 
     this.autoRefresh = setInterval(this.updateStore.bind(this), 10 * 60 * 1000);
   }
@@ -221,49 +196,8 @@ export default class ProductOverview extends Vue {
     return products;
   }
 
-  get activityTimeoutTimeSeconds() {
-    return Math.floor(this.activityTimeoutTime / 1000);
-  }
-
-  userActivity() {
-    if (this.activityTimeoutHandle !== undefined) {
-      clearTimeout(this.activityTimeoutHandle);
-      this.activityTimeoutHandle = undefined;
-    }
-
-    if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
-      return;
-    }
-
-    this.activityTimeoutTime = this.activityTimeoutDelay;
-
-    // @ts-ignore
-    this.activityTimeoutHandle = setTimeout(() => {
-      this.$refs.checkoutBar.logout();
-    }, this.activityTimeoutDelay);
-
-    this.activityTimeoutTimer();
-  }
-
-  activityTimeoutTimer() {
-    if (this.activityTimeoutTime <= 0) {
-      return;
-    }
-
-    if (this.activityTimeoutTimerHandle !== undefined) {
-      clearTimeout(this.activityTimeoutTimerHandle);
-      this.activityTimeoutTimerHandle = undefined;
-    }
-
-    if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
-      return;
-    }
-
-    // @ts-ignore
-    this.activityTimeoutTimerHandle = setTimeout(() => {
-      this.activityTimeoutTime -= this.activityTimeoutStep;
-      this.activityTimeoutTimer();
-    }, this.activityTimeoutStep);
+  get shouldTrackActivity(): boolean {
+    return this.pointOfSaleState.pointOfSale.useAuthentication;
   }
 
   updateStore() {
@@ -271,24 +205,12 @@ export default class ProductOverview extends Vue {
     this.pointOfSaleState.refreshPointOfSale();
   }
 
-  loggedOut() {
+  logout() {
     clearInterval(this.autoRefresh);
     this.userState.reset();
     this.searchState.reset();
-    this.clearTimeouts();
+    this.$refs.activityTimer.clearTimeouts();
     this.$router.push('/');
-  }
-
-  clearTimeouts() {
-    if (this.activityTimeoutHandle !== undefined) {
-      clearTimeout(this.activityTimeoutHandle);
-      this.activityTimeoutHandle = undefined;
-    }
-
-    if (this.activityTimeoutTimerHandle !== undefined) {
-      clearTimeout(this.activityTimeoutTimerHandle);
-      this.activityTimeoutTimerHandle = undefined;
-    }
   }
 
   get state() {
@@ -307,10 +229,6 @@ export default class ProductOverview extends Vue {
 
   updateRows(rows: SubTransactionRow[]) {
     this.rows = rows;
-  }
-
-  toggleSettings() {
-    this.showSettings = !this.showSettings;
   }
 
   openProductSearch() {
