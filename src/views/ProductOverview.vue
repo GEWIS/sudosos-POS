@@ -7,8 +7,7 @@
     <b-modal
       id="modal-transaction-failed"
       title="Saving transaction failed"
-      ok-only
-    >
+      ok-only>
       Saving the transaction failed. Please try again,
       with or without restarting the SudoSOS POS and logging in again.
     </b-modal>
@@ -18,7 +17,7 @@
           <CategorieButtons :categories="pointOfSaleState.categories" />
           <BackendStatus />
         </div>
-        <div v-if="state === State.SEARCH">
+        <div v-if="state === State.SEARCH"
           class="nav align-items-center">
           <ExitButton @click="exitSearch()" />
           <SearchBar ref="searchBar" @update="e => updateSearchFromInput(e)" />
@@ -35,8 +34,7 @@
           v-if="state === State.CATEGORIES || state === State.SEARCH">
           <Products
             :products="filteredProducts"
-            :searching="state === State.SEARCH" 
-            @selected="item => addProduct(item, 1)" />
+            :searching="state === State.SEARCH" />
         </main>
         <div
           class="keyboard-container"
@@ -56,8 +54,8 @@
         <MainContentUserSearch v-if="state === State.USER_SEARCH" @exit="exitSearch" @userSelected="userSelected" />
         <MainContentMembers v-if="state === State.ORGAN_MEMBER_SELECT" @exit="exitPickMember" @selected="organMemberSelected" />
       </div>
-      <CheckoutBar ref="checkoutBar" :subTransactionRows="rows" :openUserSearch="openUserSearch"
-        :openPickMember="openPickMember" :updateRows="updateRows" :logoutFunc="logout"/>
+      <CheckoutBar ref="checkoutBar" :openUserSearch="openUserSearch"
+        :openPickMember="openPickMember" :logoutFunc="logout"/>
     </div>
   </div>
 </template>
@@ -83,6 +81,7 @@ import MainContentUserSearch from '@/components/maincontent/MainContentUserSearc
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { User, UserType } from '@/entities/User';
 import UserModule from '@/store/modules/user';
+import CartModule from '@/store/modules/cart';
 
 import Fuse from 'fuse.js';
 import Keyboard from '@/components/Keyboard.vue';
@@ -124,7 +123,7 @@ export default class ProductOverview extends Vue {
 
   private pointOfSaleState = getModule(PointOfSaleModule);
 
-  public rows: SubTransactionRow[] = [];
+  private cartState = getModule(CartModule);
 
   public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 
@@ -217,10 +216,6 @@ export default class ProductOverview extends Vue {
     return State.CATEGORIES;
   }
 
-  updateRows(rows: SubTransactionRow[]) {
-    this.rows = rows;
-  }
-
   openProductSearch() {
     this.searchState.updateSearching(true);
     // @ts-ignore
@@ -290,21 +285,6 @@ export default class ProductOverview extends Vue {
 
   clickSearchButton() {
     this.searchState.setSearching(!this.searchState.searching);
-  }
-
-  addProduct(product: Product, amount: number) {
-    const productIndex = this.rows.findIndex((row) => row.product.id === product.id);
-    if (productIndex > -1) {
-      this.rows[productIndex].amount += amount;
-    } else {
-      const price = Dinero({ amount: product.priceInclVat.getAmount() });
-      const row = {
-        product,
-        amount,
-        priceInclVat: product.priceInclVat,
-      } as SubTransactionRow;
-      this.rows.push(row);
-    }
   }
 
   // Filter the products by the desired criteria

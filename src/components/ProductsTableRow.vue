@@ -14,6 +14,7 @@ import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import Formatters from '@/mixins/Formatters';
 import Keypad from '@/components/Keypad.vue';
 import TransactionModule from '@/store/modules/transactions';
+import CartModule from '@/store/modules/cart';
 
 @Component({
   components: {
@@ -21,13 +22,9 @@ import TransactionModule from '@/store/modules/transactions';
   },
 })
 export default class ProductsTableRow extends Formatters {
-  @Prop() updateRows: Function;
-
   @Prop() item!: SubTransactionRow;
 
-  @Prop() rows: SubTransactionRow[];
-
-  transactionsState = getModule(TransactionModule);
+  private cartState = getModule(CartModule);
 
   private holdDefaultDelay: number = 400;
 
@@ -41,25 +38,12 @@ export default class ProductsTableRow extends Formatters {
 
   private timeoutHandle: number;
 
+  get amount(): number {
+    return this.item.amount;
+  }
+
   get productTotal() {
-    return (this.item.priceInclVat.getAmount() as any) * this.item.amount;
-  }
-
-  get amount() {
-    const itemIndex = this.rows.findIndex((row) => row.product.id === this.item.product.id);
-
-    return this.rows[itemIndex].amount;
-  }
-
-  set amount(value: number) {
-    const itemIndex = this.rows.findIndex((row) => row.product.id === this.item.product.id);
-
-    this.rows[itemIndex].amount = value;
-  }
-
-  deleteItem() {
-    this.updateRows(this.rows.filter((row) => row.product.id !== this.item.product.id));
-    this.held = false;
+    return this.item.priceInclVat.getAmount() * this.item.amount;
   }
 
   increaseClick() {
@@ -73,15 +57,11 @@ export default class ProductsTableRow extends Formatters {
   }
 
   increaseItem() {
-    this.amount += 1;
+    this.cartState.increaseProduct(this.item.product, 1);
   }
 
   decreaseItem() {
-    if (this.amount > 1) {
-      this.amount -= 1;
-    } else {
-      this.deleteItem();
-    }
+    this.cartState.decreaseProduct(this.item.product, 1);
   }
 
   stopHold() {

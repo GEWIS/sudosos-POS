@@ -20,6 +20,7 @@ import { getModule } from 'vuex-module-decorators';
 import { postTransaction } from '@/api/transactions';
 import SearchModule from '@/store/modules/search';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
+import CartModule from '@/store/modules/cart';
 
 @Component
 export default class CheckoutButton extends Vue {
@@ -42,6 +43,8 @@ export default class CheckoutButton extends Vue {
   private searchState = getModule(SearchModule);
 
   private pointOfSaleState = getModule(PointOfSaleModule);
+
+  private cartState = getModule(CartModule);
 
   organMemberSelected(selectedMember: User) {
     this.finishTransaction(selectedMember, this.searchState.chargingUser, true);
@@ -130,15 +133,9 @@ export default class CheckoutButton extends Vue {
 
   async finishTransaction(user: User, chargingUser: User, borrelMode = false) {
     this.transactionProcessing = true;
-    const rows = [
-      ...(this.$parent.$parent as any).rows,
-    ];
-    console.log(rows, (this.$parent.$parent as any).rows);
+
     const { pointOfSale } = this.pointOfSaleState;
-
-    const subTransactions = CheckoutButton.makeSubTransactions(rows, user, pointOfSale);
-    console.log(rows, (this.$parent.$parent as any).rows);
-
+    const subTransactions = CheckoutButton.makeSubTransactions(this.cartState.rows, user, pointOfSale);
     let chargingId = 0;
 
     if (chargingUser.firstName !== undefined) {
@@ -178,7 +175,7 @@ export default class CheckoutButton extends Vue {
     try {
       await postTransaction(transaction);
       this.searchState.reset();
-      (this.$parent.$parent as any).rows = [];
+      this.cartState.clear();
 
       if (!borrelMode) {
         this.userState.reset();

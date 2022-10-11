@@ -27,12 +27,12 @@
         <font-awesome-icon icon="sign-out-alt"/>
       </b-col>
     </b-row>
-    <products-table v-if="subTransactionRows.length > 0" :items="subTransactionRows" :updateRows="updateRows"/>
-    <transaction-history v-if="subTransactionRows.length === 0" :transactions="searchState.transactionHistory" />
+    <TransactionHistory v-if="cartState.isEmpty" :transactions="searchState.transactionHistory" />
+    <ProductsTable v-if="!cartState.isEmpty" :items="cartState.rows" />
     <b-row class="transaction-detail-row">
       <div class="total-row">
         <div class="total-text">Total</div>
-        <div class="total-value">€{{ (transactionTotal / 100).toFixed(2) }}</div>
+        <div class="total-value">€{{ (cartState.total / 100).toFixed(2) }}</div>
       </div>
       <div class="balance-row" v-if="pointOfSaleState.pointOfSale.useAuthentication ? !searchState.isChargingUser : searchState.isChargingUser">
         <div class="balance-text">Balance after</div>
@@ -46,7 +46,7 @@
         You are charging {{ searchState.chargingUser.firstName }}!
       </div>
     </b-row>
-    <checkout-button ref="checkoutButton" :openPickMember="openPickMember" />
+    <CheckoutButton ref="checkoutButton" :openPickMember="openPickMember" />
     <div class="borrelmode-text" v-if="!pointOfSaleState.pointOfSale.useAuthentication">
       Borrelmode is active for {{ pointOfSaleState.pointOfSale.owner.name }}
     </div>
@@ -61,10 +61,10 @@ import ProductsTable from '@/components/ProductsTable.vue';
 import CheckoutButton from '@/components/CheckoutButton.vue';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
-import SearchModule from '@/store/modules/search';
-import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import TransactionHistory from '@/components/TransactionHistory.vue';
+import CartModule from '@/store/modules/cart';
+import SearchModule from '@/store/modules/search';
 
 @Component({
   components: { TransactionHistory, ProductsTable, CheckoutButton },
@@ -79,39 +79,30 @@ export default class CheckoutBar extends Formatters {
 
   @Prop() openPickMember: Function;
 
-  @Prop() updateRows: Function;
-
   @Prop() logoutFunc: Function;
 
   private userState = getModule(UserModule);
 
-  private searchState = getModule(SearchModule);
-
   private pointOfSaleState = getModule(PointOfSaleModule);
 
-  subTransactionRows: SubTransactionRow[];
+  private cartState = getModule(CartModule);
 
-  get transactionTotal() {
-    let total = 0;
+  private searchState = getModule(SearchModule);
 
-    this.subTransactionRows.forEach((row: SubTransactionRow) => {
-      const rowTotal = row.priceInclVat.getAmount() * row.amount;
-      total += rowTotal;
-    });
-
-    return total;
-  }
+  $refs!: {
+    checkoutButton: CheckoutButton;
+  };
 
   get balanceAfter() {
     if (this.userState.userBalance) {
       return this.userState.userBalance.subtract(DineroType({
-        amount: this.transactionTotal,
+        amount: this.cartState.total,
         currency: 'EUR',
       }));
     }
 
     return DineroType({
-      amount: -this.transactionTotal,
+      amount: -this.cartState.total,
       currency: 'EUR',
     });
   }
@@ -121,7 +112,7 @@ export default class CheckoutBar extends Formatters {
   }
 
   organMemberSelected(user: User): void {
-    (this.$refs.checkoutButton as CheckoutButton).organMemberSelected(user);
+    this.$refs.checkoutButton.organMemberSelected(user);
   }
 
   logout() {
