@@ -160,6 +160,7 @@ export default class SearchModule extends VuexModule {
         .then((transactions) => {
           this.context.commit('setTransactionHistory', transactions.records);
         });
+      this.context.dispatch('UserModule/fetchBalance', id, { root: true });
     } else {
       this.context.commit('setTransactionHistory', []);
     }

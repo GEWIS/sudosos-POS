@@ -203,9 +203,9 @@ export default class UserModule extends VuexModule {
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
-  async fetchBalance() {
+  async fetchBalance(id: number) {
     try {
-      const balanceResponse = await APIHelper.getResource('balances/');
+      const balanceResponse = await APIHelper.getResource(`balances/${id}`);
       const balance = Dinero(balanceResponse.amount);
       this.context.commit('updateBalance', balance);
     } catch (e) {
@@ -225,7 +225,7 @@ export default class UserModule extends VuexModule {
 
       this.context.commit('setUser', user);
 
-      await this.fetchBalance();
+      await this.fetchBalance(user.id);
       APIHelper.getResource(`users/${token.user.id}/pointsofsale`).then((pointOfSaleResponse) => {
         this.context.commit('setUserPOSs', pointOfSaleResponse.records);
       });
