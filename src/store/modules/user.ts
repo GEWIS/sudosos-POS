@@ -237,17 +237,17 @@ export default class UserModule extends VuexModule {
   })
   async fetchAllUsers(force: boolean = false) {
     if (this.allUsers.length === 0 || force) {
-      const take = 100000;
+      const take = 500;
       let usersResponse = await getUsers(take);
       const allUsers = usersResponse.records;
-      let totalTaken = usersResponse._pagination.take;
-      // Pagination is a thing, so we need to do multiple requests to fetch everything
-      while (totalTaken < usersResponse._pagination.count) {
-        // eslint-disable-next-line no-await-in-loop
-        usersResponse = await getUsers(take, totalTaken);
-        allUsers.push(...usersResponse.records);
-        totalTaken += usersResponse._pagination.take;
-      }
+
+      const pages = Math.ceil(usersResponse._pagination.count / take);
+
+      allUsers.push(...(await Promise.all(Array(pages-1).fill(1).map(async (_, i) => {
+        usersResponse = await getUsers(take, (i+1)*take);
+        return usersResponse.records;
+      }))).flat());
+      console.log(allUsers);
       this.context.commit('setAllUsers', allUsers);
       this.context.commit('setAllOrgans');
       this.fetchAllOrganMembers();
