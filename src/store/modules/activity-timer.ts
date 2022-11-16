@@ -48,7 +48,6 @@ export default class ActivityTimerModule extends VuexModule {
 
     this.context.commit('setTimeoutTime', this.timeoutDelay);
 
-    // @ts-ignore
     this.context.commit('setTimeoutHandle', setTimeout(() => {
       this.context.commit('setTimedOut', true);
     }, this.timeoutDelay));

@@ -4,7 +4,7 @@
       <ExitButton @click="$emit('exit')" />
       <SearchBar ref="searchBar" @update="e => updateSearchFromInput(e)" />
     </div>
-    <div class="content-center">
+    <div class="content-center custom-scrollbar">
       <Products
         :products="filteredProducts"
         :searching="true" 

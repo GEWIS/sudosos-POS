@@ -24,24 +24,22 @@
   }
 }
 
-.custom-scrollbar {
-  scrollbar-width: $scroll-bar-width;
-
-  &::-webkit-scrollbar, &::-moz-scrollbar {
+@mixin scrollbar($prefix) {
+  &::#{$prefix}-scrollbar {
     width: $scroll-bar-width;
   }
-  &::-webkit-scrollbar-thumb, &::-moz-scrollbar-thumb {
+  &::#{$prefix}-scrollbar-thumb{
     border: 1px solid $gewis-red;
     min-height: $scroll-bar-width;
     background: white;
     border-radius: 5px;
   }
-  &::-webkit-scrollbar-track, &::-moz-scrollbar-track {
+  &::#{$prefix}-scrollbar-track{
     width: $scroll-bar-width;
     background: $gewis-red;
   }
   /* Buttons */
-  &::-webkit-scrollbar-button:single-button, &::-moz-scrollbar-button:single-button {
+  &::#{$prefix}-scrollbar-button:single-button {
     background-color: $gewis-red;
 
     display: block;
@@ -50,7 +48,7 @@
   }
 
   /* Up */
-  &::-webkit-scrollbar-button:single-button:vertical:decrement, &::-moz-scrollbar-button:single-button:vertical:decrement {
+  &::#{$prefix}-scrollbar-button:single-button:vertical:decrement {
     height: 32px;
     width: $scroll-bar-width;
     border-top-left-radius: 5px;
@@ -60,7 +58,7 @@
   }
 
   /* Down */
-  &::-webkit-scrollbar-button:single-button:vertical:increment, &::-moz-scrollbar-button:single-button:vertical:increment {
+  &::#{$prefix}-scrollbar-button:single-button:vertical:increment {
     height: 32px;
     width: $scroll-bar-width;
     border-bottom-left-radius: 5px;
@@ -68,6 +66,13 @@
     background-position: center 10px;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(255, 255, 255)'><polygon points='0,0 100,0 50,50'/></svg>");
   }
+}
+
+.custom-scrollbar {
+  scrollbar-width: $scroll-bar-width;
+
+  @include scrollbar(-webkit);
+  @include scrollbar(-moz);
 }
 
 .content-container {
@@ -93,7 +98,7 @@
   > .content-center {
     width: 100%;
     flex: 1;
-    overflow: hidden;
+    overflow-y: scroll;
   }
   
   > .content-bottom {

@@ -4,7 +4,7 @@
       <CategorieButtons :categories="pointOfSaleState.categories" />
       <BackendStatus />
     </div>
-    <div class="content-center">
+    <div class="content-center custom-scrollbar">
       <Products
         :products="filteredProducts"
         :searching="false" />
@@ -74,7 +74,6 @@ export default class MainContentProducts extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "~bootstrap/scss/bootstrap";
 @import "./src/styles/common.scss";
 @import "./src/styles/Nav.scss";
 

@@ -12,7 +12,7 @@
         </div>
       </div>
     </div>
-    <div class="content-center">
+    <div class="content-center custom-scrollbar">
       <Users :users="filteredUsers" :validQuery="hasValidUserQuery" @selected="userSelected" />
     </div>
     <div class="content-bottom">
@@ -125,6 +125,11 @@ export default class MainContentUserSearch extends Vue {
 
 .keyboard-container {
   flex: 0 1 720px;
+}
+
+.wrap {
+  width: 100%;
+  overflow-y: scroll;
 }
 
 </style>
