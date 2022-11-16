@@ -64,28 +64,28 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { Product, ProductInContainer } from '@/entities/Product';
-import Settings from '@/components/Settings.vue';
-import CategorieButtons from '@/components/CategorieButtons.vue';
-import CheckoutBar from '@/components/CheckoutBar.vue';
+import Settings from '@/components/maincontent/products/Settings.vue';
+import CategorieButtons from '@/components/maincontent/products/CategorieButtons.vue';
+import CheckoutBar from '@/components/checkoutbar/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
-import ExitButton from '@/components/ExitButton.vue';
-import SearchBar from '@/components/SearchBar.vue';
-import Products from '@/components/Products.vue';
-import Users from '@/components/Users.vue';
-import ActivityTimer from '@/components/ActivityTimer.vue';
-import SearchBarButton from '@/components/SearchBarButton.vue';
+import ExitButton from '@/components/maincontent/common/ExitButton.vue';
+import SearchBar from '@/components/maincontent/common/SearchBar.vue';
+import Products from '@/components/maincontent/common/Products.vue';
+import Users from '@/components/maincontent/usersearch/Users.vue';
+import ActivityTimer from '@/components/maincontent/products/ActivityTimer.vue';
+import SearchBarButton from '@/components/maincontent/products/SearchBarButton.vue';
 import MainContentMembers from '@/components/maincontent/MainContentMembers.vue';
 import MainContentUserSearch from '@/components/maincontent/MainContentUserSearch.vue';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import CartModule from '@/store/modules/cart';
 import Fuse from 'fuse.js';
-import Keyboard from '@/components/Keyboard.vue';
+import Keyboard from '@/components/maincontent/common/Keyboard.vue';
 import 'simple-keyboard/build/css/index.css';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import { Container } from '@/entities/Container';
 import TOSNotRequired from '@/components/TOSNotRequired.vue';
-import BackendStatus from '@/components/BackendStatus.vue';
+import BackendStatus from '@/components/maincontent/products/BackendStatus.vue';
 
 enum State {
   CATEGORIES,

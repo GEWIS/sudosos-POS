@@ -33,10 +33,10 @@ import UserModule from '@/store/modules/user';
 import Fuse from 'fuse.js';
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import SearchBar from '../SearchBar.vue';
-import Keyboard from '../Keyboard.vue';
-import ExitButton from '../ExitButton.vue';
-import Users from '../Users.vue';
+import SearchBar from './common/SearchBar.vue';
+import Keyboard from './common/Keyboard.vue';
+import ExitButton from './common/ExitButton.vue';
+import Users from './usersearch/Users.vue';
 
 @Component({
   components: {

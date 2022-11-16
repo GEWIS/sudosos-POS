@@ -12,7 +12,7 @@
 import {
   Component, Prop, Vue,
 } from 'vue-property-decorator';
-import TransactionHistoryRow from '@/components/TransactionHistoryRow.vue';
+import TransactionHistoryRow from '@/components/checkoutbar/TransactionHistoryRow.vue';
 
 @Component({
   components: {

@@ -11,7 +11,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component, Prop } from 'vue-property-decorator'
-import CategorieButton from '@/components/CategorieButton.vue'
+import CategorieButton from '@/components/maincontent/products/CategorieButton.vue'
 import {ProductCategory} from '@/entities/ProductCategory'
 
 @Component({

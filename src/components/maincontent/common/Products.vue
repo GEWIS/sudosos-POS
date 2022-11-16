@@ -15,7 +15,7 @@
 <script lang="ts">
 import { ProductInContainer } from '@/entities/Product';
 import { Vue, Prop, Component } from 'vue-property-decorator';
-import Product from '@/components/Product.vue';
+import Product from '@/components/maincontent/common/Product.vue';
 import { getModule } from 'vuex-module-decorators';
 import CartModule from '@/store/modules/cart';
 

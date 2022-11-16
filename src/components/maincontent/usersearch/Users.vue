@@ -13,7 +13,7 @@
 </template>
 <script lang="ts">
 import {Vue, Prop,Component} from 'vue-property-decorator'
-import UserComponent from '@/components/User.vue'
+import UserComponent from '@/components/maincontent/usersearch/User.vue'
 import {User} from '@/entities/User'
 
 @Component({

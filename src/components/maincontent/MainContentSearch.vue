@@ -22,10 +22,10 @@
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import SearchBar from '@/components/SearchBar.vue';
-import Keyboard from '@/components/Keyboard.vue';
-import ExitButton from '@/components/ExitButton.vue';
-import Products from '@/components/Products.vue';
+import SearchBar from '@/components/maincontent/common/SearchBar.vue';
+import Keyboard from '@/components/maincontent/common/Keyboard.vue';
+import ExitButton from '@/components/maincontent/common/ExitButton.vue';
+import Products from '@/components/maincontent/common/Products.vue';
 import { getModule } from 'vuex-module-decorators';
 import CartModule from '@/store/modules/cart';
 import { Product } from '@/entities/Product';

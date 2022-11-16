@@ -58,12 +58,12 @@
 import {
   Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
-import keypad from '@/components/Keypad.vue';
+import keypad from '@/components/login/Keypad.vue';
 import APIHelper from '@/mixins/APIHelper';
 import { getModule } from 'vuex-module-decorators';
 import UserModule from '@/store/modules/user';
 import { LoginResponse } from '@/entities/APIResponses';
-import EanLogin from '@/components/EanLogin.vue';
+import EanLogin from '@/components/login/EanLogin.vue';
 import { getAllActiveBanners } from '@/api/banners';
 
 @Component({

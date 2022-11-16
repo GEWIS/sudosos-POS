@@ -21,7 +21,7 @@ import { Transaction } from '@/entities/Transaction';
 import { Component, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import UserModule from '@/store/modules/user';
-import TransactionDetailsModal from '@/components/TransactionDetailsModal.vue';
+import TransactionDetailsModal from '@/components/checkoutbar/TransactionDetailsModal.vue';
 
 @Component({
   components: { TransactionDetailsModal },
