@@ -22,8 +22,7 @@
         class="logout-button"
         @click="logout"
         align-v="center"
-        v-if="pointOfSaleState.pointOfSale.useAuthentication"
-      >
+        v-if="pointOfSaleState.pointOfSale.useAuthentication">
         <font-awesome-icon icon="sign-out-alt"/>
       </b-col>
     </b-row>
@@ -94,6 +93,7 @@ export default class CheckoutBar extends Formatters {
   };
 
   get balanceAfter() {
+    console.log(this.cartState.total);
     if (this.userState.userBalance) {
       return this.userState.userBalance.subtract(DineroType({
         amount: this.cartState.total,

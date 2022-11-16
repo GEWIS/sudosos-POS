@@ -21,7 +21,7 @@ export default class TransactionModule extends VuexModule {
   currentTransaction: Transaction = {} as Transaction;
 
   @Mutation
-  reset() {
+  resetTransactions() {
     this.transactions = [];
     this.currentTransaction = {} as Transaction;
     this.posTransactions = [];

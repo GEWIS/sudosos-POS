@@ -57,11 +57,11 @@ export default class ProductsTableRow extends Formatters {
   }
 
   increaseItem() {
-    this.cartState.increaseProduct(this.item.product, 1);
+    this.cartState.increaseProduct({product: this.item.product, amount: 1});
   }
 
   decreaseItem() {
-    this.cartState.decreaseProduct(this.item.product, 1);
+    this.cartState.decreaseProduct({product: this.item.product, amount: 1});
   }
 
   stopHold() {

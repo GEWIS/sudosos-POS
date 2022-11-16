@@ -10,16 +10,16 @@ export default class CartModule extends VuexModule {
 	public rows: SubTransactionRow[] = [];
 
   @Action
-	increaseProduct(product: Product, amount: number) {
+	increaseProduct({product, amount}: {product: Product, amount: number}) {
     if (this.contains(product)) {
       this.context.commit('increaseAmount', {row: this.rows[this.getIndex(product)], amount});
     } else {
-      this.addProduct(product, amount);
+      this.context.dispatch('addProduct', {product, amount});
     }
 	}
 
   @Action
-  addProduct(product: Product, amount: number) {
+  addProduct({product, amount}: {product: Product, amount: number}) {
     if (this.contains(product)) {
       return;
     }
@@ -30,11 +30,13 @@ export default class CartModule extends VuexModule {
       priceInclVat: product.priceInclVat,
     } as SubTransactionRow;
 
+    console.log(row);
+
     this.context.commit('addRow', row);
   }
 
   @Action
-  decreaseProduct(product: Product, amount: number) {
+  decreaseProduct({product, amount}: {product: Product, amount: number}) {
     if (!this.contains(product)) {
       return;
     }
@@ -42,7 +44,7 @@ export default class CartModule extends VuexModule {
     const row = this.rows[this.getIndex(product)];
 
     if (row.amount <= amount) {
-      this.removeProduct(product);
+      this.context.dispatch('removeProduct', product);
     }
     else {
       this.context.commit('decreaseAmount', {row, amount});
@@ -60,7 +62,7 @@ export default class CartModule extends VuexModule {
   }
 
   @Action
-  reset(product: Product) {
+  reset() {
     this.context.commit('clear');
   }
 
@@ -98,6 +100,7 @@ export default class CartModule extends VuexModule {
 
     this.rows.forEach((row: SubTransactionRow) => {
       const rowTotal = row.priceInclVat.getAmount() * row.amount;
+      console.log(rowTotal, row);
       total += rowTotal;
     });
 

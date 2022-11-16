@@ -61,8 +61,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Ref } from 'vue-property-decorator';
-import Dinero from 'dinero.js';
+import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { Product, ProductInContainer } from '@/entities/Product';
 import Settings from '@/components/Settings.vue';
@@ -77,12 +76,9 @@ import ActivityTimer from '@/components/ActivityTimer.vue';
 import SearchBarButton from '@/components/SearchBarButton.vue';
 import MainContentMembers from '@/components/maincontent/MainContentMembers.vue';
 import MainContentUserSearch from '@/components/maincontent/MainContentUserSearch.vue';
-
-import { SubTransactionRow } from '@/entities/SubTransactionRow';
-import { User, UserType } from '@/entities/User';
+import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import CartModule from '@/store/modules/cart';
-
 import Fuse from 'fuse.js';
 import Keyboard from '@/components/Keyboard.vue';
 import 'simple-keyboard/build/css/index.css';
@@ -122,8 +118,6 @@ export default class ProductOverview extends Vue {
   private userState = getModule(UserModule);
 
   private pointOfSaleState = getModule(PointOfSaleModule);
-
-  private cartState = getModule(CartModule);
 
   public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
 

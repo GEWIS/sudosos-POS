@@ -8,7 +8,7 @@
       <Products
         :products="filteredProducts"
         :searching="true" 
-        @selected="item => addProduct(item, 1)" />
+        @selected="item => addProduct({product: item, amount: 1})" />
     </div>
     <div class="content-bottom">
       <div class="keyboard-container">
@@ -26,6 +26,9 @@ import SearchBar from '@/components/SearchBar.vue';
 import Keyboard from '@/components/Keyboard.vue';
 import ExitButton from '@/components/ExitButton.vue';
 import Products from '@/components/Products.vue';
+import { getModule } from 'vuex-module-decorators';
+import CartModule from '@/store/modules/cart';
+import { Product } from '@/entities/Product';
 
 @Component({
   components: {
@@ -41,6 +44,8 @@ export default class MainContentSearch extends Vue {
   $refs!: {
     searchBar: SearchBar;
   }
+
+  private cartState = getModule(CartModule);
   
   updateSearchFromKeyboard(value: string): void {
     this.query = value;
@@ -49,6 +54,10 @@ export default class MainContentSearch extends Vue {
 
   updateSearchFromInput(value: string): void {
     this.query = value;
+  }
+
+  addProduct({product, amount}: {product: Product, amount: number}) {
+    this.cartState.addProduct({product, amount});
   }
 }
 </script>

@@ -31,7 +31,7 @@ export default class Products extends Vue {
   private cartState = getModule(CartModule);
 
   increaseProduct(product: ProductInContainer) {
-    this.cartState.increaseProduct(product, 1);
+    this.cartState.increaseProduct({product, amount: 1});
   }
 }
 </script>
