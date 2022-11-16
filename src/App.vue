@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <b-toast id="api-error" variant="danger" solid title="API Error">
+      An error occurred while communicating with the server.
+    </b-toast>
     <router-view />
   </div>
 </template>
@@ -10,6 +13,7 @@ import { getModule } from 'vuex-module-decorators';
 import SearchModule from '@/store/modules/search';
 import UserModule from '@/store/modules/user';
 import TransactionModule from '@/store/modules/transaction';
+import eventBus from '@/eventbus';
 
 export default class App extends Vue {
   public vertical: boolean = (window.innerWidth / window.innerHeight) >= 1;
@@ -23,6 +27,10 @@ export default class App extends Vue {
   mounted() {
     window.addEventListener('resize', () => {
       this.checkWindowSize();
+    });
+
+    eventBus.$on('apiError', () => {
+      this.$bvToast.show('api-error');
     });
   }
 
