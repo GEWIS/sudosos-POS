@@ -51,8 +51,6 @@ export default class Keypad extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "./src/styles/global/_variables.scss";
-
 .keypad {
   display: flex;
   align-content: center;

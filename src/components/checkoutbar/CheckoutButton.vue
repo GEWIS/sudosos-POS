@@ -217,8 +217,6 @@ export default class CheckoutButton extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "@/styles/global/variables.scss";
-
 .checkout-button {
   cursor: pointer;
   height: $nav-height;

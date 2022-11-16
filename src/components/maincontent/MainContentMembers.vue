@@ -6,7 +6,7 @@
         Select a member of {{pointOfSaleState.pointOfSale.owner.name}} to charge as:
       </div>
     </div>
-    <div class="content-center">
+    <div class="content-center custom-scrollbar">
       <div class="organ-member" v-for="user in pointOfSaleState.pointOfSaleOwners"
         v-bind:key="user.id" @click="$emit('selected', user)">
         <span>{{ user.firstName }} {{ user.lastName }}</span>
@@ -30,10 +30,6 @@ export default class MainContentMembers extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "~bootstrap/scss/bootstrap";
-@import "./src/styles/common.scss";
-@import "./src/styles/Nav.scss";
-
 .title {
   flex: 1;
   font-size: 20px;

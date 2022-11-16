@@ -28,6 +28,3 @@ export default class HomeMenuButton extends Vue {
   }
 }
 </script>
-<style lang="scss" scoped>
-  @import "./src/styles/Nav.scss";
-</style>

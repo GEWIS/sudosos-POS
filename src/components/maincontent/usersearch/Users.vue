@@ -27,9 +27,6 @@ export default class Users extends Vue {
 }
 </script>
 <style scoped lang="scss">
-@import "~bootstrap/scss/bootstrap";
-@import "./src/styles/Nav.scss";
-
 .container {
   display: flex;
   flex-direction: column;

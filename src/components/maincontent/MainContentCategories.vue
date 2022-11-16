@@ -74,9 +74,6 @@ export default class MainContentProducts extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "./src/styles/common.scss";
-@import "./src/styles/Nav.scss";
-
 .content-bottom {
   gap: 12px;
 }

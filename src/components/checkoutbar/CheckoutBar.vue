@@ -115,8 +115,6 @@ export default class CheckoutBar extends Formatters {
 }
 </script>
 <style lang="scss" scoped>
-@import "@/styles/global/variables.scss";
-
 .checkoutbar {
   display: flex;
   flex-direction: column;

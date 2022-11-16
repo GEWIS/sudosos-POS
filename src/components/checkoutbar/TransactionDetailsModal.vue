@@ -66,7 +66,3 @@ export default class TransactionDetailsModal extends Formatters {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

@@ -202,7 +202,7 @@ export default class Login extends Vue {
         APIHelper.setToken(loginResponse.token);
         await this.userState.fetchUser(true);
         await this.userState.fetchAllUsers();
-        await this.$router.push('/productOverview');
+        await this.$router.push('/home');
       }
     } else {
       this.$bvToast.show('toast-incorrect-password');
@@ -233,9 +233,6 @@ export default class Login extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "./src/styles/global/_variables.scss";
-@import "./src/styles/common.scss";
-
 @keyframes cursor-blink {
   0% {
     opacity: 0;

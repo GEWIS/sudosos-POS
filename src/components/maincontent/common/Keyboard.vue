@@ -81,8 +81,6 @@ export default class Keyboard extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "./src/styles/global/_variables.scss";
-
 .keyboard {
   display: flex;
   align-content: center;

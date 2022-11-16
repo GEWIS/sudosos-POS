@@ -77,10 +77,6 @@ export default class MainContentSearch extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "~bootstrap/scss/bootstrap";
-@import "./src/styles/common.scss";
-@import "./src/styles/Nav.scss";
-
 .content-bottom {
   justify-content: center;
 }

@@ -31,9 +31,6 @@ export default class UserComponent extends Vue {
 }
 </script>
 <style scoped lang="scss">
-@import "~bootstrap/scss/bootstrap";
-@import "./src/styles/Nav.scss";
-
 .user {
   width: 100%;
   display: flex;

@@ -1,15 +1,13 @@
 <template>
   <div class="wrapper">
-    <div v-if="posNotLoaded" class="product-overview-loader">
+    <div v-if="posNotLoaded" class="home-loader">
       <div>
         <b-spinner />
       </div>
     </div>
-
     <div v-else>
-      <product-overview />
+      <home />
     </div>
-
     <div class="background-logo">
       <!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
     </div>
@@ -18,20 +16,17 @@
 
 <script lang="ts">
 import { Vue } from 'vue-property-decorator';
-import ProductOverview from '@/views/ProductOverview.vue';
+import Home from '@/components/Home.vue';
 import Component from 'vue-class-component';
 import { getModule } from 'vuex-module-decorators';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import SearchModule from '@/store/modules/search';
-import UserModule from '@/store/modules/user';
 
 @Component({
-  components: { ProductOverview },
+  components: { Home },
 })
-export default class ProductOverviewWrapper extends Vue {
+export default class HomeWrapper extends Vue {
   private searchState = getModule(SearchModule);
-
-  private userState = getModule(UserModule);
 
   private pointOfSaleState = getModule(PointOfSaleModule);
 
@@ -52,11 +47,7 @@ export default class ProductOverviewWrapper extends Vue {
 </script>
 
 <style scoped lang="scss">
-@import "~bootstrap/scss/bootstrap";
-@import "./src/styles/common.scss";
-@import "./src/styles/Nav.scss";
-
-.product-overview-loader {
+.home-loader {
   display: flex;
   justify-content: center;
   align-items: center;

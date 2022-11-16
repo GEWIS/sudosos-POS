@@ -92,8 +92,6 @@ export default class SettingsComponent extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "./src/styles/common.scss";
-
 .options-button {
   background-color: $gewis-red;
   border-radius: $border-radius;

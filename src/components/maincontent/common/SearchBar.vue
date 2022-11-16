@@ -42,9 +42,6 @@ export default class SearchBar extends Vue {
 }
 </script>
 <style scoped lang="scss">
-@import "~bootstrap/scss/bootstrap";
-@import "./src/styles/Nav.scss";
-
 .search-bar {
   border: 1px solid $gewis-red;
   border-radius: $border-radius;

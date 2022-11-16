@@ -11,8 +11,8 @@
       Saving the transaction failed. Please try again,
       with or without restarting the SudoSOS POS and logging in again.
     </b-modal>
-    <div class="product-overview">
-      <div class="product-overview-container shadow">
+    <div class="home">
+      <div class="main-content-container shadow">
         <MainContentCategories v-if="state === State.CATEGORIES" :products="products" @forceUpdateStore="updateStore" @logout="logout" @openProductSearch="openProductSearch"/>
         <MainContentSearch v-if="state === State.SEARCH" @exit="exitSearch" :products="products"/>
         <MainContentUserSearch v-if="state === State.USER_SEARCH" @exit="exitSearch" @userSelected="userSelected" />
@@ -59,7 +59,7 @@ enum State {
     MainContentCategories,
   },
 })
-export default class ProductOverview extends Vue {
+export default class Home extends Vue {
   private searchState = getModule(SearchModule);
 
   private userState = getModule(UserModule);
@@ -224,10 +224,6 @@ export default class ProductOverview extends Vue {
 </script>
 
 <style scoped lang="scss">
-@import "~bootstrap/scss/bootstrap";
-@import "./src/styles/common.scss";
-@import "./src/styles/Nav.scss";
-
 @keyframes search-cursor-blink {
   0% {
     opacity: 0;
@@ -237,7 +233,7 @@ export default class ProductOverview extends Vue {
   }
 }
 
-.product-overview {
+.home {
   flex: 1;
   display: flex;
   flex-direction: row;
@@ -247,7 +243,7 @@ export default class ProductOverview extends Vue {
   overflow: hidden;
 }
 
-.product-overview-container {
+.main-content-container {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -257,19 +253,19 @@ export default class ProductOverview extends Vue {
 }
 
 @media screen and (max-width: 950px) {
-  .product-overview {
+  .home {
     margin: 0;
     border-radius: 0;
   }
 }
 
 @media screen and (max-width: 820px) {
-  .product-overview {
+  .home {
     flex-direction: column;
     padding: 8px;
   }
 
-  .product-overview-container {
+  .main-content-container {
     border-bottom: 1px solid $bootstrap-black;
     margin-bottom: 8px;
   }
