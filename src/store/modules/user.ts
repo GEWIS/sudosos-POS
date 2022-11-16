@@ -247,7 +247,6 @@ export default class UserModule extends VuexModule {
         usersResponse = await getUsers(take, (i+1)*take);
         return usersResponse.records;
       }))).flat());
-      console.log(allUsers);
       this.context.commit('setAllUsers', allUsers);
       this.context.commit('setAllOrgans');
       this.fetchAllOrganMembers();
