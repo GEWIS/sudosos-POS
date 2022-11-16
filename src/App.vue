@@ -9,7 +9,7 @@ import { Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import SearchModule from '@/store/modules/search';
 import UserModule from '@/store/modules/user';
-import TransactionsModule from '@/store/modules/transactions';
+import TransactionModule from '@/store/modules/transaction';
 
 export default class App extends Vue {
   public vertical: boolean = (window.innerWidth / window.innerHeight) >= 1;
@@ -18,7 +18,7 @@ export default class App extends Vue {
 
   userState = getModule(UserModule);
 
-  transactionsState = getModule(TransactionsModule);
+  transactionState = getModule(TransactionModule);
 
   mounted() {
     window.addEventListener('resize', () => {

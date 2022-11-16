@@ -64,8 +64,8 @@ export default class PointOfSaleModule extends VuexModule {
     });
     getPointOfSale(id).then((pointOfSale) => {
       this.context.commit('setPointOfSale', pointOfSale);
-      this.context.commit('SearchModule/resetSearch', null, { root: true });
-      this.context.commit('TransactionModule/resetTransactions', null, { root: true });
+      this.context.commit('SearchModule/reset', null, { root: true });
+      this.context.commit('TransactionModule/reset', null, { root: true });
       this.context.dispatch('SearchModule/fetchTransactionHistory', null, { root: true }).then();
       getOrganMembers(pointOfSale.owner.id).then((response) => {
         this.context.commit('setOwners', response);

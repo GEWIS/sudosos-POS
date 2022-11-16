@@ -38,7 +38,7 @@ export default class SearchModule extends VuexModule {
   }
 
   @Mutation
-  resetSearch() {
+  reset() {
     this.searching = false;
     this.userSearching = false;
     this.filterName = '';

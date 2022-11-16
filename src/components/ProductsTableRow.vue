@@ -13,7 +13,6 @@ import { getModule } from 'vuex-module-decorators';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import Formatters from '@/mixins/Formatters';
 import Keypad from '@/components/Keypad.vue';
-import TransactionModule from '@/store/modules/transactions';
 import CartModule from '@/store/modules/cart';
 
 @Component({

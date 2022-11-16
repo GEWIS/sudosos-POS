@@ -30,8 +30,6 @@ export default class CartModule extends VuexModule {
       priceInclVat: product.priceInclVat,
     } as SubTransactionRow;
 
-    console.log(row);
-
     this.context.commit('addRow', row);
   }
 
@@ -100,7 +98,6 @@ export default class CartModule extends VuexModule {
 
     this.rows.forEach((row: SubTransactionRow) => {
       const rowTotal = row.priceInclVat.getAmount() * row.amount;
-      console.log(rowTotal, row);
       total += rowTotal;
     });
 
