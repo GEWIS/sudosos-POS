@@ -45,8 +45,6 @@ export default class SettingsComponent extends Vue {
 
   private showSettings: boolean = false;
 
-  @Prop() forceUpdateStore: () => void;
-
   constructor() {
     super();
     this.chosenPOS = this.userState.userPOSs.find((p) => p.id === this.posState.pointOfSale.id);
@@ -88,79 +86,80 @@ export default class SettingsComponent extends Vue {
   }
 
   clickForceReload() {
-    this.forceUpdateStore();
+    this.$emit('forceUpdateStore');
     this.toggleSettings();
   }
 }
 </script>
 <style lang="scss" scoped>
-  @import "./src/styles/common.scss";
+@import "./src/styles/common.scss";
 
-  .options-button {
-    background-color: $gewis-red;
-    border-radius: $border-radius;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: $nav-height;
-    flex-grow: 0;
-    flex-shrink: 0;
-    cursor: pointer;
-    height: $nav-height;
-    text-align: center;
-    flex-basis: 62px;
+.options-button {
+  background-color: $gewis-red;
+  border-radius: $border-radius;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: $nav-height;
+  flex-grow: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+  height: $nav-height;
+  text-align: center;
+  flex-basis: 62px;
+  color: white;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.settings-component {
+  position: absolute;
+  bottom: -41px;
+  left: 74px;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  background: white;
+  border-radius: $border-radius;
+  border: 1px solid $gewis-red;
+  height: auto;
+  gap: 16px;
+  padding-bottom: 16px;
+  width: fit-content;
+  transform: translateY(-25%);
+
+  .header {
+    background: $gewis-red;
     color: white;
-
-    svg {
-      width: 24px;
-      height: 24px;
-    }
+    padding: 8px 0;
+    font-size: 1.2em;
+    border-top-left-radius: $border-radius - 2px;
+    border-top-right-radius: $border-radius - 2px;
+    text-align: center;
   }
 
-  .settings-component {
-    position: absolute;
-    top: -40%;
-    left: 75px;
-    display: flex;
-    flex-direction: column;
-    justify-content: left;
-    background: white;
-    border-radius: $border-radius;
-    border: 1px solid $gewis-red;
-    height: auto;
-    gap: 16px;
-    padding-bottom: 16px;
+  .setting-row {
     width: fit-content;
-    transform: translateY(-25%);
+    display: flex;
+    font-size: 20px;
+    padding: 0 16px;
 
-    .header {
-      background: $gewis-red;
-      color: white;
-      padding: 8px 0;
-      font-size: 1.2em;
-      border-top-left-radius: $border-radius - 2px;
-      border-top-right-radius: $border-radius - 2px;
-      text-align: center;
+    input[type=checkbox] {
+      height: 28px;
+      width: 28px;
     }
 
-    .setting-row {
-      width: fit-content;
-      display: flex;
-      font-size: 20px;
-      padding: 0 16px;
-
-      input[type=checkbox] {
-        height: 28px;
-        width: 28px;
-      }
-
-      label {
-        margin: 0 8px 0 16px;
-      }
-    }
-
-    .force-reload {
-      padding: 0 1rem;
+    label {
+      margin: 0 8px 0 16px;
     }
   }
+
+  .force-reload {
+    padding: 0 1rem;
+  }
+}
+
 </style>

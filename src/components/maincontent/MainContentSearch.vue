@@ -21,24 +21,27 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import SearchBar from '@/components/maincontent/common/SearchBar.vue';
 import Keyboard from '@/components/maincontent/common/Keyboard.vue';
 import ExitButton from '@/components/maincontent/common/ExitButton.vue';
 import Products from '@/components/maincontent/common/Products.vue';
 import { getModule } from 'vuex-module-decorators';
 import CartModule from '@/store/modules/cart';
-import { Product } from '@/entities/Product';
+import { Product, ProductInContainer } from '@/entities/Product';
+import Fuse from 'fuse.js';
 
 @Component({
   components: {
-	SearchBar,
-	Keyboard,
-	ExitButton,
-	Products,
+    SearchBar,
+    Keyboard,
+    ExitButton,
+    Products,
   },
 })
 export default class MainContentSearch extends Vue {
+  @Prop() products!: ProductInContainer[];
+  
   private query: string = "";
 
   $refs!: {
@@ -46,6 +49,18 @@ export default class MainContentSearch extends Vue {
   }
 
   private cartState = getModule(CartModule);
+
+  get filteredProducts(): ProductInContainer[] {
+    return new Fuse(
+      this.products,
+      {
+        keys: ['nameWithoutAccents', 'category.name'],
+        isCaseSensitive: false,
+        shouldSort: true,
+        threshold: 0.2,
+      },
+    ).search(this.query).map((r) => r.item);
+  }
   
   updateSearchFromKeyboard(value: string): void {
     this.query = value;
@@ -61,3 +76,17 @@ export default class MainContentSearch extends Vue {
   }
 }
 </script>
+<style lang="scss" scoped>
+@import "~bootstrap/scss/bootstrap";
+@import "./src/styles/common.scss";
+@import "./src/styles/Nav.scss";
+
+.content-bottom {
+  justify-content: center;
+}
+
+.keyboard-container {
+  flex: 0 1 720px;
+}
+
+</style>

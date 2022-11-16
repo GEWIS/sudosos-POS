@@ -4,7 +4,7 @@
       <b-col class="for-text">
           Order for
       </b-col>
-      <b-col class="user-button" @click="chargeOtherPerson">
+      <b-col class="user-button" @click="$emit('openUserSearch')">
         <div v-if="!searchState.isChargingUser && !pointOfSaleState.pointOfSale.useAuthentication">
           no one
         </div>
@@ -74,11 +74,7 @@ import SearchModule from '@/store/modules/search';
   },
 })
 export default class CheckoutBar extends Formatters {
-  @Prop() openUserSearch: Function;
-
   @Prop() openPickMember: Function;
-
-  @Prop() logoutFunc: Function;
 
   private userState = getModule(UserModule);
 
@@ -106,17 +102,13 @@ export default class CheckoutBar extends Formatters {
     });
   }
 
-  chargeOtherPerson() {
-    this.openUserSearch();
-  }
-
   organMemberSelected(user: User): void {
     this.$refs.checkoutButton.organMemberSelected(user);
   }
 
   logout() {
     if (!this.pointOfSaleState.pointOfSale.useAuthentication) return;
-    this.logoutFunc();
+    this.$emit('logout');
     // @ts-ignore
     document.querySelector(':root').style.setProperty('--gewis-red', 'rgba(212, 0, 0, 1)');
   }

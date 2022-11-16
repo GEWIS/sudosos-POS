@@ -21,7 +21,6 @@ export default class SearchBarButton extends Vue {}
   justify-content: center;
   cursor: pointer;
   font-size: 20px;
-  margin-right: 10px;
   height: 100%;
 
   .fa-search {

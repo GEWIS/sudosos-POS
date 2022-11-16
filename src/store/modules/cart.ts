@@ -9,6 +9,8 @@ import { Product } from "@/entities/Product";
 export default class CartModule extends VuexModule {
 	public rows: SubTransactionRow[] = [];
 
+  public checkingOut: boolean = false;
+
   @Action
 	increaseProduct({product, amount}: {product: Product, amount: number}) {
     if (this.contains(product)) {
@@ -70,6 +72,11 @@ export default class CartModule extends VuexModule {
   }
 
   @Mutation
+  setCheckingOut(checkingOut: boolean) {
+    this.checkingOut = checkingOut;
+  }
+
+  @Mutation
   addRow(row: SubTransactionRow) {
     this.rows.push(row);
   }
@@ -87,6 +94,7 @@ export default class CartModule extends VuexModule {
   @Mutation
   clear() {
     this.rows = [];
+    this.checkingOut = false;
   }
 
   get isEmpty(): boolean {

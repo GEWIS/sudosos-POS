@@ -1,6 +1,6 @@
 <template>
   <b-row class="checkout-button"
-    :class="{'checking-out': checkingOut, 'unfinished': unfinished || transactionProcessing}"
+    :class="{'checking-out': cartState.checkingOut, 'unfinished': unfinished || transactionProcessing}"
     @click="buttonClicked">
     <font-awesome-icon icon="lock" v-if="unfinished" />
     <b-spinner class="loading-spinner" v-if="transactionProcessing" />
@@ -29,8 +29,6 @@ export default class CheckoutButton extends Vue {
   private countdown: number = 3;
 
   private buttonText: string = 'Checkout';
-
-  private checkingOut: boolean = false;
 
   private timeout: number = 0;
 
@@ -206,13 +204,13 @@ export default class CheckoutButton extends Vue {
 
     } else if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
       this.openPickMember();
-    } else if (this.checkingOut) {
+    } else if (this.cartState.checkingOut) {
       clearTimeout(this.timeout);
       this.countdown = 3;
       this.buttonText = 'Checkout';
-      this.checkingOut = false;
+      this.cartState.setCheckingOut(false);
     } else {
-      this.checkingOut = true;
+      this.cartState.setCheckingOut(true);
       this.checkout();
     }
   }
