@@ -4,10 +4,12 @@
       <CategorieButtons :categories="pointOfSaleState.categories" />
       <BackendStatus />
     </div>
-    <div class="content-center custom-scrollbar">
-      <Products
-        :products="filteredProducts"
-        :searching="false" />
+    <div class="content-center">
+      <Scrollable>
+        <Products
+          :products="filteredProducts"
+          :searching="false" />
+      </Scrollable>
     </div>
     <div class="content-bottom">
       <Settings @forceUpdateStore="$emit('forceUpdateStore')" />
@@ -29,6 +31,7 @@ import { getModule } from 'vuex-module-decorators';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import UserModule from '@/store/modules/user';
 import SearchModule from '@/store/modules/search';
+import Scrollable from '@/components/maincontent/common/Scrollable.vue';
 
 @Component({
   components: {
@@ -38,6 +41,7 @@ import SearchModule from '@/store/modules/search';
     Settings,
     SearchBarButton,
     ActivityTimer,
+    Scrollable,
   },
 })
 export default class MainContentProducts extends Vue {

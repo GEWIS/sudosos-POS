@@ -4,11 +4,13 @@
       <ExitButton @click="$emit('exit')" />
       <SearchBar ref="searchBar" @update="e => updateSearchFromInput(e)" />
     </div>
-    <div class="content-center custom-scrollbar">
-      <Products
-        :products="filteredProducts"
-        :searching="true" 
-        @selected="item => addProduct({product: item, amount: 1})" />
+    <div class="content-center">
+      <Scrollable>
+        <Products
+          :products="filteredProducts"
+          :searching="true" 
+          @selected="item => addProduct({product: item, amount: 1})" />
+      </Scrollable>
     </div>
     <div class="content-bottom">
       <div class="keyboard-container">
@@ -29,6 +31,7 @@ import Products from '@/components/maincontent/common/Products.vue';
 import { getModule } from 'vuex-module-decorators';
 import CartModule from '@/store/modules/cart';
 import { Product, ProductInContainer } from '@/entities/Product';
+import Scrollable from '@/components/maincontent/common/Scrollable.vue';
 import Fuse from 'fuse.js';
 
 @Component({
@@ -37,6 +40,7 @@ import Fuse from 'fuse.js';
     Keyboard,
     ExitButton,
     Products,
+    Scrollable,
   },
 })
 export default class MainContentSearch extends Vue {

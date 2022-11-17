@@ -24,57 +24,6 @@
   }
 }
 
-@mixin scrollbar($prefix) {
-  &::#{$prefix}-scrollbar {
-    width: $scroll-bar-width;
-  }
-  &::#{$prefix}-scrollbar-thumb{
-    border: 1px solid $gewis-red;
-    min-height: $scroll-bar-width;
-    background: white;
-    border-radius: 5px;
-  }
-  &::#{$prefix}-scrollbar-track{
-    width: $scroll-bar-width;
-    background: $gewis-red;
-  }
-  /* Buttons */
-  &::#{$prefix}-scrollbar-button:single-button {
-    background-color: $gewis-red;
-
-    display: block;
-    background-size: 20px;
-    background-repeat: no-repeat;
-  }
-
-  /* Up */
-  &::#{$prefix}-scrollbar-button:single-button:vertical:decrement {
-    height: 32px;
-    width: $scroll-bar-width;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    background-position: center 10px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(255, 255, 255)'><polygon points='50,00 0,50 100,50'/></svg>");
-  }
-
-  /* Down */
-  &::#{$prefix}-scrollbar-button:single-button:vertical:increment {
-    height: 32px;
-    width: $scroll-bar-width;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    background-position: center 10px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(255, 255, 255)'><polygon points='0,0 100,0 50,50'/></svg>");
-  }
-}
-
-.custom-scrollbar {
-  scrollbar-width: $scroll-bar-width;
-
-  @include scrollbar(-webkit);
-  @include scrollbar(-moz);
-}
-
 .content-container {
   width: 100%;
   height: 100%;
@@ -98,8 +47,7 @@
   > .content-center {
     width: 100%;
     flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: auto;
   }
   
   > .content-bottom {

@@ -12,8 +12,10 @@
         </div>
       </div>
     </div>
-    <div class="content-center custom-scrollbar">
-      <Users :users="filteredUsers" :validQuery="hasValidUserQuery" @selected="userSelected" />
+    <div class="content-center">
+      <Scrollable>
+        <Users :users="filteredUsers" :validQuery="hasValidUserQuery" @selected="userSelected" />
+      </Scrollable>
     </div>
     <div class="content-bottom">
       <div class="keyboard-container">
@@ -33,10 +35,11 @@ import UserModule from '@/store/modules/user';
 import Fuse from 'fuse.js';
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import SearchBar from './common/SearchBar.vue';
-import Keyboard from './common/Keyboard.vue';
-import ExitButton from './common/ExitButton.vue';
-import Users from './usersearch/Users.vue';
+import SearchBar from '@/components/maincontent/common/SearchBar.vue';
+import Keyboard from '@/components/maincontent/common/Keyboard.vue';
+import ExitButton from '@/components/maincontent/common/ExitButton.vue';
+import Users from '@/components/maincontent/usersearch/Users.vue';
+import Scrollable from '@/components/maincontent/common/Scrollable.vue';
 
 @Component({
   components: {
@@ -44,6 +47,7 @@ import Users from './usersearch/Users.vue';
     Keyboard,
     ExitButton,
     Users,
+    Scrollable,
   },
 })
 export default class MainContentUserSearch extends Vue {
