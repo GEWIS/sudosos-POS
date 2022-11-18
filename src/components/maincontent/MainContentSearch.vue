@@ -33,6 +33,7 @@ import CartModule from '@/store/modules/cart';
 import { Product, ProductInContainer } from '@/entities/Product';
 import Scrollable from '@/components/maincontent/common/Scrollable.vue';
 import Fuse from 'fuse.js';
+import PointOfSaleModule from '@/store/modules/point-of-sale';
 
 @Component({
   components: {
@@ -44,9 +45,9 @@ import Fuse from 'fuse.js';
   },
 })
 export default class MainContentSearch extends Vue {
-  @Prop() products!: ProductInContainer[];
-  
   private query: string = "";
+
+  private pointOfSaleState = getModule(PointOfSaleModule);
 
   $refs!: {
     searchBar: SearchBar;
@@ -56,7 +57,7 @@ export default class MainContentSearch extends Vue {
 
   get filteredProducts(): ProductInContainer[] {
     return new Fuse(
-      this.products,
+      this.pointOfSaleState.allProducts,
       {
         keys: ['nameWithoutAccents', 'category.name'],
         isCaseSensitive: false,

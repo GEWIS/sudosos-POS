@@ -1,5 +1,5 @@
 <template>
-  <div class="checkoutbar shadow">
+  <div class="checkoutbar box">
     <b-row class="order-for">
       <b-col class="for-text">
           Order for
@@ -119,10 +119,6 @@ export default class CheckoutBar extends Formatters {
   display: flex;
   flex-direction: column;
   flex: 0 0 380px;
-  padding-left: 8px;
-  border-radius: $border-radius;
-  background: rgba(white, 0.8);
-  padding: 16px;
 
   .row {
     margin: 0;

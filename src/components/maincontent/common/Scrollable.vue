@@ -15,19 +15,34 @@ export default class Scrollable extends Vue {
   private dragScrollStart = 0;
   private dragging: boolean = false;
   private hasDragged: boolean = false;
+  private momentum: number = 0;
+  private lastDelta: number = 0;
+
+  $refs: {
+    scrollbar: HTMLDivElement;
+  };
 
   startDrag(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+
+    if (e.offsetX > target.clientWidth) {
+      return;
+    }
+
     e.preventDefault();
     this.dragYStart = e.clientY;
-    this.dragScrollStart = (this.$refs.scrollbar as HTMLElement).scrollTop;
+    this.dragScrollStart = this.$refs.scrollbar.scrollTop;
     this.dragging = true;
+    this.lastDelta = e.clientY - this.dragYStart;
   }
 
   drag(e: MouseEvent) {
     if(!this.dragging) return;
 
     const delta = e.clientY - this.dragYStart;
-    (this.$refs.scrollbar as HTMLElement).scrollTop = this.dragScrollStart - delta;
+    this.momentum = delta - this.lastDelta;
+    this.lastDelta = delta;
+    this.$refs.scrollbar.scrollTop = this.dragScrollStart - delta;
     this.hasDragged = true;
   }
 
@@ -41,6 +56,22 @@ export default class Scrollable extends Vue {
     
     this.dragging = false;
     this.hasDragged = false;
+
+    if(Math.abs(this.momentum) > 0) {
+      this.brake();
+    }
+  }
+
+  brake() {
+    this.$refs.scrollbar.scrollTop -= this.momentum;
+    this.momentum *= 0.8;
+
+    if(Math.abs(this.momentum) > 0.1) {
+      setTimeout(() => this.brake(), 10);
+    }
+    else {
+      this.momentum = 0;
+    }
   }
 }
 </script>

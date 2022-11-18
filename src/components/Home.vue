@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="home-wrapper">
     <div v-if="this.userState.user !== undefined && this.userState.user.id !== undefined">
       <TOSNotRequired :initially-open="this.userState.user.acceptedToS === 'NOT_REQUIRED'"
         :logged-out="this.logout"/>
@@ -12,9 +12,9 @@
       with or without restarting the SudoSOS POS and logging in again.
     </b-modal>
     <div class="home">
-      <div class="main-content-container shadow">
-        <MainContentCategories v-if="state === State.CATEGORIES" :products="products" @forceUpdateStore="updateStore" @logout="logout" @openProductSearch="openProductSearch"/>
-        <MainContentSearch v-if="state === State.SEARCH" @exit="exitSearch" :products="products"/>
+      <div class="main-content-container box">
+        <MainContentCategories v-if="state === State.CATEGORIES" @forceUpdateStore="updateStore" @logout="logout" @openProductSearch="openProductSearch"/>
+        <MainContentSearch v-if="state === State.SEARCH" @exit="exitSearch" />
         <MainContentUserSearch v-if="state === State.USER_SEARCH" @exit="exitSearch" @userSelected="userSelected" />
         <MainContentMembers v-if="state === State.ORGAN_MEMBER_SELECT" @exit="exitPickMember" @selected="organMemberSelected" />
       </div>
@@ -120,20 +120,6 @@ export default class Home extends Vue {
     return this.activityTimerState.timedOut;
   }
 
-  get products(): ProductInContainer[] {
-    const products: ProductInContainer[] = [];
-    if (this.pointOfSaleState.pointOfSale.containers) {
-      this.pointOfSaleState.pointOfSale.containers.forEach((con) => {
-        const containerId = con.id;
-        (con as any as Container).products.forEach((prod: ProductInContainer) => {
-          prod.containerId = containerId;
-          products.push(prod);
-        });
-      });
-    }
-    return products;
-  }
-
   logout() {
     clearInterval(this.autoRefresh);
     this.userState.reset();
@@ -233,6 +219,14 @@ export default class Home extends Vue {
   }
 }
 
+.home-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+
 .home {
   flex: 1;
   display: flex;
@@ -247,9 +241,6 @@ export default class Home extends Vue {
   display: flex;
   flex-direction: column;
   flex: 1;
-  border-radius: $border-radius;
-  background: rgba(white, 0.8);
-  padding: 16px;
 }
 
 @media screen and (max-width: 950px) {

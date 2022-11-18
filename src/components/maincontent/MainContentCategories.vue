@@ -45,8 +45,6 @@ import Scrollable from '@/components/maincontent/common/Scrollable.vue';
   },
 })
 export default class MainContentProducts extends Vue {
-  @Prop() products!: ProductInContainer[];
-
   private pointOfSaleState = getModule(PointOfSaleModule);
 
   private userState = getModule(UserModule);
@@ -69,9 +67,9 @@ export default class MainContentProducts extends Vue {
     // @ts-ignore
     const currentCategory = this.searchState.filterCategory;
     if (currentCategory === 0) {
-      return this.products.sort(sortFn);
+      return this.pointOfSaleState.allProducts.sort(sortFn);
     }
-    return this.products.filter(
+    return this.pointOfSaleState.allProducts.filter(
       (product: Product) => product.category.id === currentCategory,
     ).sort(sortFn);
   }

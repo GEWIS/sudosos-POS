@@ -6,11 +6,9 @@
       </div>
     </div>
     <div v-else>
-      <home />
+      <Home />
     </div>
-    <div class="background-logo">
-      <!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
-    </div>
+    <Background />
   </div>
 </template>
 
@@ -21,9 +19,13 @@ import Component from 'vue-class-component';
 import { getModule } from 'vuex-module-decorators';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import SearchModule from '@/store/modules/search';
+import Background from '@/components/Background.vue';
 
 @Component({
-  components: { Home },
+  components: { 
+    Home,
+    Background,
+  },
 })
 export default class HomeWrapper extends Vue {
   private searchState = getModule(SearchModule);

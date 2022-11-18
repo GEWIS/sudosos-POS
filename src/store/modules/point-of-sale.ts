@@ -8,6 +8,8 @@ import { User } from '@/entities/User';
 import { getOrganMembers } from '@/api/users';
 import { ProductCategory } from '@/entities/ProductCategory';
 import { getProductCategories } from '@/api/productCategories';
+import { ProductInContainer } from '@/entities/Product';
+import { Container } from '@/entities/Container';
 
 @Module({
   dynamic: true, namespaced: true, store, name: 'PointOfSaleModule',
@@ -71,5 +73,19 @@ export default class PointOfSaleModule extends VuexModule {
         this.context.commit('setOwners', response);
       });
     });
+  }
+
+  get allProducts(): ProductInContainer[] {
+    const products: ProductInContainer[] = [];
+    if (this.pointOfSale.containers) {
+      this.pointOfSale.containers.forEach((con) => {
+        const containerId = con.id;
+        (con as any as Container).products.forEach((prod: ProductInContainer) => {
+          prod.containerId = containerId;
+          products.push(prod);
+        });
+      });
+    }
+    return products;
   }
 }
