@@ -5,10 +5,12 @@ import ProductCategoryTransformer from '@/transformers/ProductCategoryTransforme
 import { Paginated } from '@/entities/Pagination';
 
 /**
- * Get all the product categories using the `productcategories` endpoint, as a paginated response.
+ * Get all the product categories using the `productcategories` endpoint, as a
+ * paginated response.
  * @param {Number} take The number of records to take, this can be null.
  * @param {Number} skip The number of records to skip, this can be null.
- * @returns {Promise<Paginated<ProductCategory>>} A promise that resolves to a paginated response.
+ * @returns {Promise<Paginated<ProductCategory>>} A promise that resolves to a
+ * paginated response.
  */
 export async function getProductCategories(take: number | null = null, skip: number | null = null): Promise<Paginated<ProductCategory>> {
   const body = {

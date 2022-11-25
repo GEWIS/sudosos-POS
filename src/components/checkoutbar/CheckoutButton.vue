@@ -22,37 +22,67 @@ import SearchModule from '@/store/modules/search';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import CartModule from '@/store/modules/cart';
 
+/**
+ * Component that handles the checkout button.
+ */
 @Component
 export default class CheckoutButton extends Vue {
-  @Prop() openPickMember: Function;
+  /**
+   * A function that forces the user to pick a member. This is a required prop
+   * of this component.
+   */
+  @Prop() openPickMember!: Function;
 
+  /**
+   * The number of seconds that the checkout waits before it completes the purchase.
+   */
   private countdown: number = 3;
 
-  private buttonText: string = 'Checkout';
+  /**
+   * The text that is on the checkout button.
+   */
+  public buttonText: string = 'Checkout';
 
+  /**
+   * The countdown timer that is used to count down the seconds before the checkout
+   * completes.
+   */
   private timeout: number = 0;
 
-  private borrelModeCheckout: boolean = false;
+  /**
+   * If a transaction is processing.
+   */
+  public transactionProcessing: boolean = false;
 
-  private transactionProcessing: boolean = false;
+  public userState = getModule(UserModule);
 
-  private userState = getModule(UserModule);
+  public searchState = getModule(SearchModule);
 
-  private searchState = getModule(SearchModule);
+  public pointOfSaleState = getModule(PointOfSaleModule);
 
-  private pointOfSaleState = getModule(PointOfSaleModule);
+  public cartState = getModule(CartModule);
 
-  private cartState = getModule(CartModule);
-
+  /**
+   * If in borrelmode checkout this function will finish the transaction for the
+   * selected member of current user.
+   */
   organMemberSelected(selectedMember: User) {
     this.finishTransaction(selectedMember, this.searchState.chargingUser, true);
-    this.borrelModeCheckout = false;
   }
 
+  /**
+   * If the user can check out and thus has no unfinished options that need to
+   * be set.
+   */
   get unfinished(): boolean {
     return !this.pointOfSaleState.pointOfSale.useAuthentication && !this.searchState.isChargingUser;
   }
 
+  /**
+   * If the checkout button is pressed this function will be called. If the countdown
+   * is higher than 0 it will start the countdown. If the countdown is 0 it will
+   * finish the transaction.
+   */
   checkout() {
     if (this.countdown > 0) {
       this.buttonText = this.countdown.toString();
@@ -68,7 +98,13 @@ export default class CheckoutButton extends Vue {
     }
   }
 
-  static getContainerForRow(row: any, pos: PointOfSale) {
+  /**
+   * Gets the container for the specified row and the specified pos.
+   * @param {SubTransactionRow} row The row to get the container for. 
+   * @param {PointOfSale} pos The pos to get the container for.
+   * @returns {Object} The container for the specified row and pos.
+   */
+  static getContainerForRow(row: SubTransactionRow, pos: PointOfSale) {
     const productId = row.product.id;
     let rowContainer = {};
 
@@ -85,6 +121,13 @@ export default class CheckoutButton extends Vue {
     return rowContainer;
   }
 
+  /**
+   * Makes the sub transaction model for the specified rows, user and pos.
+   * @param {SubTransactionRow[]} rows The rows to make the sub transaction model for.
+   * @param {User} user The user to make the sub transaction model for.
+   * @param {PointOfSale} pos The pos to make the sub transaction model for.
+   * @returns {Object} The sub transaction model for the specified rows, user and pos.
+   */
   static makeSubTransactions(rows: SubTransactionRow[], user: User, pos: any) {
     const subTransactions: any[] = [];
 
@@ -129,6 +172,13 @@ export default class CheckoutButton extends Vue {
     return subTransactions;
   }
 
+  /**
+   * Finish the transaction for the specified user and charging user. If the pos
+   * is not in borrelmode, this function will log out the user.
+   * @param {User} user The user to finish the transaction for.
+   * @param {User} chargingUser The charging user to finish the transaction for.
+   * @param {boolean} borrelMode If the transaction is in borrelmode.
+   */
   async finishTransaction(user: User, chargingUser: User, borrelMode = false) {
     this.transactionProcessing = true;
 
@@ -190,18 +240,18 @@ export default class CheckoutButton extends Vue {
     }
   }
 
-  isBorrelModeCheckout() {
-    return this.borrelModeCheckout;
-  }
-
-  clearBorrelModeCheckout() {
-    this.borrelModeCheckout = false;
-  }
-
+  /**
+   * A listener for if the checkout button is pressed. If the pos is in
+   * borrelmode and no-one is charged it will do nothing. If the pos is in
+   * borrelmode and someone is charged it will ask for member to be picked. If a
+   * normal user is logged it will play a timer and checkout. Lastly, if the pos
+   * is in borrelmode, someone is charged and a member is selected it will
+   * checkout immediately.
+   */
   buttonClicked() {
     // Borrelmode checkout
     if (!this.pointOfSaleState.pointOfSale.useAuthentication && !this.searchState.isChargingUser) {
-
+      return;
     } else if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
       this.openPickMember();
     } else if (this.cartState.checkingOut) {

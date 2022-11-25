@@ -6,7 +6,8 @@ import ContainerTransformer from '@/transformers/ContainerTransformer';
 import ProductTransformer from '@/transformers/ProductTransformer';
 
 /**
- * Get the point of sale at the given id using the `pointsofsale/${id}` endpoint.
+ * Get the point of sale at the given id using the `pointsofsale/${id}`
+ * endpoint.
  * @param {Number} posID The id of the point of sale.
  * @returns {Promise<PointOfSale>} A promise that resolves to a point of sale.
  */

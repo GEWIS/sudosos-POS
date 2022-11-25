@@ -54,7 +54,6 @@
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import DineroType from 'dinero.js';
 import Formatters from '@/mixins/Formatters';
 import Cart from '@/components/checkoutbar/Cart.vue';
 import CheckoutButton from '@/components/checkoutbar/CheckoutButton.vue';
@@ -64,7 +63,14 @@ import PointOfSaleModule from '@/store/modules/point-of-sale';
 import TransactionHistory from '@/components/checkoutbar/TransactionHistory.vue';
 import CartModule from '@/store/modules/cart';
 import SearchModule from '@/store/modules/search';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { BRow, BCol } from 'bootstrap-vue';
+import Dinero from 'dinero.js';
 
+/**
+ * Component for displaying the checkout bar. This is the bar that is displayed
+ * at the bottom of the screen when the user is in the checkout screen.
+ */
 @Component({
   components: { TransactionHistory, Cart, CheckoutButton },
   props: {
@@ -74,38 +80,53 @@ import SearchModule from '@/store/modules/search';
   },
 })
 export default class CheckoutBar extends Formatters {
-  @Prop() openPickMember: Function;
+  /**
+   * A function that forces the user to pick a member. This is a required prop
+   * of this component.
+   */
+  @Prop() openPickMember!: Function;
 
-  private userState = getModule(UserModule);
+  public userState = getModule(UserModule);
 
-  private pointOfSaleState = getModule(PointOfSaleModule);
+  public pointOfSaleState = getModule(PointOfSaleModule);
 
-  private cartState = getModule(CartModule);
+  public cartState = getModule(CartModule);
 
-  private searchState = getModule(SearchModule);
+  public searchState = getModule(SearchModule);
 
   $refs!: {
     checkoutButton: CheckoutButton;
   };
 
-  get balanceAfter() {
+  /**
+   * The balance of the user after the transaction would be completed.
+   */
+  get balanceAfter(): Dinero.Dinero {
     if (this.userState.userBalance) {
-      return this.userState.userBalance.subtract(DineroType({
+      return this.userState.userBalance.subtract(Dinero({
         amount: this.cartState.total,
         currency: 'EUR',
       }));
     }
 
-    return DineroType({
+    return Dinero({
       amount: -this.cartState.total,
       currency: 'EUR',
     });
   }
 
+  /** 
+   * Update the checkout button when the organ member is selected.
+   * @param {User} user The user that is selected.
+   */
   organMemberSelected(user: User): void {
+    // TODO: Fix how this is routed between the checkout button and the checkout bar.
     this.$refs.checkoutButton.organMemberSelected(user);
   }
 
+  /**
+   * Logs the user out of the POS. This also resets the color.
+   */
   logout() {
     if (!this.pointOfSaleState.pointOfSale.useAuthentication) return;
     this.$emit('logout');
@@ -182,11 +203,6 @@ export default class CheckoutBar extends Formatters {
         height: 24px;
       }
     }
-  }
-
-  .products-table-container {
-    flex: 1;
-    overflow-y: auto;
   }
 
   .transaction-history-table-container {

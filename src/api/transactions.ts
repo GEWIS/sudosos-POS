@@ -34,10 +34,10 @@ export async function getTransactions(
 
 /**
  * Update the given transaction using the `transactions` endpoint.
- * @param {Transaction} transaction The transaction to update.
+ * @param {any} transaction The transaction to update.
  * @returns {Promise<Transaction>} A promise that resolves to the updated transaction.
  */
-export async function postTransaction(transaction: Transaction): Promise<Transaction> {
+export async function postTransaction(transaction: any): Promise<Transaction> {
   const response = await APIHelper.postResource('transactions', transaction);
   
   return TransactionTransformer.makeTransaction(response);
@@ -55,13 +55,16 @@ export async function getTransaction(id: number): Promise<Transaction> {
 }
 
 /**
- * Get the transactions of the given user id using the `users/${id}/transactions` endpoint, as a
- * paginated response, and with a given filter. 
+ * Get the transactions of the given user id using the
+ * `users/${id}/transactions` endpoint, as a paginated response, and with a
+ * given filter. 
  * @param {Number} id The id of the user.
- * @param {Partial<TransactionFilter>} filter The filter to apply to the transactions.
+ * @param {Partial<TransactionFilter>} filter The filter to apply to the
+ * transactions.
  * @param {Number} take The number of records to take, this can be null.
  * @param {Number} skip The number of records to skip, this can be null.
- * @returns {Promise<Paginated<Transaction>>} A promise that resolves to a paginated response.
+ * @returns {Promise<Paginated<Transaction>>} A promise that resolves to a
+ * paginated response.
  */
 export async function getUserTransactions(
   id: number, filter: Partial<TransactionFilter>,
