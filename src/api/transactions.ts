@@ -1,60 +1,83 @@
 import APIHelper from '@/mixins/APIHelper';
 import TransactionTransformer from '@/transformers/TransactionTransformer';
 import PaginationTransformer from '@/transformers/PaginationTransformer';
-import { TransactionFilter } from '@/entities/Transaction';
+import { Transaction, TransactionFilter } from '@/entities/Transaction';
+import { Paginated } from '@/entities/Pagination';
 
-export function getTransactions(
+/**
+ * Get all the transactions using the `transactions` endpoint, as a paginated response, and with
+ * a given filter.
+ * @param {Partial<TransactionFilter>} filter The filter to apply to the transactions.
+ * @param {Number} take The number of records to take, this can be null.
+ * @param {Number} skip The number of records to skip, this can be null.
+ * @returns {Promise<Paginated<Transaction>>} A promise that resolves to a paginated response.
+ * @see TransactionFilter
+ */
+export async function getTransactions(
   filter: Partial<TransactionFilter>,
   take: number | null = null, skip: number | null = null,
-) {
+): Promise<Paginated<Transaction>> {
   const body = {
     ...filter,
     ...take && { take },
     ...skip && { skip },
   };
 
-  return APIHelper.getResource('transactions', body).then((response) => {
-    response._pagination = PaginationTransformer.makePagination(response._pagination);
-    response.records = response.records.map(
-      (transaction: any) => TransactionTransformer.makeTransaction(transaction),
-    );
+  const response = await APIHelper.getResource('transactions', body);
+  const _pagination = PaginationTransformer.makePagination(response._pagination);
+  const records = response.records.map(
+    (transaction: any) => TransactionTransformer.makeTransaction(transaction),
+  );
 
-    return response;
-  });
+  return {_pagination, records} as Paginated<Transaction>;
 }
 
-export function postTransaction(transaction: any) {
-  return APIHelper.postResource('transactions', transaction).then((response) => TransactionTransformer.makeTransaction(response));
+/**
+ * Update the given transaction using the `transactions` endpoint.
+ * @param {Transaction} transaction The transaction to update.
+ * @returns {Promise<Transaction>} A promise that resolves to the updated transaction.
+ */
+export async function postTransaction(transaction: Transaction): Promise<Transaction> {
+  const response = await APIHelper.postResource('transactions', transaction);
+  
+  return TransactionTransformer.makeTransaction(response);
 }
 
-export function getTransaction(id: number) {
-  return APIHelper.getResource(`transactions/${id}`).then((response) => TransactionTransformer.makeTransaction(response));
+/**
+ * Get the transaction at the given id using the `transactions/${id}` endpoint.
+ * @param {Number} id The id of the transaction.
+ * @returns {Promise<Transaction>} A promise that resolves to a transaction.
+ */
+export async function getTransaction(id: number): Promise<Transaction> {
+  const response = await APIHelper.getResource(`transactions/${id}`);
+  
+  return TransactionTransformer.makeTransaction(response);
 }
 
-export function patchTransaction(id: number, transaction: any) {
-  return APIHelper.patchResource(`transactions/${id}`, transaction).then((response) => TransactionTransformer.makeTransaction(response));
-}
-
-export function deleteTransaction(id: number) {
-  return APIHelper.delResource(`transactions/${id}`);
-}
-
-export function getUserTransactions(
+/**
+ * Get the transactions of the given user id using the `users/${id}/transactions` endpoint, as a
+ * paginated response, and with a given filter. 
+ * @param {Number} id The id of the user.
+ * @param {Partial<TransactionFilter>} filter The filter to apply to the transactions.
+ * @param {Number} take The number of records to take, this can be null.
+ * @param {Number} skip The number of records to skip, this can be null.
+ * @returns {Promise<Paginated<Transaction>>} A promise that resolves to a paginated response.
+ */
+export async function getUserTransactions(
   id: number, filter: Partial<TransactionFilter>,
   take: number | null = null, skip: number | null = null,
-) {
+): Promise<Paginated<Transaction>> {
   const body = {
     ...filter,
     ...take && { take },
     ...skip && { skip },
   };
 
-  return APIHelper.getResource(`users/${id}/transactions`, body).then((response) => {
-    response._pagination = PaginationTransformer.makePagination(response._pagination);
-    response.records = response.records.map(
-      (transaction: any) => TransactionTransformer.makeTransaction(transaction),
-    );
+  const response = await APIHelper.getResource(`users/${id}/transactions`, body);
+  const _pagination = PaginationTransformer.makePagination(response._pagination);
+  const records = response.records.map(
+    (transaction: any) => TransactionTransformer.makeTransaction(transaction),
+  );
 
-    return response;
-  });
+  return {_pagination, records} as Paginated<Transaction>;
 }
