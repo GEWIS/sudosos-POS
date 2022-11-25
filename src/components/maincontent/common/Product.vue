@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center product-card" @click="productClicked">
+  <div class="text-center product-card" @click="$emit('selected')">
     <div class="product">
       <img :src="image" :alt="product.name" />
       <p class="w-100 product-name mb-0">{{ product.name }}</p>
@@ -25,10 +25,6 @@ export default class ProductComponent extends Formatters {
     } else {
       this.image = `${process.env.VUE_APP_IMAGE_BASE}products/${this.product.picture}`;
     }
-  }
-
-  productClicked() {
-    (this.$parent as any).addProduct(this.product, 1);
   }
 }
 

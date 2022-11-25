@@ -30,7 +30,7 @@
 import { Component, Prop } from 'vue-property-decorator';
 import Formatters from '@/mixins/Formatters';
 import { Transaction } from '@/entities/Transaction';
-import TransactionDetails from '@/components/TransactionDetails.vue';
+import TransactionDetails from '@/components/checkoutbar/TransactionDetails.vue';
 import { getTransaction } from '@/api/transactions';
 
 @Component({
@@ -66,7 +66,3 @@ export default class TransactionDetailsModal extends Formatters {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

@@ -33,7 +33,3 @@ export default class TransactionHistory extends Vue {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

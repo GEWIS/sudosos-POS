@@ -1,17 +1,18 @@
 <template>
   <b-row class="transaction-history-row" @click="openModal">
-
-    <div class="date">{{this.date}}</div>
-    <div class="time">{{this.time}}</div>
-    <div class="value">{{this.value}}</div>
-    <div v-if="isCreatedBySomeoneElse()" class="created-by">
-      {{createdBy()}}
+    <div class="top">
+      <div class="date">{{this.date}}</div>
+      <div class="time">{{this.time}}</div>
+      <div class="value">{{this.value}}</div>
     </div>
-
+    <div class="bottom">
+      <div v-if="isCreatedBySomeoneElse()" class="created-by">
+        {{createdBy()}}
+      </div>
+    </div>
     <transaction-details-modal
       :baseTransaction="transaction"
-      :ref="`transaction-modal-${transaction.id}`"
-    />
+      :ref="`transaction-modal-${transaction.id}`" />
   </b-row>
 </template>
 
@@ -21,7 +22,7 @@ import { Transaction } from '@/entities/Transaction';
 import { Component, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import UserModule from '@/store/modules/user';
-import TransactionDetailsModal from '@/components/TransactionDetailsModal.vue';
+import TransactionDetailsModal from '@/components/checkoutbar/TransactionDetailsModal.vue';
 
 @Component({
   components: { TransactionDetailsModal },
@@ -69,15 +70,46 @@ export default class ProductsTableRow extends Formatters {
 .transaction-history-row {
   margin: 0 0 0.5rem 0;
   width: 100%;
-  background: $gewis-grey-accent;
+  background: white;
   border-radius: 8px;
-  padding: 4px 0.5rem;
+  padding: 8px 16px;
   display: flex;
   flex-wrap: wrap;
   cursor: pointer;
+  flex-direction: column;
 
-  div {
-    flex: 1 1 30%;
+  .top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+
+    .date {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .time {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .value {
+      font-size: 18px;
+      font-weight: 500;
+    }
+  }
+
+  .bottom {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+
+    .created-by {
+      font-size: 15px;
+      font-weight: 500;
+    }
   }
 }
 </style>

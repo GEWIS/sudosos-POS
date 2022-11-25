@@ -11,14 +11,14 @@
         You have not yet accepted the terms of service of SudoSOS.
         Please do this first on sudosos.gewis.nl!
       </b-toast>
-      <div class="wrap-container-child login-container shadow">
+      <div class="wrap-container-child login-container box">
         <div class="entry-row">
           <div class="keycodes-container">
             <div class="title">
               <div class="sub-title">Welcome to</div>
               <div class="title-text">SudoSOS</div>
             </div>
-            <b-alert variant="light" show class="login-info">
+            <b-alert variant="light" show class="login-info" style="background: none !important; border: none !important">
               {{external==='GEWIS'
               ? 'Log in with your GEWIS ID and PIN'
               : 'Log in with your SudoSOS ID and PIN'
@@ -45,26 +45,25 @@
           </div>
         </div>
       </div>
-      <div class="wrap-container-child sponsor-container shadow">
+      <div class="wrap-container-child sponsor-container box">
         <img :src="banners[bannerIndex]" />
       </div>
     </div>
-    <div class="background-logo">
-<!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
-    </div>
+    <Background />
   </div>
 </template>
 <script lang="ts">
 import {
   Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
-import keypad from '@/components/Keypad.vue';
+import keypad from '@/components/login/Keypad.vue';
 import APIHelper from '@/mixins/APIHelper';
 import { getModule } from 'vuex-module-decorators';
 import UserModule from '@/store/modules/user';
 import { LoginResponse } from '@/entities/APIResponses';
-import EanLogin from '@/components/EanLogin.vue';
+import EanLogin from '@/components/login/EanLogin.vue';
 import { getAllActiveBanners } from '@/api/banners';
+import Background from '@/components/Background.vue';
 
 @Component({
   filters: {
@@ -78,6 +77,7 @@ import { getAllActiveBanners } from '@/api/banners';
   components: {
     EanLogin,
     keypad,
+    Background,
   },
 })
 export default class Login extends Vue {
@@ -202,7 +202,7 @@ export default class Login extends Vue {
         APIHelper.setToken(loginResponse.token);
         await this.userState.fetchUser(true);
         await this.userState.fetchAllUsers();
-        await this.$router.push('/productOverview');
+        await this.$router.push('/home');
       }
     } else {
       this.$bvToast.show('toast-incorrect-password');
@@ -233,9 +233,6 @@ export default class Login extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-@import "./src/styles/global/_variables.scss";
-@import "./src/styles/common.scss";
-
 @keyframes cursor-blink {
   0% {
     opacity: 0;
@@ -255,9 +252,6 @@ export default class Login extends Vue {
   display: flex;
   flex-direction: column;
   flex: 1;
-  border-radius: $border-radius;
-  background: rgba(white, 0.8);
-  padding: 32px;
 }
 
 .login-container {
@@ -290,7 +284,7 @@ export default class Login extends Vue {
             content: "";
             width: 5px;
             height: 3rem;
-            background: #525659;
+            background: white;
             animation: cursor-blink 1.5s steps(2) infinite;
             display: none;
           }
