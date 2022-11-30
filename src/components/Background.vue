@@ -1,7 +1,7 @@
 <template>
-    <div class="background">
+    <div v-if="isChristmas()" class="background">
       <!--      <img src="@/assets/img/base-gewis-logo.png" alt="logo" />-->
-      <div class="snowflake" v-for="i in 12" :key="i">❅</div>
+      <div class="snowflake" v-for="i in 12" :key="i"><div class="falling">❅</div></div>
     </div>
 </template>
 <script lang="ts">
@@ -34,9 +34,130 @@ export default class Background extends Vue {
   color: darken(lightblue, 10%);
   font-size: 50px;
   font-family: Arial, sans-serif;
-  text-shadow: 0 0 3px darken(lightblue, 20%);
+  //text-shadow: 0 0 3px darken(lightblue, 20%);
   opacity: .5;
 }
 
-@-webkit-keyframes snowflakes-fall{0%{top:-10%}100%{top:100%}}@-webkit-keyframes snowflakes-shake{0%,100%{-webkit-transform:translateX(0);transform:translateX(0)}50%{-webkit-transform:translateX(80px);transform:translateX(80px)}}@keyframes snowflakes-fall{0%{top:-10%}100%{top:100%}}@keyframes snowflakes-shake{0%,100%{transform:translateX(0)}50%{transform:translateX(80px)}}.snowflake{position:fixed;top:-10%;z-index:9999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:default;-webkit-animation-name:snowflakes-fall,snowflakes-shake;-webkit-animation-duration:10s,3s;-webkit-animation-timing-function:linear,ease-in-out;-webkit-animation-iteration-count:infinite,infinite;-webkit-animation-play-state:running,running;animation-name:snowflakes-fall,snowflakes-shake;animation-duration:10s,3s;animation-timing-function:linear,ease-in-out;animation-iteration-count:infinite,infinite;animation-play-state:running,running}.snowflake:nth-of-type(0){left:1%;-webkit-animation-delay:0s,0s;animation-delay:0s,0s}.snowflake:nth-of-type(1){left:10%;-webkit-animation-delay:1s,1s;animation-delay:1s,1s}.snowflake:nth-of-type(2){left:20%;-webkit-animation-delay:6s,.5s;animation-delay:6s,.5s}.snowflake:nth-of-type(3){left:30%;-webkit-animation-delay:4s,2s;animation-delay:4s,2s}.snowflake:nth-of-type(4){left:40%;-webkit-animation-delay:2s,2s;animation-delay:2s,2s}.snowflake:nth-of-type(5){left:50%;-webkit-animation-delay:8s,3s;animation-delay:8s,3s}.snowflake:nth-of-type(6){left:60%;-webkit-animation-delay:6s,2s;animation-delay:6s,2s}.snowflake:nth-of-type(7){left:70%;-webkit-animation-delay:2.5s,1s;animation-delay:2.5s,1s}.snowflake:nth-of-type(8){left:80%;-webkit-animation-delay:1s,0s;animation-delay:1s,0s}.snowflake:nth-of-type(9){left:90%;-webkit-animation-delay:3s,1.5s;animation-delay:3s,1.5s}.snowflake:nth-of-type(10){left:25%;-webkit-animation-delay:2s,0s;animation-delay:2s,0s}.snowflake:nth-of-type(11){left:65%;-webkit-animation-delay:4s,2.5s;animation-delay:4s,2.5s}
+@keyframes snowflakes-fall{
+  0%{
+    transform:translate3d(0,-100px,0);
+  }
+  100%{
+    transform:translate3d(0,100vh,0);
+  }
+}
+@keyframes snowflakes-shake{
+  0%,
+  100%{
+    transform:translate3d(0,0,0)
+  }
+  50%{
+    transform:translate3d(80px,0,0)
+  }
+}
+.falling {
+  transform:translate3d(0,-100px,0);
+  animation-name:snowflakes-fall;
+  animation-duration:10s;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+  will-change: transform;
+}
+.snowflake{
+  position:fixed;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+  cursor:default;
+  animation-name:snowflakes-shake;
+  animation-duration:3s;
+  animation-timing-function:ease-in-out;
+  animation-iteration-count:infinite;
+  will-change: transform;
+}
+.snowflake:nth-of-type(0){
+  left:1%;
+  animation-delay:0s;
+  .falling {
+    animation-delay:0s;
+  }
+}
+.snowflake:nth-of-type(1){
+  left:10%;
+  animation-delay:1s;
+  .falling {
+    animation-delay:1s;
+  }
+}
+.snowflake:nth-of-type(2){
+  left:20%;
+  animation-delay:.5s;
+  .falling {
+    animation-delay:6s;
+  }
+}
+.snowflake:nth-of-type(3){
+  left:30%;
+  animation-delay:2s;
+  .falling {
+    animation-delay:4s;
+  }
+}
+.snowflake:nth-of-type(4){
+  left:40%;
+  animation-delay:2s;
+  .falling {
+    animation-delay:2s;
+  }
+}
+.snowflake:nth-of-type(5){
+  left:50%;
+  animation-delay:3s;
+  .falling {
+    animation-delay:8s;
+  }
+}
+.snowflake:nth-of-type(6){
+  left:60%;
+  animation-delay:2s;
+  .falling {
+    animation-delay:6s;
+  }
+}
+.snowflake:nth-of-type(7){
+  left:70%;
+  animation-delay:1s;
+  .falling {
+    animation-delay:2.5s;
+  }
+}
+.snowflake:nth-of-type(8){
+  left:80%;
+  animation-delay:0s;
+  .falling {
+    animation-delay:1s;
+  }
+}
+.snowflake:nth-of-type(9){
+  left:90%;
+  animation-delay:1.5s;
+  .falling {
+    animation-delay:3s;
+  }
+}
+.snowflake:nth-of-type(10){
+  left:25%;
+  animation-delay:0s;
+  .falling {
+    animation-delay:2s;
+  }
+}
+.snowflake:nth-of-type(11){
+  left:65%;
+  animation-delay:2.5s;
+  .falling {
+    animation-delay:4s;
+  }
+}
 </style>
