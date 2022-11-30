@@ -1,11 +1,11 @@
 <template>
   <div class="backend-status-container" v-if="online">
     <span class="backend-status-dot pulsation" style="background-color: green;" />
-    <span style="color: green;">SudoSOS online</span>
+    <span style="color: green;"></span>
   </div>
   <div class="backend-status-container" v-else>
     <span class="backend-status-dot" style="background-color: red;" />
-    <span style="color: red;">SudoSOS offline</span>
+    <span style="color: red;"></span>
   </div>
 </template>
 
@@ -57,12 +57,12 @@ export default class BackendStatus extends Vue {
 }
 
 .backend-status-dot {
-  height: 15px;
-  width: 15px;
+  height: 16px;
+  width: 16px;
   border-radius: 50%;
-  margin-top: 6px;
-  margin-left: 10px;
-  margin-right: 7px;
+  margin-top: 0;
+  margin-left: 12px;
+  margin-right: 12px;
 }
 
 .pulsation {

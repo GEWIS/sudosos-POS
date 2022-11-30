@@ -98,6 +98,7 @@ export default class Home extends Vue {
     });
 
     this.$watch('timedOut', (value) => {
+      console.log("LOGOUT IS CALLED");
       if (value) {
         this.logout();
       }
@@ -166,7 +167,7 @@ export default class Home extends Vue {
     }
 
     // TODO: Improve how this is routed
-    this.$refs.checkoutBar.$refs.checkoutButton.clearBorrelModeCheckout();
+    //this.$refs.checkoutBar.$refs.checkoutButton.clearBorrelModeCheckout();
   }
 
   updateStore() {
@@ -189,8 +190,7 @@ export default class Home extends Vue {
   }
 
   organMemberRequired() {
-    return this.$refs.checkoutBar.$refs.checkoutButton.isBorrelModeCheckout()
-      && !this.pointOfSaleState.pointOfSale.useAuthentication;
+    return !this.pointOfSaleState.pointOfSale.useAuthentication;
   }
 
   organMemberSelected(user: User): void {

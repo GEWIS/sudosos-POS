@@ -19,6 +19,7 @@ export default class ActivityTimerModule extends VuexModule {
 
   @Action
   start() {
+    console.log("start");
     this.context.dispatch('userActivity');
 
     window.addEventListener('mouseup', () => {
@@ -42,12 +43,13 @@ export default class ActivityTimerModule extends VuexModule {
   @Action
   userActivity() {
     if (this.timeoutHandle > 0) {
+      console.log("Clear the timeout timer");
       clearTimeout(this.timeoutHandle);
-      this.context.commit('setTimeoutHandle', undefined);
     }
 
     this.context.commit('setTimeoutTime', this.timeoutDelay);
 
+    console.log("Set new timeout timer");
     this.context.commit('setTimeoutHandle', setTimeout(() => {
       this.context.commit('setTimedOut', true);
     }, this.timeoutDelay));
@@ -57,9 +59,12 @@ export default class ActivityTimerModule extends VuexModule {
 
   @Action
   timeoutClock() {
+    console.log("Timeout ", this.timeoutTime);
     if (this.timeoutTime <= 0) {
       return;
     }
+
+    console.log("No timeout yet", this.timeoutClockHandle);
 
     if (this.timeoutClockHandle > 0) {
       clearTimeout(this.timeoutClockHandle);
@@ -85,6 +90,7 @@ export default class ActivityTimerModule extends VuexModule {
   @Mutation
   setTimedOut(timedOut: boolean) {
     this.timedOut = timedOut;
+    console.log("timed out?",this.timedOut);
   }
 
   @Mutation
@@ -99,6 +105,7 @@ export default class ActivityTimerModule extends VuexModule {
 
   @Mutation
   clearTimeouts() {
+    console.log("clearTimeouts ", this.timeoutHandle, this.timeoutClockHandle);
     if (this.timeoutHandle !== undefined) {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
