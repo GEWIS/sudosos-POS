@@ -1,6 +1,6 @@
 <template>
   <b-row class="checkout-button"
-    :class="{'checking-out': cartState.checkingOut, 'unfinished': unfinished || transactionProcessing}"
+    :class="{'checking-out': isCheckingOut, 'unfinished': unfinished || transactionProcessing}"
     @click="buttonClicked">
     <font-awesome-icon icon="lock" v-if="unfinished" />
     <b-spinner class="loading-spinner" v-if="transactionProcessing" />
@@ -15,7 +15,9 @@ import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { Container } from '@/entities/Container';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { 
+  Component, Prop, Vue 
+} from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { postTransaction } from '@/api/transactions';
 import SearchModule from '@/store/modules/search';
@@ -54,17 +56,22 @@ export default class CheckoutButton extends Vue {
    */
   public transactionProcessing: boolean = false;
 
-  public userState = getModule(UserModule);
+  private userState = getModule(UserModule);
+  private searchState = getModule(SearchModule);
+  private pointOfSaleState = getModule(PointOfSaleModule);
+  private cartState = getModule(CartModule);
 
-  public searchState = getModule(SearchModule);
-
-  public pointOfSaleState = getModule(PointOfSaleModule);
-
-  public cartState = getModule(CartModule);
+  /**
+   * If the user is currently checking out.
+   */
+  get isCheckingOut(): boolean {
+    return this.cartState.checkingOut;
+  }
 
   /**
    * If in borrelmode checkout this function will finish the transaction for the
    * selected member of current user.
+   * @param {User} selectedMember The member that is selected.
    */
   organMemberSelected(selectedMember: User) {
     this.finishTransaction(selectedMember, this.searchState.chargingUser, true);
@@ -128,7 +135,7 @@ export default class CheckoutButton extends Vue {
    * @param {PointOfSale} pos The pos to make the sub transaction model for.
    * @returns {Object} The sub transaction model for the specified rows, user and pos.
    */
-  static makeSubTransactions(rows: SubTransactionRow[], user: User, pos: any) {
+  makeSubTransactions(rows: SubTransactionRow[], user: User, pos: any) {
     const subTransactions: any[] = [];
 
     rows.forEach((originalRow: SubTransactionRow) => {
@@ -183,7 +190,7 @@ export default class CheckoutButton extends Vue {
     this.transactionProcessing = true;
 
     const { pointOfSale } = this.pointOfSaleState;
-    const subTransactions = CheckoutButton.makeSubTransactions(this.cartState.rows, user, pointOfSale);
+    const subTransactions = this.makeSubTransactions(this.cartState.rows, user, pointOfSale);
     let chargingId = 0;
 
     if (chargingUser.firstName !== undefined) {
@@ -269,7 +276,7 @@ export default class CheckoutButton extends Vue {
 <style lang="scss" scoped>
 .checkout-button {
   cursor: pointer;
-  height: $nav-height;
+  height: $top-bottom-height;
   background-color: #93e78e;
   display: flex;
   justify-content: center;
@@ -303,7 +310,7 @@ export default class CheckoutButton extends Vue {
   }
 
   p {
-    font-size: 26px;
+    font-size: $font-size+4px;
     font-weight: 700;
     margin: 0;
   }

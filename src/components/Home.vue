@@ -1,8 +1,8 @@
 <template>
   <div class="home-wrapper">
-    <div v-if="this.userState.user !== undefined && this.userState.user.id !== undefined">
-      <TOSNotRequired :initially-open="this.userState.user.acceptedToS === 'NOT_REQUIRED'"
-        :logged-out="this.logout"/>
+    <div v-if="user !== undefined && user.id !== undefined">
+      <TOSNotRequired :initially-open="user.acceptedToS === 'NOT_REQUIRED'"
+        :logged-out="logout"/>
     </div>
     <b-modal
       id="modal-transaction-failed"
@@ -14,19 +14,19 @@
     <div class="home">
       <div class="main-content-container box">
         <MainContentCategories v-if="state === State.CATEGORIES" @forceUpdateStore="updateStore" @logout="logout" @openProductSearch="openProductSearch"/>
-        <MainContentSearch v-if="state === State.SEARCH" @exit="exitSearch" />
-        <MainContentUserSearch v-if="state === State.USER_SEARCH" @exit="exitSearch" @userSelected="userSelected" />
+        <MainContentSearch v-if="state === State.SEARCH" @exit="exitProductSearch" />
+        <MainContentUserSearch v-if="state === State.USER_SEARCH" @exit="exitUserSearch" @userSelected="userSelected" />
         <MainContentMembers v-if="state === State.ORGAN_MEMBER_SELECT" @exit="exitPickMember" @selected="organMemberSelected" />
       </div>
       <CheckoutBar ref="checkoutBar" @openUserSearch="openUserSearch" :openPickMember="openPickMember" @logout="logout"/>
     </div>
   </div>
 </template>
-
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { 
+  Component, Vue 
+} from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import { ProductInContainer } from '@/entities/Product';
 import CheckoutBar from '@/components/checkoutbar/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
 import CartModule from '@/store/modules/cart';
@@ -38,10 +38,12 @@ import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import 'simple-keyboard/build/css/index.css';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
-import { Container } from '@/entities/Container';
 import TOSNotRequired from '@/components/TOSNotRequired.vue';
 import ActivityTimerModule from '@/store/modules/activity-timer';
 
+/**
+ * The different states the home page can be in.
+ */
 enum State {
   CATEGORIES,
   SEARCH,
@@ -49,6 +51,9 @@ enum State {
   ORGAN_MEMBER_SELECT,
 }
 
+/**
+ * The home page. This page contains all the main parts of the POS.
+ */
 @Component({
   components: {
     TOSNotRequired,
@@ -70,25 +75,31 @@ export default class Home extends Vue {
 
   private cartState = getModule(CartModule);
 
-  public vertical: boolean = window.innerWidth / window.innerHeight >= 1;
-
-  public showSettings: boolean = false;
-
+  /**
+   * Whether the organ members should be shown.
+   */
   public showOrganMembers: boolean = false;
 
-  State: any = State;
+  /**
+   * Gives the template access to the state enum.
+   */
+  State = State;
 
-  private autoRefresh;
+  /**
+   * The handle for the auto refresh interval.
+   */
+  private autoRefresh: number;
 
   $refs!: {
     checkoutBar: CheckoutBar
   }
 
+  /**
+   * Called when the component is mounted. It will 1) add a listener that checks the windows size when it is resized,
+   * 2) watch if the user is checking out, 3) watch if the user is timed out, 4) add a listener that prevents the user
+   * from right clicking, 5) start the auto refresh interval, and 6) start the activity timer.
+   */
   async mounted() {
-    window.addEventListener('resize', () => {
-      this.checkWindowSize();
-    });
-
     this.$watch('checkingOut', (value) => {
       if (value) {
         this.activityTimerState.stop();
@@ -108,19 +119,35 @@ export default class Home extends Vue {
       event.preventDefault();
     });
 
-    this.autoRefresh = setInterval(this.updateStore.bind(this), 10 * 60 * 1000);
+    this.autoRefresh = setInterval(() => this.updateStore(), 10 * 60 * 1000) as unknown as number;
 
     this.activityTimerState.start();
   }
 
+  /**
+   * The user that is currently logged in.
+   */
+  get user() {
+    return this.userState.user;
+  }
+
+  /**
+   * If the user is currently checking out.
+   */
   get checkingOut() {
     return this.cartState.checkingOut;
   }
 
+  /**
+   * If the user is timed out.
+   */
   get timedOut() {
     return this.activityTimerState.timedOut;
   }
 
+  /**
+   * Log the user out. This will reset all the states and push the user to '/'.
+   */
   logout() {
     clearInterval(this.autoRefresh);
     this.userState.reset();
@@ -129,6 +156,9 @@ export default class Home extends Vue {
     this.$router.push('/');
   }
 
+  /**
+   * Get the current state of the home page.
+   */
   get state() {
     if (this.showOrganMembers) {
       return State.ORGAN_MEMBER_SELECT;
@@ -143,24 +173,40 @@ export default class Home extends Vue {
     return State.CATEGORIES;
   }
 
+  /**
+   * Open the product search by uodatung the search state.
+   */
   openProductSearch() {
     this.searchState.updateSearching(true);
   }
 
+  /**
+   * Open the user search by updating the search state.
+   */
   openUserSearch() {
     this.searchState.updateUserSearching(true);
   }
 
-  exitSearch() {
-    if (this.state === State.SEARCH) {
-      this.searchState.updateSearching(false);
-    } else if (this.state === State.USER_SEARCH) {
-      this.searchState.updateUserSearching(false);
-
-      this.exitBorrelModeCheckout();
-    }
+  /**
+   * Exit either the product search.
+   */
+  exitProductSearch() {
+    this.searchState.updateSearching(false);
   }
 
+  /**
+   * Exit the user search.
+   */
+  exitUserSearch() {
+    this.searchState.updateUserSearching(false);
+
+    this.exitBorrelModeCheckout();
+  }
+
+  /**
+   * Exit the borrel mode checkout. This is only done if the user is not
+   * authenticated, meaning it is in borrel mode.
+   */
   exitBorrelModeCheckout() {
     if (this.pointOfSaleState.pointOfSale.useAuthentication) {
       return;
@@ -170,45 +216,61 @@ export default class Home extends Vue {
     //this.$refs.checkoutBar.$refs.checkoutButton.clearBorrelModeCheckout();
   }
 
-  updateStore() {
-    this.userState.fetchAllUsers(true);
+  /**
+   * Update the user store with the latest users and the point of sale with the
+   * latest point of sale data. This is done asynchroniously and on a 10 minute
+   * interval.
+   */
+  async updateStore() {
+    await this.userState.fetchAllUsers(true);
     this.pointOfSaleState.refreshPointOfSale();
   }
 
-  checkWindowSize() {
-    this.vertical = window.innerWidth / window.innerHeight >= 1;
-  }
-
-  clickSearchButton() {
-    this.searchState.setSearching(!this.searchState.searching);
-  }
-
+  /**
+   * This method is called if in the user search screen a user has been
+   * selected. If a organ member is required to complete the checkout, the organ
+   * member selection screen will be shown.
+   * @param {User} user The user that has been selected.
+   */
   userSelected(user: User): void {
     if (this.organMemberRequired()) {
       this.showOrganMembers = true;
     }
   }
 
+  /**
+   * Check if an organ member is required to complete the checkout.
+   */
   organMemberRequired() {
     return !this.pointOfSaleState.pointOfSale.useAuthentication;
   }
 
+  /**
+   * This method is called if in the organ member selection screen a user has
+   * been selected. The organ member selection screen will be hidden and the
+   * checkout bar will be notified of the organ member selection.
+   */
   organMemberSelected(user: User): void {
     this.showOrganMembers = false;
     this.$refs.checkoutBar.organMemberSelected(user);
   }
 
+  /**
+   * Open the organ member selection screen.
+   */
   openPickMember() {
     this.showOrganMembers = true;
   }
 
+  /**
+   * Exit the organ member selection screen.
+   */
   exitPickMember() {
     this.showOrganMembers = false;
     this.exitBorrelModeCheckout();
   }
 }
 </script>
-
 <style scoped lang="scss">
 @keyframes search-cursor-blink {
   0% {

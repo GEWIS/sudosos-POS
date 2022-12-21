@@ -2,8 +2,6 @@ import UserTransformer from '@/transformers/UserTransformer';
 import PaginationTransformer from '@/transformers/PaginationTransformer';
 import APIHelper from '@/mixins/APIHelper';
 import { User } from '@/entities/User';
-import { TransactionFilter } from '@/entities/Transaction';
-import TransactionTransformer from '@/transformers/TransactionTransformer';
 import { Paginated } from '@/entities/Pagination';
 
 /**

@@ -3,7 +3,7 @@ import {
 } from 'vuex-module-decorators';
 import Dinero from 'dinero.js';
 import store from '@/store';
-import { User, UserPermissions, UserType } from '@/entities/User';
+import { User, UserPermissions } from '@/entities/User';
 import { Organ } from '@/entities/Organ';
 import APIHelper from '@/mixins/APIHelper';
 import { getOrganMembers, getUsers } from '@/api/users';
@@ -12,26 +12,46 @@ import { NFCDevice } from '@/entities/NFCDevice';
 import jwtDecode from 'jwt-decode';
 import { BasePointOfSale } from '@/entities/PointOfSale';
 
+/**
+ * The module that controls the current user.
+ */
 @Module({
   dynamic: true, namespaced: true, store, name: 'UserModule',
 })
 export default class UserModule extends VuexModule {
-  user: User = {} as User;
+  /**
+   * The user that is currently logged in.
+   */
+  public user: User = {} as User;
 
-  userBalance: Dinero.Dinero = null;
+  /**
+   * The balance of the user that is currently logged in.
+   */
+  public userBalance: Dinero.Dinero = null;
 
-  userRoles: string[] = [];
+  /**
+   * The roles of the user that is currently logged in.
+   */
+  public userRoles: string[] = [];
 
-  userPOSs: BasePointOfSale[] = [];
+  /**
+   * The points of sale that the user that is currently logged in has access to.
+   */
+  public userPOSs: BasePointOfSale[] = [];
 
-  allUsers: User[] = [];
+  /**
+   * All users that are currently in the system.
+   */
+  public allUsers: User[] = [];
 
-  allOrgans: Organ[] = [];
+  /**
+   * All organs that are currently in the system.
+   */
+  public allOrgans: Organ[] = [];
 
-  permissions: UserPermissions = {} as UserPermissions;
-
-  automaticRestart: boolean = true;
-
+  /**
+   * MUTATION. Resets the user.
+   */
   @Mutation
   reset() {
     this.user = {} as User;
@@ -39,24 +59,39 @@ export default class UserModule extends VuexModule {
     this.userPOSs = [];
     this.allUsers = [];
     this.allOrgans = [];
-    this.permissions = {} as UserPermissions;
   }
 
+  /**
+   * MUTATION. Sets the user.
+   * @param {User} user The user to set.
+   */
   @Mutation
   setUser(user: User) {
     this.user = user;
   }
 
+  /**
+   * MUTATION. Sets the all users.
+   * @param {User[]} allUsers The all users to set.
+   */
   @Mutation
   setAllUsers(allUsers: User[]) {
     this.allUsers = allUsers;
   }
 
+  /**
+   * MUTATION. Sets the user points of sale.
+   * @param {BasePointOfSale[]} pointsOfSale The points of sale to set.
+   */
   @Mutation
   setUserPOSs(pointsOfSale: BasePointOfSale[]) {
     this.userPOSs = pointsOfSale.sort((a, b) => (a.name.localeCompare(b.name)));
   }
 
+  /**
+   * MUTATION. Sets the all organs by filtering all the users.
+   * @param {Organ[]} allOrgans The all organs to set.
+   */
   @Mutation
   setAllOrgans() {
     if (this.allUsers.length > 0) {
@@ -70,39 +105,61 @@ export default class UserModule extends VuexModule {
     }
   }
 
+  /**
+   * MUTATION. Sets the users roles.
+   */
   @Mutation
   setUserRoles(roles: string[]) {
     this.userRoles = roles;
   }
 
+  /**
+   * MUTATION. Updates the users balance.
+   * @param {Dinero.Dinero} balance The balance to set.
+   */
   @Mutation
   updateBalance(balance: Dinero.Dinero) {
     this.userBalance = balance;
   }
 
+  /**
+   * MUTATION. Updates the users pin code and refreshes the user.
+   * @param {object} data ??
+   */
   @Mutation
   updatePinCode(data: {}) {
     APIHelper.putResource('user/pincode', data);
     this.fetchUser(true);
   }
 
+  /**
+   * MUTATION. Updates the users pin code and refreshes all the users.
+   * @param {object} data ??
+   */
   @Mutation
   updateUsersPinCode(data: {}) {
     APIHelper.putResource('user/pincode', data);
     this.fetchAllUsers(true);
   }
 
+  /**
+   * MUTATION. Adds an NFC device to the user.
+   * @param {object} data ??
+   */
   @Mutation
-  addNFCDevice(data: {}) {
-    const nfcResponse = APIHelper.postResource('user/nfcdevice', data);
+  async addNFCDevice(data: {}) {
+    const nfcResponse = await APIHelper.postResource('user/nfcdevice', data);
     this.user.nfcDevices.splice(0, 0, UserTransformer.makeNFCDevice(nfcResponse));
   }
 
+  /**
+   * MUTATION. Adds an NFC device for the given user.
+   * @param {number} {userID} The ID of the user to add the NFC device to.
+   * @param {object} data ??
+   */
   @Mutation
-  addUsersNFCDevice(data: {
-    userID: number;
-  }) {
-    const nfcResponse = APIHelper.postResource('user/nfcdevice', data);
+  async addUsersNFCDevice(data: {userID: number}) {
+    const nfcResponse = await APIHelper.postResource('user/nfcdevice', data);
     const index = this.allUsers.findIndex((user) => user.id === data.userID);
     const user = this.allUsers[index];
 
@@ -111,39 +168,57 @@ export default class UserModule extends VuexModule {
     this.allUsers.splice(index, 1, user);
   }
 
+  /**
+   * MUTATION. Updates the given NFC device.
+   * @param {number} {id} The ID of the NFC device to update.
+   * @param {object} data ??
+   */
   @Mutation
-  updateNFCDevice(data: {id : number}) {
-    const nfcResponse = APIHelper.putResource('user/nfcdevice', data);
+  async updateNFCDevice(data: {id : number}) {
+    const nfcResponse = await APIHelper.putResource('user/nfcdevice', data);
     const index = this.user.nfcDevices.findIndex((nfc: NFCDevice) => nfc.id === data.id);
     this.user.nfcDevices.splice(index, 1, UserTransformer.makeNFCDevice(nfcResponse));
   }
 
+  /**
+   * MUTATION. Updates the given NFC device for the given user.
+   * @param {number} {id} The ID of the NFC device to update.
+   * @param {number} {userID} The ID of the user to update the NFC device for.
+   * @param {object} data ??
+   */
   @Mutation
   updateUsersNFCDevice(data: {id : number, userID: number}) {
     const nfcResponse = APIHelper.putResource('user/nfcdevice', data);
     const userIndex = this.allUsers.findIndex((user) => user.id === data.userID);
     const user = this.allUsers[userIndex];
-    const index = user.nfcDevices.findIndex(
-      (nfc: NFCDevice) => nfc.id === data.id,
-    );
+    const index = user.nfcDevices.findIndex((nfc: NFCDevice) => nfc.id === data.id);
 
-    user.nfcDevices.splice(
-      index, 1, UserTransformer.makeNFCDevice(nfcResponse),
-    );
+    user.nfcDevices.splice(index, 1, UserTransformer.makeNFCDevice(nfcResponse));
 
     this.allUsers.splice(userIndex, 1, user);
   }
 
+  /**
+   * MUTATION. Removes the given NFC device.
+   * @param {number} {id} The ID of the NFC device to remove.
+   * @param {object} data ??
+   */
   @Mutation
-  removeNFCDevice(data: {id: number}) {
-    const nfcResponse = APIHelper.delResource('user/nfcdevice', data);
+  async removeNFCDevice(data: {id: number}) {
+    await APIHelper.delResource('user/nfcdevice', data);
     const index = this.user.nfcDevices.findIndex((nfc: NFCDevice) => nfc.id === data.id);
     this.user.nfcDevices.splice(index, 1);
   }
 
+  /**
+   * MUTATION. Removes an NFC device for the given user.
+   * @param {number} {id} The ID of the NFC device to remove.
+   * @param {number} {userID} The ID of the user to remove the NFC device for.
+   * @param {object} data ??
+   */
   @Mutation
-  removeUsersNFCDevice(data: {id: number, userID: number}) {
-    const nfcResponse = APIHelper.delResource('user/nfcdevice', data);
+  async removeUsersNFCDevice(data: {id: number, userID: number}) {
+    await APIHelper.delResource('user/nfcdevice', data);
     const userIndex = this.allUsers.findIndex((user) => user.id === data.userID);
     const user = this.allUsers[userIndex];
     const index = user.nfcDevices.findIndex(
@@ -154,28 +229,34 @@ export default class UserModule extends VuexModule {
     this.allUsers.splice(userIndex, 1, user);
   }
 
+  /**
+   * MUTATION. Updates the users information.
+   * @param {number} {userID} The ID of the user to update.
+   * @param {string} {firstname} The new first name of the user.
+   * @param {string} {lastname} The new last name of the user.
+   * @param {string} {email} The new email of the user.
+   * @param {object} data ??
+   */
   @Mutation
-  updateUserInformation(data: {
-    userID: number,
-    firstname: string,
-    lastname: string,
-    email: string,
-    }) {
-    const userResponse = APIHelper.putResource('user/updateUserInfo', data);
+  async updateUserInformation(data: {userID: number, firstname: string, lastname: string, email: string}) {
+    await APIHelper.putResource('user/updateUserInfo', data);
     this.user.firstName = data.firstname;
     this.user.lastName = data.lastname;
     this.user.email = data.email;
   }
 
+  /**
+   * MUTATION. Updates the users information. ??
+   * @param {number} {userID} The ID of the user to update.
+   * @param {string} {firstname} The new first name of the user.
+   * @param {string} {lastname} The new last name of the user.
+   * @param {string} {email} The new email of the user.
+   * @param {boolean} {active} ??
+   * @param {object} data ??
+   */
   @Mutation
-  updateUsersUserInformation(data: {
-    userID: number,
-    firstname: string,
-    lastname: string,
-    email: string,
-    active: boolean,
-  }) {
-    const userResponse = APIHelper.putResource('user/updateUserInfo', data);
+  async updateUsersUserInformation(data: {userID: number, firstname: string, lastname: string, email: string, active: boolean}) {
+    await APIHelper.putResource('user/updateUserInfo', data);
     const userIndex = this.allUsers.findIndex((user) => user.id === data.userID);
     const user = this.allUsers[userIndex];
 
@@ -188,18 +269,32 @@ export default class UserModule extends VuexModule {
     this.allUsers.splice(userIndex, 1, user);
   }
 
+  /**
+   * MUTATION. Updates the users password.
+   * @param {number} {id} The ID of the user to update.
+   * @param {string} {password} The new password of the user.
+   * @param {object} data ??
+   */
   @Mutation
-  // eslint-disable-next-line class-methods-use-this
   updatePassword(data: {id: number, password: string}) {
-    const passwordResponse = APIHelper.putResource('user/password', data);
+    return APIHelper.putResource('user/password', data);
   }
 
+  /**
+   * MUTATION. Updates the users password.
+   * @param {number} {userID} The ID of the user to update.
+   * @param {string} {password} The new password of the user.
+   * @param {object} data ??
+   */
   @Mutation
-  // eslint-disable-next-line class-methods-use-this
   updateUsersPassword(data: {userID: number, password: string}) {
-    const passwordResponse = APIHelper.putResource('user/password', data);
+    return APIHelper.putResource('user/password', data);
   }
 
+  /**
+   * ACTION. Fetches the balance of the given user.
+   * @param {number} id The ID of the user to fetch the balance for.
+   */
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
@@ -213,6 +308,11 @@ export default class UserModule extends VuexModule {
     }
   }
 
+  /**
+   * ACTION. Fetches the user. If the user is already fetched, it will not fetch
+   * again unless forced. 
+   * @param {boolean} force Will force to fetch if the user is already fetched.
+   */
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
@@ -232,6 +332,13 @@ export default class UserModule extends VuexModule {
     }
   }
 
+  /**
+   * ACTION. Fetches all users. If the users are already fetched, it will not
+   * fetch again unless forced. It will first fetch the first 500 users, then
+   * fetch the rest of the users in parallel.
+   * @param {boolean} force Will force to fetch if the users are already
+   * fetched.
+   */
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
@@ -253,14 +360,15 @@ export default class UserModule extends VuexModule {
     }
   }
 
+  /**
+   * ACTION. Fetches all organ members.
+   */
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
   })
   async fetchAllOrganMembers() {
     // TODO: Replace with actual fetch code
-    // eslint-disable-next-line no-restricted-syntax
     for (const organ of this.allOrgans) {
-      // eslint-disable-next-line no-await-in-loop
       organ.organMembers = await getOrganMembers(organ.organUser.id);
     }
   }

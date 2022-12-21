@@ -18,13 +18,26 @@
   </div>
 </template>
 <script lang="ts">
-import {Vue, Prop, Component} from 'vue-property-decorator'
-import { User, UserType } from '@/entities/User';
+import {
+  Vue, Prop, Component
+} from 'vue-property-decorator'
+import { 
+  User, UserType 
+} from '@/entities/User';
 
+/**
+ * Component for a user listing. When clicked, the selected event is emitted.
+ */
 @Component
 export default class UserComponent extends Vue {
+  /**
+   * The user to display. This is a required prop.
+   */
   @Prop() user!: User;
   
+  /**
+   * Check if the user is a person.
+   */
   isPerson(): boolean {
     return [UserType.MEMBER, UserType.LOCAL_USER, UserType.LOCAL_ADMIN].includes(this.user.type);
   }

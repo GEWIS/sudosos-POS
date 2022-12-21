@@ -52,7 +52,9 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import { 
+  Component, Prop 
+} from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import Formatters from '@/mixins/Formatters';
 import Cart from '@/components/checkoutbar/Cart.vue';
@@ -63,8 +65,6 @@ import PointOfSaleModule from '@/store/modules/point-of-sale';
 import TransactionHistory from '@/components/checkoutbar/TransactionHistory.vue';
 import CartModule from '@/store/modules/cart';
 import SearchModule from '@/store/modules/search';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { BRow, BCol } from 'bootstrap-vue';
 import Dinero from 'dinero.js';
 
 /**
@@ -147,16 +147,16 @@ export default class CheckoutBar extends Formatters {
 
   .order-for {
     flex-wrap: nowrap;
-    margin-bottom: 16px;
+    margin-bottom: $default-padding;
 
     .for-text {
       flex-grow: 0;
       flex-shrink: 0;
       flex-basis: fit-content;
       vertical-align: middle;
-      line-height: 62px;
-      font-size: 20px;
-      margin-right: 10px;
+      line-height: $top-bottom-height;
+      font-size: $font-size;
+      margin-right: $default-padding-half;
       padding: 0;
     }
 
@@ -170,8 +170,8 @@ export default class CheckoutBar extends Formatters {
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 20px;
-      margin-right: 10px;
+      font-size: $font-size;
+      margin-right: $default-padding-half;
 
       .angle-down-icon {
         margin-left: 10px;
@@ -189,13 +189,13 @@ export default class CheckoutBar extends Formatters {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: $nav-height;
+      width: $top-bottom-height;
       flex-grow: 0;
       flex-shrink: 0;
       cursor: pointer;
-      height: $nav-height;
+      height: $top-bottom-height;
       text-align: center;
-      flex-basis: 62px;
+      flex-basis: $top-bottom-height;
       color: white;
 
       svg {
@@ -211,7 +211,7 @@ export default class CheckoutBar extends Formatters {
   }
 
   .transaction-detail-row {
-    margin: 8px 0;
+    margin: $default-padding 0 $default-padding-half 0;
     background: white;
     padding: 8px 12px;
     display: flex;
@@ -221,7 +221,7 @@ export default class CheckoutBar extends Formatters {
     .total-row {
       display: flex;
       flex-direction: row;
-      font-size: 20px;
+      font-size: $font-size;
 
       .total-text {
         flex: 1;
@@ -235,7 +235,7 @@ export default class CheckoutBar extends Formatters {
     .balance-row {
       display: flex;
       flex-direction: row;
-      font-size: 16px;
+      font-size: $font-size - 4px;
 
       .balance-text {
         flex: 1;

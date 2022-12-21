@@ -12,17 +12,29 @@
   </div>
 </template>
 <script lang="ts">
-import {Vue, Prop,Component} from 'vue-property-decorator'
+import {
+  Vue, Prop,Component
+} from 'vue-property-decorator'
 import UserComponent from '@/components/maincontent/usersearch/User.vue'
 import {User} from '@/entities/User'
 
+/**
+ * Component for a list of users.
+ */
 @Component({
   components: {
     User: UserComponent,
   },
 })
 export default class Users extends Vue {
+  /**
+   * The list of users. This is a required prop.
+   */
   @Prop() users!: User[];
+
+  /**
+   * If the query is valid. This is a required prop.
+   */
   @Prop() validQuery!: boolean;
 }
 </script>

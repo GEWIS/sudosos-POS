@@ -7,18 +7,30 @@
     </div>
   </div>
 </template>
-
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import { 
+  Component, Prop, Vue
+} from 'vue-property-decorator';
 import { Product } from '@/entities/Product';
-import Formatters from '@/mixins/Formatters';
 
+/**
+ * Component for a product card. When clicked, the selected event is emitted.
+ */
 @Component
-export default class ProductComponent extends Formatters {
+export default class ProductComponent extends Vue {
+  /**
+   * The product to display. This is a required prop.
+   */
   @Prop() product!: Product;
 
-  image: string = null;
+  /**
+   * The image to display.
+   */
+  public image: string = null;
 
+  /**
+   * Before the component is mounted, the image source is set.
+   */
   beforeMount() {
     if (!this.product.picture) {
       this.image = 'https://imgur.com/CS0aauU.png';
@@ -27,9 +39,7 @@ export default class ProductComponent extends Formatters {
     }
   }
 }
-
 </script>
-
 <style scoped lang="scss">
 .product-card {
   padding: 0 0 8px 0;

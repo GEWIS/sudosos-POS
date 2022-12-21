@@ -32,7 +32,7 @@
               <p v-bind:class="{'active-input': !enteringUserId,
                'can-enter':  passcode.length < maxPasscodeLength }" @click="enteringUserId = false">
                 <font-awesome-icon icon="lock" />
-                <span class="passcode">{{ passcode | passcodeDots }} </span>
+                <span class="passcode">{{ passcodeDots }} </span>
               </p>
               <div class="login-error">{{ loginError }}</div>
           </div>
@@ -54,7 +54,7 @@
 </template>
 <script lang="ts">
 import {
-  Component, Prop, Vue, Watch,
+  Component, Vue,
 } from 'vue-property-decorator';
 import keypad from '@/components/login/Keypad.vue';
 import APIHelper from '@/mixins/APIHelper';
@@ -65,15 +65,10 @@ import EanLogin from '@/components/login/EanLogin.vue';
 import { getAllActiveBanners } from '@/api/banners';
 import Background from '@/components/Background.vue';
 
+/**
+ * The login page.
+ */
 @Component({
-  filters: {
-    passcodeDots(passcode: string) {
-      if (passcode.length > 0) {
-        return '•'.repeat(passcode.length);
-      }
-      return '';
-    },
-  },
   components: {
     EanLogin,
     keypad,
@@ -81,18 +76,9 @@ import Background from '@/components/Background.vue';
   },
 })
 export default class Login extends Vue {
-  userState = getModule(UserModule);
+  private userState = getModule(UserModule);
 
-  private messagesOfTheDay: string[] = [
-    '🦀🦀🦀🦀🦀Het bestuur geeft ons te weinig pizza🦀🦀🦀🦀🦀',
-    '👩‍🦼👩‍🦼👩‍🦼Julie de Nooij👩‍🦼👩‍🦼👩‍🦼',
-    'Wannie Beumer is de rechtmatige voorzitter van de AC',
-    'SudoSOS zoekt coder!',
-  ];
-
-  private banners: string[] = [];
-
-  public motdIndex = 0;
+  public banners: string[] = [];
 
   public bannerIndex = 0;
 
@@ -100,18 +86,44 @@ export default class Login extends Vue {
 
   public passcode = '';
 
-  private enteringUserId = true;
+  public enteringUserId = true;
 
-  private loginError = '';
+  public loginError = '';
 
-  private maxUserIdLength = 5;
+  public maxUserIdLength = 5;
 
-  private maxPasscodeLength = 4;
+  public maxPasscodeLength = 4;
 
   private maxUserId = 40000;
 
-  private external: String = 'GEWIS';
+  public external: String = 'GEWIS';
 
+  /**
+   * When the page is mounted, get all active banners.
+   */
+  mounted() {
+    getAllActiveBanners().then((banners) => {
+      this.banners = [];
+      banners.forEach((b) => {
+        this.banners.push(`${process.env.VUE_APP_IMAGE_BASE}banners/${b.picture}`);
+      });
+    });
+  }
+
+  /**
+   * The passcode is shown as dots.
+   */
+  get passcodeDots() {
+    if (this.passcode.length > 0) {
+      return '•'.repeat(this.passcode.length);
+    }
+
+    return '';
+  }
+
+  /**
+   * Handle when the user presses the backspace button.
+   */
   backspacePressed() {
     if (this.enteringUserId && this.userId.length > 0) {
       this.userId = this.userId.slice(0, -1);
@@ -122,6 +134,9 @@ export default class Login extends Vue {
     }
   }
 
+  /**
+   * Handle when the user presses the ok button.
+   */
   okPressed() {
     if (this.enteringUserId) {
       this.enteringUserId = false;
@@ -130,10 +145,20 @@ export default class Login extends Vue {
     }
   }
 
+  /**
+   * Switch if the user is entering the user id or the passcode.
+   */
   switchInput() {
     this.enteringUserId = !this.enteringUserId;
   }
 
+  /**
+   * Handle if a key is pressed. If it is entering the user id, add the key to
+   * the user id and if that is at the max length, switch to the passcode. If it
+   * is entering the passcode, add the key to the passcode and if that is at the
+   * max length, login.
+   * @param {string} keyValue The value of the key that was pressed.
+   */
   keyPress(keyValue: string) {
     if (this.enteringUserId) {
       if (this.userId.length >= this.maxUserIdLength) return;
@@ -152,6 +177,10 @@ export default class Login extends Vue {
     }
   }
 
+  /**
+   * Login using the EAN code.
+   * @param {string} eanCode The EAN code.
+   */
   async eanLogin(eanCode: string) {
     let loginResponse;
     try {
@@ -163,6 +192,9 @@ export default class Login extends Vue {
     }
   }
 
+  /**
+   * Login using the user id and passcode.
+   */
   async login() {
     let loginResponse;
 
@@ -194,6 +226,12 @@ export default class Login extends Vue {
     this.enteringUserId = true;
   }
 
+  /**
+   * Handle the login response. If the user has not accepted the TOS, show a
+   * toast. If the user has accepted the TOS, set the token and redirect to the
+   * home page. If the login was incorrect, show a toast.
+   * @param {LoginResponse} loginResponse The login response.
+   */
   async handleLoginResponse(loginResponse?: LoginResponse | any) {
     if (loginResponse && Object.keys(loginResponse).length > 0 && !('message' in loginResponse)) {
       if (loginResponse.user.acceptedTOS === 'NOT_ACCEPTED') {
@@ -208,27 +246,6 @@ export default class Login extends Vue {
       this.$bvToast.show('toast-incorrect-password');
       this.loginError = loginResponse.message;
     }
-  }
-
-  mounted() {
-    getAllActiveBanners().then((banners) => {
-      this.banners = [];
-      banners.forEach((b) => {
-        this.banners.push(`${process.env.VUE_APP_IMAGE_BASE}banners/${b.picture}`);
-      });
-    });
-    setInterval(() => {
-      if (this.motdIndex < this.messagesOfTheDay.length - 1) {
-        this.motdIndex += 1;
-      } else {
-        this.motdIndex = 0;
-      }
-      if (this.bannerIndex < this.banners.length - 1) {
-        this.bannerIndex += 1;
-      } else {
-        this.bannerIndex = 0;
-      }
-    }, 5000);
   }
 }
 </script>

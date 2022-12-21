@@ -14,19 +14,38 @@ import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
 import APIHelper from '@/mixins/APIHelper';
 
-const PING_INTERVAL = 10000; // ms
-
+/**
+ * Component that handles the backend status indicator.
+ */
 @Component
 export default class BackendStatus extends Vue {
-  private online: boolean = true;
+  /**
+   * The interval at which the backend is pinged. This value cannot be changed.
+   */
+  private readonly PING_INTERVAL = 10000;
 
-  private pingInterval;
+  /**
+   * The handle for the interval that pings the backend.
+   */
+  private pingIntervalHandle: number;
 
+  /**
+   * If the backend is online.
+   */
+  public online: boolean = true;
+
+  /**
+   * When the component is mounted, start pinging the backend.
+   */
   mounted() {
     this.pingBackend();
-    this.pingInterval = setInterval(this.pingBackend.bind(this), PING_INTERVAL);
+    this.pingIntervalHandle = setInterval(this.pingBackend.bind(this), this.PING_INTERVAL) as unknown as number;
   }
 
+  /**
+   * Ping the backend using the 'ping' endpoint. If the backend responds with
+   * 'Pong!', then the backend is online. Otherwise, the backend is offline.
+   */
   pingBackend() {
     APIHelper.getResource('ping', null, {
       pragma: 'no-cache',
@@ -40,8 +59,11 @@ export default class BackendStatus extends Vue {
     });
   }
 
+  /**
+   * When the component is unmounted, clear the interval.
+   */
   unmounted() {
-    clearInterval(this.pingInterval);
+    clearInterval(this.pingIntervalHandle);
   }
 }
 </script>
@@ -71,7 +93,7 @@ export default class BackendStatus extends Vue {
   opacity: 0;
 }
 
-@-webkit-keyframes opacityPulse {
+@keyframes opacityPulse {
   0% {opacity: 1.0;}
   50% {opacity: 1.0;}
   75% {opacity: 0.0;}

@@ -38,25 +38,48 @@
 </template>
 <script lang="ts">
 import {
-  Component, PropSync, Prop, Vue,
+  Component, Prop, Vue,
 } from 'vue-property-decorator';
 
+/**
+ * Component for a keyboard that can be used to input text.
+ */
 @Component
 export default class Keyboard extends Vue {
+  /**
+   * The function that is called when the input changes.
+   */
   @Prop() onChange!: (value: string) => void;
 
+  /**
+   * If the keyboard should allow numbers.
+   */
   @Prop() allowNumbers!: boolean;
 
-  private keys: (number|string)[][] = [
+  /**
+   * The keys that are displayed on the keyboard. This is a 2D array, where the
+   * first dimension is the row and the second dimension contains the keys in
+   * that row.
+   */
+  public readonly keys: (number|string)[][] = [
     ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
     ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
     ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
     ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
   ];
 
+  /**
+   * The current input.
+   */
   private input: string = '';
 
-  // eslint-disable-next-line class-methods-use-this
+  /**
+   * This function is called when a key is clicked. If the key is a backspace,
+   * the last character is removed from the input. If the key is a space, a
+   * space is added to the input. Otherwise, the key is added to the input.
+   * Then, the input is emitted as change event.
+   * @param {number|string} key The key that was clicked.
+   */
   keyClicked(key: number|string) {
     if (key === 'backspace') {
       if(this.input.length > 0) {
@@ -68,15 +91,7 @@ export default class Keyboard extends Vue {
       this.input += key;
     }
 
-    this.onChange(this.input);
-  }
-
-  getInput() {
-    return this.input;
-  }
-
-  setInput(value: string) {
-    this.input = value;
+    this.$emit("change", this.input);
   }
 }
 </script>

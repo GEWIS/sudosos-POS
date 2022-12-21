@@ -30,6 +30,9 @@ export default class Cart extends Vue {
 <style lang="scss" scoped>
 .cart {
   flex: 1;
-   overflow-y: auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: $default-padding-half;
 }
 </style>

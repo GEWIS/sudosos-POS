@@ -8,18 +8,25 @@
 import { Vue } from 'vue-property-decorator';
 import Component from 'vue-class-component';
 
+/**
+ * Component for the background of the page. Currently, it only shows snowflakes
+ * during winter.
+ */
 @Component({
   components: {},
 })
 export default class Background extends Vue {
-  isChristmas() {
+  /**
+   * Returns whether it is currently winter.
+   * @returns Whether it is currently winter.
+   */
+  isChristmas(): boolean {
     const month = new Date().getMonth();
     const day = new Date().getDate();
     return (month == 10 && day >= 15) || (month == 11);
   }
 }
 </script>
-
 <style scoped lang="scss">
 .background {
   position: absolute;

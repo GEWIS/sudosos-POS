@@ -21,6 +21,9 @@ import PointOfSaleModule from '@/store/modules/point-of-sale';
 import SearchModule from '@/store/modules/search';
 import Background from '@/components/Background.vue';
 
+/**
+ * HomeWrapper contains the Home component and the Background component.
+ */
 @Component({
   components: { 
     Home,
@@ -32,11 +35,17 @@ export default class HomeWrapper extends Vue {
 
   private pointOfSaleState = getModule(PointOfSaleModule);
 
+  /**
+   * Returns true if the point of sale is not loaded.
+   */
   get posNotLoaded() {
     return this.pointOfSaleState.pointOfSale === undefined
       || Object.keys(this.pointOfSaleState.pointOfSale).length === 0;
   }
 
+  /**
+   * When the component is mounted, fetch the point of sale and the transaction history.
+   */
   async mounted() {
     if (this.pointOfSaleState.pointOfSale === undefined
       || this.pointOfSaleState.pointOfSale.id === undefined) {

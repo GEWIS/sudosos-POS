@@ -8,7 +8,9 @@
   </b-row>
 </template>
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import { 
+  Component, Prop 
+} from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import Formatters from '@/mixins/Formatters';
@@ -194,7 +196,7 @@ export default class CartProduct extends Formatters {
 <style lang="scss" scoped>
 .cart-product {
   width: 100%;
-  margin: 0 0 4px 0;
+  margin: 0;
   align-items: center;
 
   .adjust-button {

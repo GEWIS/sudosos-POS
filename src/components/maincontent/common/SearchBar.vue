@@ -5,13 +5,19 @@
     <div class="indicator"></div>
     <input
       type="text" class="search-input" ref="searchInput"
-      @input="e => emitUpdate(e)"
+      @input="() => onInput()"
     />
   </div>
 </template>
 <script lang="ts">
-import { Vue, Ref, Component } from 'vue-property-decorator'
+import { 
+  Vue, Component 
+} from 'vue-property-decorator'
 
+/**
+ * Component for a search bar. When the user types in the search bar, the
+ * update event is emitted with the current query.
+ */
 @Component
 export default class SearchBar extends Vue {
   $refs!: {
@@ -19,23 +25,41 @@ export default class SearchBar extends Vue {
     text: HTMLSpanElement
   }
 
+  /**
+   * The current query.
+   */
   private query: string = "";
 
+  /**
+   * Update the query. This also updates the text in the search bar.
+   * @param {string} query The new query.
+   */
   updateQuery(query: string) {
     this.query = query;
-    // TODO: fix that this does not use model and direct rerendering (currently like this because of weird behavior)
     this.$refs.text.innerText = query;
   }
 
+  /**
+   * Get the current query.
+   * @return {string} The current query.
+   */
   getQuery(): string {
     return this.query;
   }
 
-  emitUpdate(e) {
-    this.updateQuery(e.target.value);
+
+  /**
+   * Called when the user types in the search bar. Updates the query and emits
+   * the update event.
+   */
+  onInput() {
+    this.updateQuery(this.$refs.searchInput.value);
     this.$emit('update', this.query);
   }
 
+  /**
+   * Focus on the search bar if the user clicks on the search bar.
+   */
   focusOnSearch() {
     this.$refs.searchInput.focus();
   }

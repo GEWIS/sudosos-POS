@@ -1,7 +1,5 @@
 import ContainerTransformer from '@/transformers/ContainerTransformer';
 import APIHelper from '@/mixins/APIHelper';
-import PaginationTransformer from '@/transformers/PaginationTransformer';
-import ProductTransformer from '@/transformers/ProductTransformer';
 import { BaseContainer, Container } from '@/entities/Container';
 
 /**

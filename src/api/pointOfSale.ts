@@ -1,9 +1,6 @@
 import APIHelper from '@/mixins/APIHelper';
 import PointOfSaleTransformer from '@/transformers/PointOfSaleTransformer';
 import { PointOfSale } from '@/entities/PointOfSale';
-import PaginationTransformer from '@/transformers/PaginationTransformer';
-import ContainerTransformer from '@/transformers/ContainerTransformer';
-import ProductTransformer from '@/transformers/ProductTransformer';
 
 /**
  * Get the point of sale at the given id using the `pointsofsale/${id}`
