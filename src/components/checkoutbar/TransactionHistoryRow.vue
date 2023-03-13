@@ -29,7 +29,7 @@ import TransactionDetailsModal from '@/components/checkoutbar/TransactionDetails
  */
 @Component({
   components: { TransactionDetailsModal },
-})
+  })
 export default class ProductsTableRow extends Formatters {
   /**
    * The transaction to display.

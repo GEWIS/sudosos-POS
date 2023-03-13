@@ -9,6 +9,6 @@ import { Dinero } from 'dinero.js';
  */
 export default async function getUserBalance(id: Number): Promise<Dinero> {
   const response = await APIHelper.getResource(`balances/${id}`);
-  
+
   return UserTransformer.makeSaldo(response);
 }

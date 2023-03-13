@@ -14,7 +14,10 @@
     </div>
     <div class="content-center">
       <Scrollable>
-        <Users :users="filteredUsers" :validQuery="hasValidUserQuery" @selected="user => userSelected(user)" />
+        <Users
+          :users="filteredUsers"
+          :validQuery="hasValidUserQuery"
+          @selected="user => userSelected(user)" />
       </Scrollable>
     </div>
     <div class="content-bottom">
@@ -33,8 +36,8 @@ import PointOfSaleModule from '@/store/modules/point-of-sale';
 import SearchModule from '@/store/modules/search';
 import UserModule from '@/store/modules/user';
 import Fuse from 'fuse.js';
-import { 
-  Component, Vue 
+import {
+  Component, Vue,
 } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import SearchBar from '@/components/maincontent/common/SearchBar.vue';
@@ -49,21 +52,23 @@ import Scrollable from '@/components/maincontent/common/Scrollable.vue';
  */
 @Component({
   components: {
-    SearchBar,
-    Keyboard,
-    ExitButton,
-    Users,
-    Scrollable,
+  SearchBar,
+  Keyboard,
+  ExitButton,
+  Users,
+  Scrollable,
   },
-})
+  })
 export default class MainContentUserSearch extends Vue {
   /**
    * The current search query.
    */
-  private query: string = "";
+  private query: string = '';
 
   private userState = getModule(UserModule);
+
   private searchState = getModule(SearchModule);
+
   private pointOfSaleState = getModule(PointOfSaleModule);
 
   $refs!: {

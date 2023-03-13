@@ -7,25 +7,27 @@
       <p>No users were found for your query</p>
     </div>
     <div v-else class="content">
-      <User v-for="user in users" :user="user" :key="`${user.id}`" @selected="$emit('selected', user)" />
+      <User v-for="user in users"
+        :user="user" :key="`${user.id}`"
+        @selected="$emit('selected', user)" />
     </div>
   </div>
 </template>
 <script lang="ts">
 import {
-  Vue, Prop,Component
-} from 'vue-property-decorator'
-import UserComponent from '@/components/maincontent/usersearch/User.vue'
-import {User} from '@/entities/User'
+  Vue, Prop, Component,
+} from 'vue-property-decorator';
+import UserComponent from '@/components/maincontent/usersearch/User.vue';
+import { User } from '@/entities/User';
 
 /**
  * Component for a list of users.
  */
 @Component({
   components: {
-    User: UserComponent,
+  User: UserComponent,
   },
-})
+  })
 export default class Users extends Vue {
   /**
    * The list of users. This is a required prop.

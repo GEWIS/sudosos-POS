@@ -1,6 +1,9 @@
 <template>
   <div class="settings-bar" :style="{display: userOwnsPOS() ? 'initial' : 'none'}">
-    <div class="options-button" id="options-button" @click="() => toggleSettings()" v-if="userOwnsPOS()">
+    <div class="options-button"
+      id="options-button"
+      @click="() => toggleSettings()"
+      v-if="userOwnsPOS()">
       <font-awesome-icon icon="ellipsis-h"/>
     </div>
     <div class="settings-component pos-card" id="settings-component" v-if="showSettings">
@@ -67,7 +70,7 @@ export default class SettingsComponent extends Vue {
   mounted() {
     setTimeout(() => document.addEventListener('click', this.pageClicked), 1);
   }
-  
+
   /**
    * When the component is updated the settings menu is moved to the correct
    * height.
@@ -121,8 +124,8 @@ export default class SettingsComponent extends Vue {
    * was outside the settings menu while it is visible.
    */
   pageClicked(e: MouseEvent) {
-    if (e.composedPath().includes(document.getElementById('options-button'))
-     || e.composedPath().includes(document.getElementById('settings-component')) && this.showSettings) {
+    if ((e.composedPath().includes(document.getElementById('options-button'))
+     || e.composedPath().includes(document.getElementById('settings-component'))) && this.showSettings) {
       return;
     }
 

@@ -11,7 +11,7 @@ import { getUserTransactions } from '@/api/transactions';
  */
 @Module({
   dynamic: true, store, namespaced: true, name: 'SearchModule',
-})
+  })
 export default class SearchModule extends VuexModule {
   /**
    * Whether the user is searching for a product.
@@ -60,16 +60,16 @@ export default class SearchModule extends VuexModule {
   }
 
   /**
-   * MUTATION. Resets the search module. This will also reset the filter
+   * ACTION. Resets the search module. This will also reset the filter
    * category.
    */
-  @Mutation
+  @Action
   reset() {
-    this.searching = false;
-    this.userSearching = false;
-    this.chargingUser = {} as User;
-    this.transactionHistory = [];
-    this.resetFilterCategory();
+    this.context.commit('setSearching', false);
+    this.context.commit('setUserSearching', false);
+    this.context.commit('clearChargingUser');
+    this.context.commit('setTransactionHistory', []);
+    this.context.commit('resetFilterCategory');
   }
 
   /**
@@ -88,12 +88,6 @@ export default class SearchModule extends VuexModule {
   @Mutation
   setSearching(searching: boolean): void {
     this.searching = searching;
-    // Disable filters when searching
-    if (searching) {
-      this.filterCategory = 0;
-    } else {
-      this.resetFilterCategory();
-    }
   }
 
   /**
@@ -140,7 +134,7 @@ export default class SearchModule extends VuexModule {
    */
   @Action({
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
-  })
+    })
   updateSearching(searching: boolean) {
     this.context.commit('setSearching', searching);
   }
@@ -151,7 +145,7 @@ export default class SearchModule extends VuexModule {
    */
   @Action({
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
-  })
+    })
   updateUserSearching(searching: boolean) {
     this.context.commit('setUserSearching', searching);
   }
@@ -162,7 +156,7 @@ export default class SearchModule extends VuexModule {
    */
   @Action({
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
-  })
+    })
   updateFilterName(name: string) {
     this.context.commit('setFilterName', name);
   }
@@ -173,7 +167,7 @@ export default class SearchModule extends VuexModule {
    */
   @Action({
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
-  })
+    })
   updateFilterCategory(category: number) {
     this.context.commit('setFilterCategory', category);
   }
@@ -184,10 +178,10 @@ export default class SearchModule extends VuexModule {
    */
   @Action({
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
-  })
+    })
   updateChargingUser(user: User) {
     this.context.commit('setChargingUser', user);
-    this.fetchTransactionHistory();
+    this.context.dispatch('fetchTransactionHistory');
   }
 
   /**
@@ -196,10 +190,10 @@ export default class SearchModule extends VuexModule {
    */
   @Action({
     rawError: Boolean(process.env.VUE_APP_DEBUG_STORES),
-  })
+    })
   removeChargingUser() {
     this.context.commit('clearChargingUser');
-    this.fetchTransactionHistory();
+    this.context.dispatch('fetchTransactionHistory');
   }
 
   /**
@@ -207,7 +201,7 @@ export default class SearchModule extends VuexModule {
    */
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
-  })
+    })
   fetchTransactionHistory() {
     let id;
     if (this.chargingUser !== undefined && this.chargingUser.id !== undefined

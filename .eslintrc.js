@@ -21,6 +21,7 @@ module.exports = {
     '@typescript-eslint/no-empty-function': ['error', { allow: ['constructors'] }],
     'no-underscore-dangle': 'off',
     'no-plusplus': [0, { allowForLoopAfterthoughts: true }],
+    'class-methods-use-this': 'off',
   },
   parserOptions: {
     parser: '@typescript-eslint/parser',

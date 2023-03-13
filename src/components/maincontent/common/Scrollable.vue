@@ -1,17 +1,17 @@
 <template>
-  <div 
-    class="custom-scrollbar" 
-    @mousedown.capture="e => startDrag(e)" 
-    @mousemove.capture="e => drag(e)" 
-    @mouseleave="e => stopDrag(e)" 
-    @click.capture="e => stopDrag(e)" 
+  <div
+    class="custom-scrollbar"
+    @mousedown.capture="e => startDrag(e)"
+    @mousemove.capture="e => drag(e)"
+    @mouseleave="e => stopDrag(e)"
+    @click.capture="e => stopDrag(e)"
     ref="scrollbar">
     <slot></slot>
   </div>
 </template>
 <script lang="ts">
-import { 
-  Vue, Component 
+import {
+  Vue, Component,
 } from 'vue-property-decorator';
 
 /**
@@ -21,14 +21,14 @@ import {
 @Component({
   components: {
   },
-})
+  })
 export default class Scrollable extends Vue {
   /**
    * The y position of the mouse when the drag started.
    */
   private dragYStart = 0;
 
-  /** 
+  /**
    * The scroll top of the scrollbar when the drag started.
    */
   private dragScrollStart = 0;
@@ -86,7 +86,7 @@ export default class Scrollable extends Vue {
    * @param {MouseEvent} e The mouse event.
    */
   drag(e: MouseEvent) {
-    if(!this.dragging) return;
+    if (!this.dragging) return;
 
     const delta = e.clientY - this.dragYStart;
     this.momentum = delta - this.lastDelta;
@@ -101,20 +101,20 @@ export default class Scrollable extends Vue {
    * was greater than 0 it will start the brake function. When the draggable
    * area is clicked it will only stop draggen if the user has actually dragged.
    * This is done to prevent the click event from being fired.
-   * @param e 
+   * @param e
    */
   stopDrag(e: MouseEvent) {
-    if(!this.dragging) return;
+    if (!this.dragging) return;
 
-    if(this.hasDragged) {
+    if (this.hasDragged) {
       e.stopImmediatePropagation();
       e.stopPropagation();
     }
-    
+
     this.dragging = false;
     this.hasDragged = false;
 
-    if(Math.abs(this.momentum) > 0) {
+    if (Math.abs(this.momentum) > 0) {
       this.brake();
     }
   }
@@ -128,10 +128,9 @@ export default class Scrollable extends Vue {
     this.$refs.scrollbar.scrollTop -= this.momentum;
     this.momentum *= 0.8;
 
-    if(Math.abs(this.momentum) > 0.1) {
+    if (Math.abs(this.momentum) > 0.1) {
       setTimeout(() => this.brake(), 10);
-    }
-    else {
+    } else {
       this.momentum = 0;
     }
   }

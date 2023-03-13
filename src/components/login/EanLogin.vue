@@ -2,8 +2,8 @@
   <div class="ean-scanner" />
 </template>
 <script lang="ts">
-import { 
-  Component, Prop, Vue 
+import {
+  Component, Prop, Vue,
 } from 'vue-property-decorator';
 
 /**
@@ -30,7 +30,7 @@ export default class EanLogin extends Vue {
 
   /**
    * Handle the input event. When the enter key is pressed, the captured
-   * key events are reduced to a string and passed to the handleLogin 
+   * key events are reduced to a string and passed to the handleLogin
    * function. The captures are then reset.
    */
   onInput(event: KeyboardEvent): void {

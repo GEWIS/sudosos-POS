@@ -1,4 +1,6 @@
-import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
+import {
+  Action, Module, Mutation, VuexModule,
+} from 'vuex-module-decorators';
 import store from '@/store';
 
 /**
@@ -6,7 +8,7 @@ import store from '@/store';
  */
 @Module({
   dynamic: true, namespaced: true, store, name: 'ActivityTimerModule',
-})
+  })
 export default class ActivityTimerModule extends VuexModule {
   /**
    * The time in milliseconds until the user is considered inactive.

@@ -8,11 +8,11 @@
 </template>
 <script lang="ts">
 import {
-  Vue, Component, Prop
+  Vue, Component, Prop,
 } from 'vue-property-decorator';
 import ActivityTimerModule from '@/store/modules/activity-timer';
 import CartModule from '@/store/modules/cart';
-import {getModule} from 'vuex-module-decorators';
+import { getModule } from 'vuex-module-decorators';
 
 /**
  * Component that handles the activity timer.

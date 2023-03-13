@@ -17,7 +17,7 @@ import { BasePointOfSale } from '@/entities/PointOfSale';
  */
 @Module({
   dynamic: true, namespaced: true, store, name: 'UserModule',
-})
+  })
 export default class UserModule extends VuexModule {
   /**
    * The user that is currently logged in.
@@ -238,7 +238,9 @@ export default class UserModule extends VuexModule {
    * @param {object} data ??
    */
   @Mutation
-  async updateUserInformation(data: {userID: number, firstname: string, lastname: string, email: string}) {
+  async updateUserInformation(
+    data: {userID: number, firstname: string, lastname: string, email: string},
+  ) {
     await APIHelper.putResource('user/updateUserInfo', data);
     this.user.firstName = data.firstname;
     this.user.lastName = data.lastname;
@@ -255,7 +257,9 @@ export default class UserModule extends VuexModule {
    * @param {object} data ??
    */
   @Mutation
-  async updateUsersUserInformation(data: {userID: number, firstname: string, lastname: string, email: string, active: boolean}) {
+  async updateUsersUserInformation(
+    data: {userID: number, firstname: string, lastname: string, email: string, active: boolean},
+  ) {
     await APIHelper.putResource('user/updateUserInfo', data);
     const userIndex = this.allUsers.findIndex((user) => user.id === data.userID);
     const user = this.allUsers[userIndex];
@@ -297,7 +301,7 @@ export default class UserModule extends VuexModule {
    */
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
-  })
+    })
   async fetchBalance(id: number) {
     try {
       const balanceResponse = await APIHelper.getResource(`balances/${id}`);
@@ -310,12 +314,12 @@ export default class UserModule extends VuexModule {
 
   /**
    * ACTION. Fetches the user. If the user is already fetched, it will not fetch
-   * again unless forced. 
+   * again unless forced.
    * @param {boolean} force Will force to fetch if the user is already fetched.
    */
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
-  })
+    })
   async fetchUser(force: boolean = false) {
     if (this.user.id === undefined || force) {
       const token = jwtDecode(APIHelper.getToken().jwtToken as string) as any;
@@ -326,9 +330,10 @@ export default class UserModule extends VuexModule {
       this.context.commit('setUser', user);
 
       await this.fetchBalance(user.id);
-      APIHelper.getResource(`users/${token.user.id}/pointsofsale`).then((pointOfSaleResponse) => {
-        this.context.commit('setUserPOSs', pointOfSaleResponse.records);
-      });
+      APIHelper.getResource(`users/${token.user.id}/pointsofsale`)
+        .then((pointOfSaleResponse) => {
+          this.context.commit('setUserPOSs', pointOfSaleResponse.records);
+        });
     }
   }
 
@@ -341,7 +346,7 @@ export default class UserModule extends VuexModule {
    */
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
-  })
+    })
   async fetchAllUsers(force: boolean = false) {
     if (this.allUsers.length === 0 || force) {
       const take = 500;
@@ -350,8 +355,8 @@ export default class UserModule extends VuexModule {
 
       const pages = Math.ceil(usersResponse._pagination.count / take);
 
-      allUsers.push(...(await Promise.all(Array(pages-1).fill(1).map(async (_, i) => {
-        usersResponse = await getUsers(take, (i+1)*take);
+      allUsers.push(...(await Promise.all(Array(pages - 1).fill(1).map(async (_, i) => {
+        usersResponse = await getUsers(take, (i + 1) * take);
         return usersResponse.records;
       }))).flat());
       this.context.commit('setAllUsers', allUsers);
@@ -365,7 +370,7 @@ export default class UserModule extends VuexModule {
    */
   @Action({
     rawError: (process.env.VUE_APP_DEBUG_STORES === 'true'),
-  })
+    })
   async fetchAllOrganMembers() {
     // TODO: Replace with actual fetch code
     for (const organ of this.allOrgans) {

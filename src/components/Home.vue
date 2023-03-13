@@ -13,18 +13,34 @@
     </b-modal>
     <div class="home">
       <div class="main-content-container box">
-        <MainContentCategories v-if="state === State.CATEGORIES" @forceUpdateStore="updateStore" @logout="logout" @openProductSearch="openProductSearch"/>
-        <MainContentSearch v-if="state === State.SEARCH" @exit="exitProductSearch" />
-        <MainContentUserSearch v-if="state === State.USER_SEARCH" @exit="exitUserSearch" @userSelected="userSelected" />
-        <MainContentMembers v-if="state === State.ORGAN_MEMBER_SELECT" @exit="exitPickMember" @selected="organMemberSelected" />
+        <MainContentCategories
+          v-if="state === State.CATEGORIES"
+          @forceUpdateStore="updateStore"
+          @logout="logout"
+          @openProductSearch="openProductSearch"/>
+        <MainContentSearch
+          v-if="state === State.SEARCH"
+          @exit="exitProductSearch" />
+        <MainContentUserSearch
+          v-if="state === State.USER_SEARCH"
+          @exit="exitUserSearch"
+          @userSelected="userSelected" />
+        <MainContentMembers
+          v-if="state === State.ORGAN_MEMBER_SELECT"
+          @exit="exitPickMember"
+          @selected="organMemberSelected" />
       </div>
-      <CheckoutBar ref="checkoutBar" @openUserSearch="openUserSearch" :openPickMember="openPickMember" @logout="logout"/>
+      <CheckoutBar
+        ref="checkoutBar"
+        @openUserSearch="openUserSearch"
+        :openPickMember="openPickMember"
+        @logout="logout"/>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { 
-  Component, Vue 
+import {
+  Component, Vue,
 } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import CheckoutBar from '@/components/checkoutbar/CheckoutBar.vue';
@@ -56,14 +72,14 @@ enum State {
  */
 @Component({
   components: {
-    TOSNotRequired,
-    CheckoutBar,
-    MainContentMembers,
-    MainContentUserSearch,
-    MainContentSearch,
-    MainContentCategories,
+  TOSNotRequired,
+  CheckoutBar,
+  MainContentMembers,
+  MainContentUserSearch,
+  MainContentSearch,
+  MainContentCategories,
   },
-})
+  })
 export default class Home extends Vue {
   private searchState = getModule(SearchModule);
 
@@ -95,9 +111,11 @@ export default class Home extends Vue {
   }
 
   /**
-   * Called when the component is mounted. It will 1) add a listener that checks the windows size when it is resized,
-   * 2) watch if the user is checking out, 3) watch if the user is timed out, 4) add a listener that prevents the user
-   * from right clicking, 5) start the auto refresh interval, and 6) start the activity timer.
+   * Called when the component is mounted. It will 1) add a listener that checks
+   * the windows size when it is resized,
+   * 2) watch if the user is checking out, 3) watch if the user is timed out, 4)
+   *    add a listener that prevents the user from right clicking, 5) start the
+   *    auto refresh interval, and 6) start the activity timer.
    */
   async mounted() {
     this.$watch('checkingOut', (value) => {
@@ -109,7 +127,7 @@ export default class Home extends Vue {
     });
 
     this.$watch('timedOut', (value) => {
-      console.log("LOGOUT IS CALLED");
+      console.log('LOGOUT IS CALLED');
       if (value) {
         this.logout();
       }
@@ -208,12 +226,12 @@ export default class Home extends Vue {
    * authenticated, meaning it is in borrel mode.
    */
   exitBorrelModeCheckout() {
-    if (this.pointOfSaleState.pointOfSale.useAuthentication) {
-      return;
-    }
+    // if (this.pointOfSaleState.pointOfSale.useAuthentication) {
+
+    // }
 
     // TODO: Improve how this is routed
-    //this.$refs.checkoutBar.$refs.checkoutButton.clearBorrelModeCheckout();
+    // this.$refs.checkoutBar.$refs.checkoutButton.clearBorrelModeCheckout();
   }
 
   /**

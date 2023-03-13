@@ -4,8 +4,8 @@
   </div>
 </template>
 <script lang="ts">
-import { 
-  Component, Vue 
+import {
+  Component, Vue,
 } from 'vue-property-decorator';
 
 /**

@@ -10,9 +10,9 @@
   </div>
 </template>
 <script lang="ts">
-import { 
-  Vue, Component 
-} from 'vue-property-decorator'
+import {
+  Vue, Component,
+} from 'vue-property-decorator';
 
 /**
  * Component for a search bar. When the user types in the search bar, the
@@ -28,7 +28,7 @@ export default class SearchBar extends Vue {
   /**
    * The current query.
    */
-  private query: string = "";
+  private query: string = '';
 
   /**
    * Update the query. This also updates the text in the search bar.
@@ -46,7 +46,6 @@ export default class SearchBar extends Vue {
   getQuery(): string {
     return this.query;
   }
-
 
   /**
    * Called when the user types in the search bar. Updates the query and emits

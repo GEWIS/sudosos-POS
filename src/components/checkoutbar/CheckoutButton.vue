@@ -15,8 +15,8 @@ import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import { Container } from '@/entities/Container';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
-import { 
-  Component, Prop, Vue 
+import {
+  Component, Prop, Vue,
 } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { postTransaction } from '@/api/transactions';
@@ -57,8 +57,11 @@ export default class CheckoutButton extends Vue {
   public transactionProcessing: boolean = false;
 
   private userState = getModule(UserModule);
+
   private searchState = getModule(SearchModule);
+
   private pointOfSaleState = getModule(PointOfSaleModule);
+
   private cartState = getModule(CartModule);
 
   /**
@@ -107,7 +110,7 @@ export default class CheckoutButton extends Vue {
 
   /**
    * Gets the container for the specified row and the specified pos.
-   * @param {SubTransactionRow} row The row to get the container for. 
+   * @param {SubTransactionRow} row The row to get the container for.
    * @param {PointOfSale} pos The pos to get the container for.
    * @returns {Object} The container for the specified row and pos.
    */
@@ -257,9 +260,11 @@ export default class CheckoutButton extends Vue {
    */
   buttonClicked() {
     // Borrelmode checkout
-    if (!this.pointOfSaleState.pointOfSale.useAuthentication && !this.searchState.isChargingUser) {
-      return;
-    } else if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
+    // if (!this.pointOfSaleState.pointOfSale.useAuthentication &&
+    // !this.searchState.isChargingUser) {
+
+    /* } else */
+    if (!this.pointOfSaleState.pointOfSale.useAuthentication) {
       this.openPickMember();
     } else if (this.cartState.checkingOut) {
       clearTimeout(this.timeout);

@@ -9,8 +9,8 @@ import { Banner } from '@/entities/Banner';
  */
 export async function getAllActiveBanners(): Promise<Banner[]> {
   const date = new Date();
-  const response = await  APIHelper.readPagination('open/banners');
+  const response = await APIHelper.readPagination('open/banners');
   const banners: Banner[] = response.map((banner: any) => BannerTransformer.makeBanner(banner));
-  
+
   return banners.filter((b) => b.active || (b.startDate < date && date < b.endDate));
 }

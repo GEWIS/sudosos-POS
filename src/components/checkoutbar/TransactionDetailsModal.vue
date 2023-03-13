@@ -38,9 +38,9 @@ import { getTransaction } from '@/api/transactions';
  */
 @Component({
   components: {
-    TransactionDetails,
+  TransactionDetails,
   },
-})
+  })
 export default class TransactionDetailsModal extends Formatters {
   /**
    * The base information of transaction to display.

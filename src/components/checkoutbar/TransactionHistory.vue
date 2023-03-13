@@ -20,9 +20,9 @@ import { Transaction } from '@/entities/Transaction';
  */
 @Component({
   components: {
-    TransactionHistoryRow,
+  TransactionHistoryRow,
   },
-})
+  })
 export default class TransactionHistory extends Vue {
   /**
    * The transactions to display.

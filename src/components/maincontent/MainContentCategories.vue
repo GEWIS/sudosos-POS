@@ -13,17 +13,17 @@
     </div>
     <div class="content-bottom">
       <Settings @forceUpdateStore="$emit('forceUpdateStore')" />
-      <SearchBarButton @clicked="$emit('openProductSearch')" /> 
+      <SearchBarButton @clicked="$emit('openProductSearch')" />
       <ActivityTimer ref="activityTimer" v-if="shouldTrackActivity"/>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { 
-  Product, ProductInContainer 
+import {
+  Product, ProductInContainer,
 } from '@/entities/Product';
-import { 
-  Vue, Component
+import {
+  Vue, Component,
 } from 'vue-property-decorator';
 import CategorieButtons from '@/components/maincontent/categories/CategorieButtons.vue';
 import BackendStatus from '@/components/maincontent/categories/BackendStatus.vue';
@@ -43,15 +43,15 @@ import { ProductCategory } from '@/entities/ProductCategory';
  */
 @Component({
   components: {
-    CategorieButtons,
-    BackendStatus,
-    Products,
-    Settings,
-    SearchBarButton,
-    ActivityTimer,
-    Scrollable,
+  CategorieButtons,
+  BackendStatus,
+  Products,
+  Settings,
+  SearchBarButton,
+  ActivityTimer,
+  Scrollable,
   },
-})
+  })
 export default class MainContentCategories extends Vue {
   private pointOfSaleState = getModule(PointOfSaleModule);
 

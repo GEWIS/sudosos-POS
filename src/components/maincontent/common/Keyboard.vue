@@ -1,32 +1,44 @@
 <template>
   <div class="keyboard">
     <div class="keyrow" v-if="allowNumbers">
-        <div v-for="key in keys[3]" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
+        <div v-for="key in keys[3]"
+          :key="key" cols="4" class="key"
+          @click.stop="keyClicked(key)">
             <div class="key-text">{{ key }}</div>
         </div>
     </div>
     <div class="keyrow">
-        <div v-for="key in keys[0]" :key="key" cols="4" class="key" @click.stop="keyClicked(key)">
+        <div v-for="key in keys[0]"
+        :key="key" cols="4" class="key"
+        @click.stop="keyClicked(key)">
             <div class="key-text">{{ key }}</div>
         </div>
     </div>
     <div class="keyrow">
         <div class="padding" :style="{'flex-grow':1}"></div>
-        <div v-for="key in keys[1]" :key="key" cols="4" class="key" @click.stop="keyClicked(key)" :style="{'flex-grow':3}">
+        <div v-for="key in keys[1]"
+          :key="key" cols="4" class="key"
+          @click.stop="keyClicked(key)"
+          :style="{'flex-grow':3}">
             <div class="key-text">{{ key }}</div>
         </div>
         <div class="padding" :style="{'flex-grow':2.5}"></div>
     </div>
     <div class="keyrow">
         <div class="padding" :style="{'flex-grow':1}"></div>
-        <div v-for="key in keys[2]" :key="key" cols="4" class="key" @click.stop="keyClicked(key)" :style="{'flex-grow':1}">
+        <div v-for="key in keys[2]"
+          :key="key" cols="4" class="key"
+          @click.stop="keyClicked(key)"
+          :style="{'flex-grow':1}">
             <div class="key-text">{{ key }}</div>
         </div>
     <div class="padding" :style="{'flex-grow':2.5}"></div>
     </div>
     <div class="keyrow">
         <div class="padding" :style="{'flex-grow':4}"></div>
-        <div class="key" @click.stop="keyClicked('space')" :style="{'flex-grow':6, 'max-width': '200px'}">
+        <div class="key"
+          @click.stop="keyClicked('space')"
+          :style="{'flex-grow':6, 'max-width': '200px'}">
             <div class="key-text">space</div>
         </div>
         <div class="key" @click.stop="keyClicked('backspace')" :style="{'flex-grow':2}">
@@ -82,7 +94,7 @@ export default class Keyboard extends Vue {
    */
   keyClicked(key: number|string) {
     if (key === 'backspace') {
-      if(this.input.length > 0) {
+      if (this.input.length > 0) {
         this.input = this.input.slice(0, -1);
       }
     } else if (key === 'space') {
@@ -91,7 +103,7 @@ export default class Keyboard extends Vue {
       this.input += key;
     }
 
-    this.$emit("change", this.input);
+    this.$emit('change', this.input);
   }
 }
 </script>

@@ -25,11 +25,11 @@ import Background from '@/components/Background.vue';
  * HomeWrapper contains the Home component and the Background component.
  */
 @Component({
-  components: { 
-    Home,
-    Background,
+  components: {
+  Home,
+  Background,
   },
-})
+  })
 export default class HomeWrapper extends Vue {
   private searchState = getModule(SearchModule);
 

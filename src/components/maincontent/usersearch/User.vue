@@ -19,10 +19,10 @@
 </template>
 <script lang="ts">
 import {
-  Vue, Prop, Component
-} from 'vue-property-decorator'
-import { 
-  User, UserType 
+  Vue, Prop, Component,
+} from 'vue-property-decorator';
+import {
+  User, UserType,
 } from '@/entities/User';
 
 /**
@@ -34,7 +34,7 @@ export default class UserComponent extends Vue {
    * The user to display. This is a required prop.
    */
   @Prop() user!: User;
-  
+
   /**
    * Check if the user is a person.
    */

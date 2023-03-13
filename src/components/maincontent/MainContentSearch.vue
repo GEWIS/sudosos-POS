@@ -8,23 +8,23 @@
       <Scrollable>
         <Products
           :products="filteredProducts"
-          :searching="true" 
+          :searching="true"
           @selected="item => addProduct(item)" />
       </Scrollable>
     </div>
     <div class="content-bottom">
       <div class="keyboard-container">
-		<Keyboard
-      ref="keyboard"
+        <Keyboard
+          ref="keyboard"
           @change="input => updateSearchFromKeyboard(input)"
           :allowNumbers="false" />
-	  </div>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { 
-  Vue, Component
+import {
+  Vue, Component,
 } from 'vue-property-decorator';
 import SearchBar from '@/components/maincontent/common/SearchBar.vue';
 import Keyboard from '@/components/maincontent/common/Keyboard.vue';
@@ -32,8 +32,8 @@ import ExitButton from '@/components/maincontent/common/ExitButton.vue';
 import Products from '@/components/maincontent/common/Products.vue';
 import { getModule } from 'vuex-module-decorators';
 import CartModule from '@/store/modules/cart';
-import { 
-  Product, ProductInContainer 
+import {
+  Product, ProductInContainer,
 } from '@/entities/Product';
 import Scrollable from '@/components/maincontent/common/Scrollable.vue';
 import Fuse from 'fuse.js';
@@ -45,18 +45,18 @@ import PointOfSaleModule from '@/store/modules/point-of-sale';
  */
 @Component({
   components: {
-    SearchBar,
-    Keyboard,
-    ExitButton,
-    Products,
-    Scrollable,
+  SearchBar,
+  Keyboard,
+  ExitButton,
+  Products,
+  Scrollable,
   },
-})
+  })
 export default class MainContentSearch extends Vue {
   /**
    * The current search query.
    */
-  private query: string = "";
+  private query: string = '';
 
   private pointOfSaleState = getModule(PointOfSaleModule);
 
@@ -81,7 +81,7 @@ export default class MainContentSearch extends Vue {
       },
     ).search(this.query).map((r) => r.item);
   }
-  
+
   /**
    * Called when the keyboard query changes. Updates the search query.
    */
@@ -101,7 +101,7 @@ export default class MainContentSearch extends Vue {
    * Called when a product is clicked. Adds one of the product to the cart.
    */
   addProduct(product: Product) {
-    this.cartState.addProduct({product, amount: 1});
+    this.cartState.addProduct({ product, amount: 1 });
   }
 }
 </script>

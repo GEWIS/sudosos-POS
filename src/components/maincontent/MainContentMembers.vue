@@ -15,8 +15,8 @@
   </div>
 </template>
 <script lang="ts">
-import { 
-  Component, Vue 
+import {
+  Component, Vue,
 } from 'vue-property-decorator';
 import ExitButton from '@/components/maincontent/common/ExitButton.vue';
 import { getModule } from 'vuex-module-decorators';
@@ -30,9 +30,9 @@ import PointOfSaleModule from '@/store/modules/point-of-sale';
  */
 @Component({
   components: {
-    ExitButton,
+  ExitButton,
   },
-})
+  })
 export default class MainContentMembers extends Vue {
   private pointOfSaleState = getModule(PointOfSaleModule);
 

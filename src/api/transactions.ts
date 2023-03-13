@@ -29,7 +29,7 @@ export async function getTransactions(
     (transaction: any) => TransactionTransformer.makeTransaction(transaction),
   );
 
-  return {_pagination, records} as Paginated<Transaction>;
+  return { _pagination, records } as Paginated<Transaction>;
 }
 
 /**
@@ -39,7 +39,7 @@ export async function getTransactions(
  */
 export async function postTransaction(transaction: any): Promise<Transaction> {
   const response = await APIHelper.postResource('transactions', transaction);
-  
+
   return TransactionTransformer.makeTransaction(response);
 }
 
@@ -50,14 +50,14 @@ export async function postTransaction(transaction: any): Promise<Transaction> {
  */
 export async function getTransaction(id: number): Promise<Transaction> {
   const response = await APIHelper.getResource(`transactions/${id}`);
-  
+
   return TransactionTransformer.makeTransaction(response);
 }
 
 /**
  * Get the transactions of the given user id using the
  * `users/${id}/transactions` endpoint, as a paginated response, and with a
- * given filter. 
+ * given filter.
  * @param {Number} id The id of the user.
  * @param {Partial<TransactionFilter>} filter The filter to apply to the
  * transactions.
@@ -82,5 +82,5 @@ export async function getUserTransactions(
     (transaction: any) => TransactionTransformer.makeTransaction(transaction),
   );
 
-  return {_pagination, records} as Paginated<Transaction>;
+  return { _pagination, records } as Paginated<Transaction>;
 }

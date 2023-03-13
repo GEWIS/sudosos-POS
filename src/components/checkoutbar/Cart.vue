@@ -16,9 +16,9 @@ import CartProduct from '@/components/checkoutbar/CartProduct.vue';
  */
 @Component({
   components: {
-    CartProduct,
+  CartProduct,
   },
-})
+  })
 export default class Cart extends Vue {
   /**
    * The items that are currently in the shopping cart. This is a list of

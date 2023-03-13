@@ -33,7 +33,7 @@
         <div class="total-text">Total</div>
         <div class="total-value">€{{ (cartState.total / 100).toFixed(2) }}</div>
       </div>
-      <div class="balance-row" v-if="pointOfSaleState.pointOfSale.useAuthentication ? !searchState.isChargingUser : searchState.isChargingUser">
+      <div class="balance-row" v-if="showBalance">
         <div class="balance-text">Balance after</div>
         <div class="balance-value warn" v-if="balanceAfter.getAmount() < 0">
           {{ balanceAfter.toFormat() }}
@@ -52,8 +52,8 @@
   </div>
 </template>
 <script lang="ts">
-import { 
-  Component, Prop 
+import {
+  Component, Prop,
 } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import Formatters from '@/mixins/Formatters';
@@ -74,11 +74,11 @@ import Dinero from 'dinero.js';
 @Component({
   components: { TransactionHistory, Cart, CheckoutButton },
   props: {
-    subTransactionRows: {
-      type: Array,
-    },
+  subTransactionRows: {
+  type: Array,
   },
-})
+  },
+  })
 export default class CheckoutBar extends Formatters {
   /**
    * A function that forces the user to pick a member. This is a required prop
@@ -98,6 +98,12 @@ export default class CheckoutBar extends Formatters {
     checkoutButton: CheckoutButton;
   };
 
+  get showBalance(): boolean {
+    return this.pointOfSaleState.pointOfSale.useAuthentication
+      ? !this.searchState.isChargingUser
+      : this.searchState.isChargingUser;
+  }
+
   /**
    * The balance of the user after the transaction would be completed.
    */
@@ -115,7 +121,7 @@ export default class CheckoutBar extends Formatters {
     });
   }
 
-  /** 
+  /**
    * Update the checkout button when the organ member is selected.
    * @param {User} user The user that is selected.
    */

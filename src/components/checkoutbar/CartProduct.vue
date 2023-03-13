@@ -1,15 +1,21 @@
 <template>
   <b-row class="cart-product">
-    <b-button class="adjust-button" @mouseup="decreaseClick" @mousedown="startDecreaseHold" @mouseleave="stopHold">-</b-button>
+    <b-button class="adjust-button"
+      @mouseup="decreaseClick"
+      @mousedown="startDecreaseHold"
+      @mouseleave="stopHold">-</b-button>
     <div class="amount">{{amount}}</div>
-    <b-button class="adjust-button" @mouseup="increaseClick" @mousedown="startIncreaseHold" @mouseleave="stopHold">+</b-button>
+    <b-button class="adjust-button"
+      @mouseup="increaseClick"
+      @mousedown="startIncreaseHold"
+      @mouseleave="stopHold">+</b-button>
     <div class="name">{{ item.product.name }}</div>
     <div class="price">€{{ (productTotal / 100).toFixed(2) }}</div>
   </b-row>
 </template>
 <script lang="ts">
-import { 
-  Component, Prop 
+import {
+  Component, Prop,
 } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
@@ -21,7 +27,7 @@ import CartModule from '@/store/modules/cart';
  */
 @Component({
   components: {},
-})
+  })
 export default class CartProduct extends Formatters {
   /**
    * The item that is currently in the shopping cart. This is a
@@ -103,7 +109,7 @@ export default class CartProduct extends Formatters {
    * @param {number} amount The amount to increase the amount of the item by.
    */
   increaseItem(amount: number = 1) {
-    this.cartState.increaseProduct({product: this.item.product, amount});
+    this.cartState.increaseProduct({ product: this.item.product, amount });
   }
 
   /**
@@ -111,7 +117,7 @@ export default class CartProduct extends Formatters {
    * @param {number} amount The amount to decrease the amount of the item by.
    */
   decreaseItem(amount: number = 1) {
-    this.cartState.decreaseProduct({product: this.item.product, amount});
+    this.cartState.decreaseProduct({ product: this.item.product, amount });
   }
 
   /**

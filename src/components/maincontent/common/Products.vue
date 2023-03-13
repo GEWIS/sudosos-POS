@@ -14,8 +14,8 @@
 </template>
 <script lang="ts">
 import { ProductInContainer } from '@/entities/Product';
-import { 
-  Vue, Prop, Component 
+import {
+  Vue, Prop, Component,
 } from 'vue-property-decorator';
 import Product from '@/components/maincontent/common/Product.vue';
 import { getModule } from 'vuex-module-decorators';
@@ -26,9 +26,9 @@ import CartModule from '@/store/modules/cart';
  */
 @Component({
   components: {
-    Product: Product,
+  Product: Product,
   },
-})
+  })
 export default class Products extends Vue {
   /**
    * The list of products. This is a required prop.
@@ -47,7 +47,7 @@ export default class Products extends Vue {
    * the cart by 1.
    */
   increaseProduct(product: ProductInContainer) {
-    this.cartState.increaseProduct({product, amount: 1});
+    this.cartState.increaseProduct({ product, amount: 1 });
   }
 }
 </script>

@@ -12,7 +12,10 @@ import { Paginated } from '@/entities/Pagination';
  * @returns {Promise<Paginated<ProductCategory>>} A promise that resolves to a
  * paginated response.
  */
-export async function getProductCategories(take: number | null = null, skip: number | null = null): Promise<Paginated<ProductCategory>> {
+export async function getProductCategories(
+  take: number | null = null,
+  skip: number | null = null,
+): Promise<Paginated<ProductCategory>> {
   const body = {
     ...take && { take },
     ...skip && { skip },
@@ -24,5 +27,5 @@ export async function getProductCategories(take: number | null = null, skip: num
     (productcategory: any) => ProductCategoryTransformer.makeProductCategory(productcategory),
   );
 
-  return {_pagination, records} as Paginated<ProductCategory>;
+  return { _pagination, records } as Paginated<ProductCategory>;
 }

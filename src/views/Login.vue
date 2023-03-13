@@ -18,7 +18,9 @@
               <div class="sub-title">Welcome to</div>
               <div class="title-text">SudoSOS</div>
             </div>
-            <b-alert variant="light" show class="login-info" style="background: none !important; border: none !important">
+            <b-alert
+              variant="light" show class="login-info"
+              style="background: none !important; border: none !important">
               {{external==='GEWIS'
               ? 'Log in with your GEWIS ID and PIN'
               : 'Log in with your SudoSOS ID and PIN'
@@ -70,11 +72,11 @@ import Background from '@/components/Background.vue';
  */
 @Component({
   components: {
-    EanLogin,
-    keypad,
-    Background,
+  EanLogin,
+  keypad,
+  Background,
   },
-})
+  })
 export default class Login extends Vue {
   private userState = getModule(UserModule);
 

@@ -11,7 +11,10 @@ import { Paginated } from '@/entities/Pagination';
  * @returns {Promise<Paginated<User>>} A promise that resolves to a paginated
  * response.
  */
-export async function getUsers(take: number | null = null, skip: number | null = null): Promise<Paginated<User>> {
+export async function getUsers(
+  take: number | null = null,
+  skip: number | null = null,
+): Promise<Paginated<User>> {
   const body = {
     ...take && { take },
     ...skip && { skip },
@@ -26,7 +29,7 @@ export async function getUsers(take: number | null = null, skip: number | null =
     (user: any) => UserTransformer.makeUser(user),
   );
 
-  return {_pagination, records} as Paginated<User>;
+  return { _pagination, records } as Paginated<User>;
 }
 
 /**
@@ -37,7 +40,7 @@ export async function getUsers(take: number | null = null, skip: number | null =
  */
 export async function getUser(id: number) {
   const response = await APIHelper.getResource(`users/${id}`);
-  
+
   return UserTransformer.makeUser(response);
 }
 
@@ -51,7 +54,7 @@ export async function getUser(id: number) {
 export async function getOrganMembers(id: number): Promise<User[]> {
   const response = await APIHelper.getResource(`users/${id}/members`);
 
-  if(response == undefined || response.records == undefined) {
+  if (response === undefined || response.records === undefined) {
     return [];
   }
 

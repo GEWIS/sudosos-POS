@@ -3,13 +3,13 @@
     <div class="product">
       <img :src="image" :alt="product.name" />
       <p class="w-100 product-name mb-0">{{ product.name }}</p>
-      <p class="w-100 product-price mb-0">€{{ (product.priceInclVat.getAmount() / 100).toFixed(2) }}</p>
+      <p class="w-100 product-price mb-0">€{{ productPrice }}</p>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { 
-  Component, Prop, Vue
+import {
+  Component, Prop, Vue,
 } from 'vue-property-decorator';
 import { Product } from '@/entities/Product';
 
@@ -37,6 +37,10 @@ export default class ProductComponent extends Vue {
     } else {
       this.image = `${process.env.VUE_APP_IMAGE_BASE}products/${this.product.picture}`;
     }
+  }
+
+  get productPrice() {
+    return (this.product.priceInclVat.getAmount() / 100).toFixed(2);
   }
 }
 </script>

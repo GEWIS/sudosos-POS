@@ -39,7 +39,7 @@ export default class BackendStatus extends Vue {
    */
   mounted() {
     this.pingBackend();
-    this.pingIntervalHandle = setInterval(this.pingBackend.bind(this), this.PING_INTERVAL) as unknown as number;
+    this.pingIntervalHandle = setInterval(() => this.pingBackend(), this.PING_INTERVAL) as number;
   }
 
   /**
