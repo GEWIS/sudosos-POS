@@ -27,14 +27,17 @@
               }}
             </b-alert>
             <p v-bind:class="{'active-input': enteringUserId,
-             'can-enter':  userId.length < maxUserIdLength}" @click="enteringUserId = true">
-                <font-awesome-icon icon="user" />
-                <span>{{ userId }}</span>
+             'can-enter':  userId.length < maxUserIdLength}"
+             @click="enteringUserId = true">
+                <span v-if="external!=='GEWIS'">E</span>
+                <font-awesome-icon v-else icon="user" />
+                <span class="code">{{ userId }}</span>
               </p>
               <p v-bind:class="{'active-input': !enteringUserId,
-               'can-enter':  passcode.length < maxPasscodeLength }" @click="enteringUserId = false">
+               'can-enter':  passcode.length < maxPasscodeLength }"
+               @click="enteringUserId = false">
                 <font-awesome-icon icon="lock" />
-                <span class="passcode">{{ passcodeDots }} </span>
+                <span class="code passcode">{{ passcodeDots }} </span>
               </p>
               <div class="login-error">{{ loginError }}</div>
           </div>
@@ -299,7 +302,7 @@ export default class Login extends Vue {
         background-color: $gewis-red;
         span {
           color: white;
-          &::after {
+          *.code::after {
             content: "";
             width: 5px;
             height: 3rem;
@@ -314,7 +317,7 @@ export default class Login extends Vue {
       }
 
       &.can-enter {
-        span::after {
+        .code::after {
           display: inline-block;
         }
       }
