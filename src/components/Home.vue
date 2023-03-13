@@ -127,7 +127,6 @@ export default class Home extends Vue {
     });
 
     this.$watch('timedOut', (value) => {
-      console.log('LOGOUT IS CALLED');
       if (value) {
         this.logout();
       }

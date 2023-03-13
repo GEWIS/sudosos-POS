@@ -9,7 +9,7 @@ module.exports = {
     '@vue/typescript',
   ],
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-console': [process.env.NODE_ENV === 'production' ? 'error' : 'off', { 'allow': ['warn', 'error'] }],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'linebreak-style': process.env.NODE_ENV === 'production' ? ['warn', 'unix'] : ['off', 'unix'],
     '@typescript-eslint/no-unused-expressions': 'off',
