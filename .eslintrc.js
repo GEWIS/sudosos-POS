@@ -22,6 +22,9 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'no-plusplus': [0, { allowForLoopAfterthoughts: true }],
     'class-methods-use-this': 'off',
+    'no-restricted-syntax': 'warn',
+    'no-await-in-loop': 'warn',
+    'import/prefer-default-export': 'off'
   },
   parserOptions: {
     parser: '@typescript-eslint/parser',

@@ -21,6 +21,6 @@ $scroll-bar-width: 40px;
 
 // Padding and sizing
 $default-padding: 16px;
-$default-padding-half: $default-padding/2+4px;
+$default-padding-half: calc($default-padding/2)+4px;
 $top-bottom-height: 64px;
 $font-size: 20px;
