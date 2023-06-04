@@ -16,7 +16,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        
+        with:
+          path: .
+
+      - name: Set up environment - main
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE_PRODUCTION }}
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "${ENV_FILE}" > .env
+
+      - name: Set up environment - develop
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE_DEVELOPMENT }}
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "${ENV_FILE}" > .env
+
       - name: Get Docker meta (for tags)
         id: meta
         uses: docker/metadata-action@v4
@@ -44,7 +60,7 @@ jobs:
           registry: ${{ vars.DOCKER_REGISTRY }}
           username: ${{ secrets.SVC_GH_SUDOSOS_USERNAME }}
           password: ${{ secrets.SVC_GH_SUDOSOS_PWD }}
-      
+
       # Build and push Docker image with Buildx (don't push on PR)
       - name: Build and push
         uses: docker/build-push-action@v3
