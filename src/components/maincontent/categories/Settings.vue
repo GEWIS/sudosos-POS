@@ -1,23 +1,26 @@
 <template>
-  <div class="settings-bar">
-    <div class="options-button" id="options-button" @click="toggleSettings" v-if="userOwnsCurrentPOS()">
+  <div class="settings-bar" :style="{display: userOwnsPOS() ? 'initial' : 'none'}">
+    <div class="options-button"
+      id="options-button"
+      @click="() => toggleSettings()"
+      v-if="userOwnsPOS()">
       <font-awesome-icon icon="ellipsis-h"/>
     </div>
     <div class="settings-component pos-card" id="settings-component" v-if="showSettings">
       <div class="header">Settings</div>
-      <div class="setting-row" v-if="userState.userPOSs.length > 0">
+      <div class="setting-row" v-if="userPOSs.length > 0">
         <label for="posselect">Switch POS to</label>
         <select v-model="chosenPOS" name="posselect"
-                v-on:change="posChanged" v-if="userState.userPOSs.length > 1">
-          <option v-for="pointOfSale in userState.userPOSs"
+                v-on:change="posChanged" v-if="userPOSs.length > 1">
+          <option v-for="pointOfSale in userPOSs"
                   v-bind:key="pointOfSale.name" :value="pointOfSale">
             {{ pointOfSale.name }}
           </option>
         </select>
-        <div v-else>{{ userState.userPOSs[0].name }}</div>
+        <div v-else>{{ userPOSs[0].name }}</div>
       </div>
       <div class="force-reload">
-        <b-button @click="clickForceReload" variant="primary">
+        <b-button @click="() => clickedForceReload()" variant="primary">
           Force update information
         </b-button>
       </div>
@@ -27,65 +30,120 @@
 <script lang="ts">
 import UserModule from '@/store/modules/user';
 import {
-  Component, Vue, Prop,
+  Component, Vue,
 } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import { BasePointOfSale } from '@/entities/PointOfSale';
 
+/**
+ * Component for the settings menu.
+ */
 @Component
 export default class SettingsComponent extends Vue {
   private userState = getModule(UserModule);
 
   private posState = getModule(PointOfSaleModule);
 
-  private boundedListener: any;
+  /**
+   * The currently chosen point of sale.
+   */
+  public chosenPOS: BasePointOfSale;
 
-  private chosenPOS: BasePointOfSale;
+  /**
+   * If the settings menu is currently visible.
+   */
+  public showSettings: boolean = false;
 
-  private showSettings: boolean = false;
-
+  /**
+   * When the component is created the chosen point of sale is set to the current.
+   */
   constructor() {
     super();
     this.chosenPOS = this.userState.userPOSs.find((p) => p.id === this.posState.pointOfSale.id);
   }
 
-  toggleSettings() {
-    this.showSettings = !this.showSettings;
-  }
-
+  /**
+   * When the component is mounted the pageClicked listener is added to the
+   * document.
+   */
   mounted() {
-    this.boundedListener = this.outsideClickListener.bind(this);
-
-    setTimeout(() => document.addEventListener('click', this.boundedListener), 1);
+    setTimeout(() => document.addEventListener('click', this.pageClicked), 1);
   }
 
+  /**
+   * When the component is updated the settings menu is moved to the correct
+   * height.
+   */
   updated() {
     (this.$el as HTMLElement).style.top = `-${this.$el.clientHeight - 62}px`;
   }
 
-  userOwnsCurrentPOS() {
+  /**
+   * When the component is unmounted the pageClicked listener is removed from the
+   * document.
+   */
+  unmounted() {
+    document.removeEventListener('click', this.pageClicked);
+  }
+
+  /**
+   * The points of sale that the user is allowed to see.
+   */
+  get userPOSs() {
+    return this.userState.userPOSs;
+  }
+
+  /**
+   * Toggles the visibility of the settings menu.
+   */
+  toggleSettings() {
+    this.showSettings = !this.showSettings;
+  }
+
+  /**
+   * Checks if the user should be able to see the point of sale in posState.
+   */
+  userOwnsPOS() {
     return this.userState.userPOSs.map((pos) => pos.id)
       .indexOf(this.posState.pointOfSale.id) >= 0;
   }
 
+  /**
+   * If the user can see the selected point of sale it is set as the current
+   * point of sale.
+   */
   posChanged() {
-    if (!this.userOwnsCurrentPOS()) return;
+    if (!this.userOwnsPOS()) return;
 
     this.posState.fetchPointOfSale(this.chosenPOS.id);
   }
 
-  outsideClickListener(e) {
-    if (e.composedPath().includes(document.getElementById('options-button'))
-     || e.composedPath().includes(document.getElementById('settings-component')) && this.showSettings) {
+  /**
+   * Listens to clicks on the page and closes the settings menu if the click
+   * was outside the settings menu while it is visible.
+   */
+  pageClicked(e: MouseEvent) {
+    if ((e.composedPath().includes(document.getElementById('options-button'))
+     || e.composedPath().includes(document.getElementById('settings-component'))) && this.showSettings) {
       return;
     }
 
-    this.showSettings = false;
-    document.removeEventListener('click', this.boundedListener);
+    this.clickedOutside();
   }
 
-  clickForceReload() {
+  /**
+   * Called when the user clicked outside of the settings menu.
+   */
+  clickedOutside() {
+    this.showSettings = false;
+  }
+
+  /**
+   * Listens to the forceReload button and emits the forceUpdateStore event.
+   * This also closes the settings menu.
+   */
+  clickedForceReload() {
     this.$emit('forceUpdateStore');
     this.toggleSettings();
   }
@@ -159,5 +217,4 @@ export default class SettingsComponent extends Vue {
     padding: 0 1rem;
   }
 }
-
 </style>

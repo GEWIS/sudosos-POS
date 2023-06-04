@@ -1,13 +1,10 @@
 /* eslint-disable no-console */
 
-import * as dotenv from 'dotenv';
 import eventBus from '@/eventbus';
 import { ApiError } from '@/entities/ApiError';
 import { ResponseBody } from '@/entities/ResponseBody';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import devAPI from '../../dev/api';
-
-dotenv.config();
 
 const baseURL = process.env.VUE_APP_API_BASE;
 let token = '';

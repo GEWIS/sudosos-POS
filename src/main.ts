@@ -30,6 +30,7 @@ import 'bootstrap';
 // Import the BootstrapVue style
 import './styles/global/_main.scss';
 
+// Add all icons to the library
 library.add(
   faBeer,
   faCoffee,
@@ -52,15 +53,17 @@ library.add(
 dinero.defaultCurrency = 'EUR' as Currency;
 dinero.defaultPrecision = 2;
 
+// Register components for the FontAwesome library
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.component('font-awesome-layers', FontAwesomeLayers);
 Vue.component('font-awesome-layers-text', FontAwesomeLayersText);
 
+// Register plugins
 Vue.use(VueI18n);
 Vue.use(BootstrapVue);
 
+// Create the i18n instance using the imported messages
 const messages = Object.assign(languages);
-
 const i18n = new VueI18n({
   locale: 'nl',
   fallbackLocale: 'en',
@@ -69,6 +72,7 @@ const i18n = new VueI18n({
 
 Vue.config.productionTip = false;
 
+// Create the Vue instance
 new Vue({
   router,
   store,
