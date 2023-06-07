@@ -1,31 +1,31 @@
+import { ProductCategory } from '@/entities/ProductCategory';
 import APIHelper from '@/mixins/APIHelper';
 import PaginationTransformer from '@/transformers/PaginationTransformer';
 import ProductCategoryTransformer from '@/transformers/ProductCategoryTransformer';
+import { Paginated } from '@/entities/Pagination';
 
-export function getProductCategories(take: number | null = null, skip: number | null = null) {
+/**
+ * Get all the product categories using the `productcategories` endpoint, as a
+ * paginated response.
+ * @param {Number} take The number of records to take, this can be null.
+ * @param {Number} skip The number of records to skip, this can be null.
+ * @returns {Promise<Paginated<ProductCategory>>} A promise that resolves to a
+ * paginated response.
+ */
+export async function getProductCategories(
+  take: number | null = null,
+  skip: number | null = null,
+): Promise<Paginated<ProductCategory>> {
   const body = {
     ...take && { take },
     ...skip && { skip },
   };
 
-  return APIHelper.getResource('productcategories', body).then((response) => {
-    response._pagination = PaginationTransformer.makePagination(response._pagination);
-    response.records = response.records.map(
-      (productcategory: any) => ProductCategoryTransformer.makeProductCategory(productcategory),
-    );
+  const response = await APIHelper.getResource('productcategories', body);
+  const _pagination = PaginationTransformer.makePagination(response._pagination);
+  const records = response.records.map(
+    (productcategory: any) => ProductCategoryTransformer.makeProductCategory(productcategory),
+  );
 
-    return response;
-  });
-}
-
-export function postProductCategory(productcategory: any) {
-  return APIHelper.postResource('productcategories', productcategory).then((response) => ProductCategoryTransformer.makeProductCategory(response));
-}
-
-export function getProductCategory(id: number) {
-  return APIHelper.getResource(`productcategories/${id}`).then((response) => ProductCategoryTransformer.makeProductCategory(response));
-}
-
-export function patchProductCategory(id: number, productcategory: any) {
-  return APIHelper.patchResource(`productcategories/${id}`, productcategory).then((response) => ProductCategoryTransformer.makeProductCategory(response));
+  return { _pagination, records } as Paginated<ProductCategory>;
 }

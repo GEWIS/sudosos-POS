@@ -33,7 +33,7 @@
         <div class="total-text">Total</div>
         <div class="total-value">€{{ (cartState.total / 100).toFixed(2) }}</div>
       </div>
-      <div class="balance-row" v-if="pointOfSaleState.pointOfSale.useAuthentication ? !searchState.isChargingUser : searchState.isChargingUser">
+      <div class="balance-row" v-if="showBalance">
         <div class="balance-text">Balance after</div>
         <div class="balance-value warn" v-if="balanceAfter.getAmount() < 0">
           {{ balanceAfter.toFormat() }}
@@ -52,9 +52,10 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import {
+  Component, Prop,
+} from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import DineroType from 'dinero.js';
 import Formatters from '@/mixins/Formatters';
 import Cart from '@/components/checkoutbar/Cart.vue';
 import CheckoutButton from '@/components/checkoutbar/CheckoutButton.vue';
@@ -64,48 +65,74 @@ import PointOfSaleModule from '@/store/modules/point-of-sale';
 import TransactionHistory from '@/components/checkoutbar/TransactionHistory.vue';
 import CartModule from '@/store/modules/cart';
 import SearchModule from '@/store/modules/search';
+import Dinero from 'dinero.js';
 
+/**
+ * Component for displaying the checkout bar. This is the bar that is displayed
+ * at the bottom of the screen when the user is in the checkout screen.
+ */
 @Component({
   components: { TransactionHistory, Cart, CheckoutButton },
   props: {
-    subTransactionRows: {
-      type: Array,
-    },
+  subTransactionRows: {
+  type: Array,
   },
-})
+  },
+  })
 export default class CheckoutBar extends Formatters {
-  @Prop() openPickMember: Function;
+  /**
+   * A function that forces the user to pick a member. This is a required prop
+   * of this component.
+   */
+  @Prop() openPickMember!: Function;
 
-  private userState = getModule(UserModule);
+  public userState = getModule(UserModule);
 
-  private pointOfSaleState = getModule(PointOfSaleModule);
+  public pointOfSaleState = getModule(PointOfSaleModule);
 
-  private cartState = getModule(CartModule);
+  public cartState = getModule(CartModule);
 
-  private searchState = getModule(SearchModule);
+  public searchState = getModule(SearchModule);
 
   $refs!: {
     checkoutButton: CheckoutButton;
   };
 
-  get balanceAfter() {
+  get showBalance(): boolean {
+    return this.pointOfSaleState.pointOfSale.useAuthentication
+      ? !this.searchState.isChargingUser
+      : this.searchState.isChargingUser;
+  }
+
+  /**
+   * The balance of the user after the transaction would be completed.
+   */
+  get balanceAfter(): Dinero.Dinero {
     if (this.userState.userBalance) {
-      return this.userState.userBalance.subtract(DineroType({
+      return this.userState.userBalance.subtract(Dinero({
         amount: this.cartState.total,
         currency: 'EUR',
       }));
     }
 
-    return DineroType({
+    return Dinero({
       amount: -this.cartState.total,
       currency: 'EUR',
     });
   }
 
+  /**
+   * Update the checkout button when the organ member is selected.
+   * @param {User} user The user that is selected.
+   */
   organMemberSelected(user: User): void {
+    // TODO: Fix how this is routed between the checkout button and the checkout bar.
     this.$refs.checkoutButton.organMemberSelected(user);
   }
 
+  /**
+   * Logs the user out of the POS. This also resets the color.
+   */
   logout() {
     if (!this.pointOfSaleState.pointOfSale.useAuthentication) return;
     this.$emit('logout');
@@ -126,16 +153,16 @@ export default class CheckoutBar extends Formatters {
 
   .order-for {
     flex-wrap: nowrap;
-    margin-bottom: 16px;
+    margin-bottom: $default-padding;
 
     .for-text {
       flex-grow: 0;
       flex-shrink: 0;
       flex-basis: fit-content;
       vertical-align: middle;
-      line-height: 62px;
-      font-size: 20px;
-      margin-right: 10px;
+      line-height: $top-bottom-height;
+      font-size: $font-size;
+      margin-right: $default-padding-half;
       padding: 0;
     }
 
@@ -149,8 +176,8 @@ export default class CheckoutBar extends Formatters {
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 20px;
-      margin-right: 10px;
+      font-size: $font-size;
+      margin-right: $default-padding-half;
 
       .angle-down-icon {
         margin-left: 10px;
@@ -168,13 +195,13 @@ export default class CheckoutBar extends Formatters {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: $nav-height;
+      width: $top-bottom-height;
       flex-grow: 0;
       flex-shrink: 0;
       cursor: pointer;
-      height: $nav-height;
+      height: $top-bottom-height;
       text-align: center;
-      flex-basis: 62px;
+      flex-basis: $top-bottom-height;
       color: white;
 
       svg {
@@ -184,18 +211,13 @@ export default class CheckoutBar extends Formatters {
     }
   }
 
-  .products-table-container {
-    flex: 1;
-    overflow-y: auto;
-  }
-
   .transaction-history-table-container {
     flex: 1;
     overflow-y: auto;
   }
 
   .transaction-detail-row {
-    margin: 8px 0;
+    margin: $default-padding 0 $default-padding-half 0;
     background: white;
     padding: 8px 12px;
     display: flex;
@@ -205,7 +227,7 @@ export default class CheckoutBar extends Formatters {
     .total-row {
       display: flex;
       flex-direction: row;
-      font-size: 20px;
+      font-size: $font-size;
 
       .total-text {
         flex: 1;
@@ -219,7 +241,7 @@ export default class CheckoutBar extends Formatters {
     .balance-row {
       display: flex;
       flex-direction: row;
-      font-size: 16px;
+      font-size: $font-size - 4px;
 
       .balance-text {
         flex: 1;

@@ -1,1 +1,1 @@
-import "vue-tsx-support/enable-check";
+import 'vue-tsx-support/enable-check';

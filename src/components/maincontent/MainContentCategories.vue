@@ -1,7 +1,7 @@
 <template>
   <div class="content-container">
     <div class="content-top">
-      <CategorieButtons :categories="pointOfSaleState.categories" />
+      <CategorieButtons :categories="categories" />
       <BackendStatus />
     </div>
     <div class="content-center">
@@ -13,14 +13,18 @@
     </div>
     <div class="content-bottom">
       <Settings @forceUpdateStore="$emit('forceUpdateStore')" />
-      <SearchBarButton @clicked="$emit('openProductSearch')" /> 
+      <SearchBarButton @clicked="$emit('openProductSearch')" />
       <ActivityTimer ref="activityTimer" v-if="shouldTrackActivity"/>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Product, ProductInContainer } from '@/entities/Product';
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import {
+  Product, ProductInContainer,
+} from '@/entities/Product';
+import {
+  Vue, Component,
+} from 'vue-property-decorator';
 import CategorieButtons from '@/components/maincontent/categories/CategorieButtons.vue';
 import BackendStatus from '@/components/maincontent/categories/BackendStatus.vue';
 import Products from '@/components/maincontent/common/Products.vue';
@@ -29,32 +33,42 @@ import SearchBarButton from '@/components/maincontent/categories/SearchBarButton
 import ActivityTimer from '@/components/maincontent/categories/ActivityTimer.vue';
 import { getModule } from 'vuex-module-decorators';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
-import UserModule from '@/store/modules/user';
 import SearchModule from '@/store/modules/search';
 import Scrollable from '@/components/maincontent/common/Scrollable.vue';
+import { ProductCategory } from '@/entities/ProductCategory';
 
+/**
+ * Component for the main content containing an overview of the products per
+ * category.
+ */
 @Component({
   components: {
-    CategorieButtons,
-    BackendStatus,
-    Products,
-    Settings,
-    SearchBarButton,
-    ActivityTimer,
-    Scrollable,
+  CategorieButtons,
+  BackendStatus,
+  Products,
+  Settings,
+  SearchBarButton,
+  ActivityTimer,
+  Scrollable,
   },
-})
-export default class MainContentProducts extends Vue {
+  })
+export default class MainContentCategories extends Vue {
   private pointOfSaleState = getModule(PointOfSaleModule);
-
-  private userState = getModule(UserModule);
 
   private searchState = getModule(SearchModule);
 
+  /**
+   * If the activity should be shown and should track if the user stays active.
+   */
   get shouldTrackActivity(): boolean {
     return this.pointOfSaleState.pointOfSale.useAuthentication;
   }
 
+  /**
+   * The products that should be shown. This is a computed property that filters
+   * the products based on the current category. It will also sort them by name
+   * and put names that start with _ at the start.
+   */
   get filteredProducts(): ProductInContainer[] {
     const sortFn = (a: Product, b: Product) => {
       if (a.name[0] === '_' && b.name[0] !== '_') return -1;
@@ -64,7 +78,6 @@ export default class MainContentProducts extends Vue {
       return 0;
     };
 
-    // @ts-ignore
     const currentCategory = this.searchState.filterCategory;
     if (currentCategory === 0) {
       return this.pointOfSaleState.allProducts.sort(sortFn);
@@ -73,10 +86,18 @@ export default class MainContentProducts extends Vue {
       (product: Product) => product.category.id === currentCategory,
     ).sort(sortFn);
   }
+
+  /**
+   * The allowed categories that should be shown.
+   */
+  get categories(): ProductCategory[] {
+    return this.pointOfSaleState.categories;
+  }
 }
 </script>
 <style lang="scss" scoped>
 .content-bottom {
-  gap: 12px;
+  gap: $default-padding-half;
+  flex: $top-bottom-height 0 0;
 }
 </style>

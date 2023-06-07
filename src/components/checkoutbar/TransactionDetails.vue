@@ -76,9 +76,15 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Transaction } from '@/entities/Transaction';
 
+/**
+ * Component for displaying the transaction details.
+ */
 @Component
 export default class TransactionDetails extends Vue {
-  @Prop() transaction: Transaction | undefined;
+  /**
+   * The transaction to display. This is a required prop.
+   */
+  @Prop() transaction!: Transaction | undefined;
 }
 </script>
 

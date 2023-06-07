@@ -3,22 +3,34 @@
     <div class="product">
       <img :src="image" :alt="product.name" />
       <p class="w-100 product-name mb-0">{{ product.name }}</p>
-      <p class="w-100 product-price mb-0">€{{ (product.priceInclVat.getAmount() / 100).toFixed(2) }}</p>
+      <p class="w-100 product-price mb-0">€{{ productPrice }}</p>
     </div>
   </div>
 </template>
-
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import {
+  Component, Prop, Vue,
+} from 'vue-property-decorator';
 import { Product } from '@/entities/Product';
-import Formatters from '@/mixins/Formatters';
 
+/**
+ * Component for a product card. When clicked, the selected event is emitted.
+ */
 @Component
-export default class ProductComponent extends Formatters {
+export default class ProductComponent extends Vue {
+  /**
+   * The product to display. This is a required prop.
+   */
   @Prop() product!: Product;
 
-  image: string = null;
+  /**
+   * The image to display.
+   */
+  public image: string = null;
 
+  /**
+   * Before the component is mounted, the image source is set.
+   */
   beforeMount() {
     if (!this.product.picture) {
       this.image = 'https://imgur.com/CS0aauU.png';
@@ -26,10 +38,12 @@ export default class ProductComponent extends Formatters {
       this.image = `${process.env.VUE_APP_IMAGE_BASE}products/${this.product.picture}`;
     }
   }
+
+  get productPrice() {
+    return (this.product.priceInclVat.getAmount() / 100).toFixed(2);
+  }
 }
-
 </script>
-
 <style scoped lang="scss">
 .product-card {
   padding: 0 0 8px 0;
