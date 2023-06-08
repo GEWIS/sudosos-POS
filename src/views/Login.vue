@@ -246,6 +246,7 @@ export default class Login extends Vue {
       }
     } else {
       this.$bvToast.show('toast-incorrect-password');
+      this.passcode = '';
       this.loginError = loginResponse.message;
     }
   }
