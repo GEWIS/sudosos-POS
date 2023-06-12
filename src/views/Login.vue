@@ -29,7 +29,7 @@
             <p v-bind:class="{'active-input': enteringUserId,
              'can-enter':  userId.length < maxUserIdLength}" @click="enteringUserId = true">
                 <font-awesome-icon icon="user" />
-                <span>{{ userId }}</span>
+                <span>{{external === 'GEWIS' ? '' : 'E'}}{{ userId }}</span>
               </p>
               <p v-bind:class="{'active-input': !enteringUserId,
                'can-enter':  passcode.length < maxPasscodeLength }" @click="enteringUserId = false">
@@ -246,6 +246,7 @@ export default class Login extends Vue {
       }
     } else {
       this.$bvToast.show('toast-incorrect-password');
+      this.passcode = '';
       this.loginError = loginResponse.message;
     }
   }
