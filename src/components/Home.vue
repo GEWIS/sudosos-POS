@@ -127,8 +127,13 @@ export default class Home extends Vue {
     });
 
     this.$watch('timedOut', (value) => {
-      if (value) {
-        this.logout();
+      if (value && !this.checkingOut) {
+        if (!this.cartState.isEmpty) {
+          this.$refs.checkoutBar.$refs.checkoutButton.checkout();
+        } else {
+          this.logout();
+          this.activityTimerState.setTimedOut(false);
+        }
       }
     });
 
@@ -169,6 +174,7 @@ export default class Home extends Vue {
     clearInterval(this.autoRefresh);
     this.userState.reset();
     this.searchState.reset();
+    this.cartState.reset();
     this.activityTimerState.stop();
     this.$router.push('/');
   }

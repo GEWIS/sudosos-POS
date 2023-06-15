@@ -6,6 +6,7 @@
   background-color: #f2f2f2;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
   .background-logo {
     position: fixed;
@@ -51,13 +52,13 @@
     gap: $default-padding;
     flex: 0;
   }
-  
+
   > .content-center {
     width: 100%;
     flex: 1;
     overflow: auto;
   }
-  
+
   > .content-bottom {
     display: flex;
     width: 100%;

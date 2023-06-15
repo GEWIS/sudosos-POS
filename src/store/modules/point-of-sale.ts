@@ -109,6 +109,14 @@ export default class PointOfSaleModule extends VuexModule {
   }
 
   /**
+   * COMPUTED. Returns all categories that have products in them.
+   */
+  get usedCategories(): ProductCategory[] {
+    const ids = new Set(this.allProducts.map((p) => p.category.id));
+    return this.categories.filter((c) => ids.has(c.id));
+  }
+
+  /**
    * COMPUTED. Returns all products in the point of sale.
    */
   get allProducts(): ProductInContainer[] {
