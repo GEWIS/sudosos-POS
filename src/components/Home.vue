@@ -126,9 +126,6 @@ export default class Home extends Vue {
       }
     });
 
-    this.$watch('timedOut', (value) => {
-    });
-
     document.addEventListener('contextmenu', (event) => {
       event.preventDefault();
     });
