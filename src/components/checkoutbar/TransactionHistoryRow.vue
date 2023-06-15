@@ -19,7 +19,7 @@
 <script lang="ts">
 import Formatters from '@/mixins/Formatters';
 import { Transaction } from '@/entities/Transaction';
-import { Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-facing-decorator';
 import { getModule } from 'vuex-module-decorators';
 import UserModule from '@/store/modules/user';
 import TransactionDetailsModal from '@/components/checkoutbar/TransactionDetailsModal.vue';
@@ -30,7 +30,7 @@ import TransactionDetailsModal from '@/components/checkoutbar/TransactionDetails
 @Component({
   components: { TransactionDetailsModal },
   })
-export default class ProductsTableRow extends Formatters {
+export default class TransactionHistoryRow extends Vue {
   /**
    * The transaction to display.
    */

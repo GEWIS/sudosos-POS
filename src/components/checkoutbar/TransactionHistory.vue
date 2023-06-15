@@ -11,7 +11,7 @@
 <script lang="ts">
 import {
   Component, Prop, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import TransactionHistoryRow from '@/components/checkoutbar/TransactionHistoryRow.vue';
 import { Transaction } from '@/entities/Transaction';
 

@@ -9,7 +9,7 @@
 <script lang="ts">
 import {
   Vue, Component, Prop,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import ActivityTimerModule from '@/store/modules/activity-timer';
 import CartModule from '@/store/modules/cart';
 import { getModule } from 'vuex-module-decorators';

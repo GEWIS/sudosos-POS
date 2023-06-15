@@ -53,8 +53,8 @@
 </template>
 <script lang="ts">
 import {
-  Component, Prop,
-} from 'vue-property-decorator';
+  Vue, Component, Prop, Ref,
+} from 'vue-facing-decorator';
 import { getModule } from 'vuex-module-decorators';
 import Formatters from '@/mixins/Formatters';
 import Cart from '@/components/checkoutbar/Cart.vue';
@@ -73,13 +73,8 @@ import Dinero from 'dinero.js';
  */
 @Component({
   components: { TransactionHistory, Cart, CheckoutButton },
-  props: {
-  subTransactionRows: {
-  type: Array,
-  },
-  },
   })
-export default class CheckoutBar extends Formatters {
+export default class CheckoutBar extends Vue {
   /**
    * A function that forces the user to pick a member. This is a required prop
    * of this component.
@@ -94,9 +89,8 @@ export default class CheckoutBar extends Formatters {
 
   public searchState = getModule(SearchModule);
 
-  $refs!: {
-    checkoutButton: CheckoutButton;
-  };
+  @Ref
+  readonly checkoutButton!: CheckoutButton;
 
   get showBalance(): boolean {
     return this.pointOfSaleState.pointOfSale.useAuthentication
@@ -127,7 +121,7 @@ export default class CheckoutBar extends Formatters {
    */
   organMemberSelected(user: User): void {
     // TODO: Fix how this is routed between the checkout button and the checkout bar.
-    this.$refs.checkoutButton.organMemberSelected(user);
+    this.checkoutButton.organMemberSelected(user);
   }
 
   /**

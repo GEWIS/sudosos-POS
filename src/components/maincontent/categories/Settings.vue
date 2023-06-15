@@ -31,7 +31,7 @@
 import UserModule from '@/store/modules/user';
 import {
   Component, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { getModule } from 'vuex-module-decorators';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import { BasePointOfSale } from '@/entities/PointOfSale';
@@ -56,18 +56,11 @@ export default class SettingsComponent extends Vue {
   public showSettings: boolean = false;
 
   /**
-   * When the component is created the chosen point of sale is set to the current.
-   */
-  constructor() {
-    super();
-    this.chosenPOS = this.userState.userPOSs.find((p) => p.id === this.posState.pointOfSale.id);
-  }
-
-  /**
    * When the component is mounted the pageClicked listener is added to the
    * document.
    */
   mounted() {
+    this.chosenPOS = this.userState.userPOSs.find((p) => p.id === this.posState.pointOfSale.id);
     setTimeout(() => document.addEventListener('click', this.pageClicked), 1);
   }
 

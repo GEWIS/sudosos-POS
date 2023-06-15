@@ -24,7 +24,7 @@ import {
 } from '@/entities/Product';
 import {
   Vue, Component,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import CategorieButtons from '@/components/maincontent/categories/CategorieButtons.vue';
 import BackendStatus from '@/components/maincontent/categories/BackendStatus.vue';
 import Products from '@/components/maincontent/common/Products.vue';

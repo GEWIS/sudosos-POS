@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <ean-login :handle-login="eanLogin" />
+    <EanLogin @login="str => eanLogin(str)" />
     <div class="wrap-container">
       <b-toast id="toast-incorrect-password" variant="danger" solid title="Incorrect login">
         Incorrect ID or PIN. Please try again.
@@ -43,7 +43,7 @@
               @backspace="backspacePressed"
               @ok="okPressed"
               @keyPressed="keyPress"
-              v-bind:externalState.sync="external"/>
+              />
           </div>
         </div>
       </div>
@@ -57,7 +57,7 @@
 <script lang="ts">
 import {
   Component, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import keypad from '@/components/login/Keypad.vue';
 import APIHelper from '@/mixins/APIHelper';
 import { getModule } from 'vuex-module-decorators';
@@ -66,6 +66,7 @@ import { LoginResponse } from '@/entities/APIResponses';
 import EanLogin from '@/components/login/EanLogin.vue';
 import { getAllActiveBanners } from '@/api/banners';
 import Background from '@/components/Background.vue';
+import { useToast } from 'bootstrap-vue-next';
 
 /**
  * The login page.
@@ -237,7 +238,7 @@ export default class Login extends Vue {
   async handleLoginResponse(loginResponse?: LoginResponse | any) {
     if (loginResponse && Object.keys(loginResponse).length > 0 && !('message' in loginResponse)) {
       if (loginResponse.user.acceptedTOS === 'NOT_ACCEPTED') {
-        this.$bvToast.show('toast-tos-not-accepted');
+        this.showTOSNotAcceptedToast();
       } else {
         APIHelper.setToken(loginResponse.token);
         await this.userState.fetchUser(true);
@@ -245,10 +246,14 @@ export default class Login extends Vue {
         await this.$router.push('/home');
       }
     } else {
-      this.$bvToast.show('toast-incorrect-password');
+      this.showTOSNotAcceptedToast();
       this.passcode = '';
       this.loginError = loginResponse.message;
     }
+  }
+
+  showTOSNotAcceptedToast() {
+    // test
   }
 }
 </script>

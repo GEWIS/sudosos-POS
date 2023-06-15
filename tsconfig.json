@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "ES2015",
+    "target": "ESNext",
+    "module": "ESNext",
     "strict": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "jsx": "preserve",
+    "jsxImportSource": "vue",
     "importHelpers": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
@@ -21,6 +22,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "tslib": [
+        "node_modules/tslib/tslib.d.ts"
       ]
     },
     "lib": [

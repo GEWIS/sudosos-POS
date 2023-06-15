@@ -7,6 +7,13 @@
     <p v-if="unfinished">Charge someone</p>
     <p v-else-if="transactionProcessing">Processing...</p>
     <p v-else>{{ buttonText }}</p>
+    <b-modal
+      v-model="modalTransactionFailed"
+      title="Saving transaction failed"
+      ok-only>
+      Saving the transaction failed. Please try again,
+      with or without restarting the SudoSOS POS and logging in again.
+    </b-modal>
   </b-row>
 </template>
 <script lang="ts">
@@ -16,8 +23,8 @@ import { Container } from '@/entities/Container';
 import { User } from '@/entities/User';
 import UserModule from '@/store/modules/user';
 import {
-  Component, Prop, Vue,
-} from 'vue-property-decorator';
+  Component, Prop, Vue, Ref,
+} from 'vue-facing-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { postTransaction } from '@/api/transactions';
 import SearchModule from '@/store/modules/search';
@@ -63,6 +70,8 @@ export default class CheckoutButton extends Vue {
   private pointOfSaleState = getModule(PointOfSaleModule);
 
   private cartState = getModule(CartModule);
+
+  modalTransactionFailed: boolean = false;
 
   /**
    * If the user is currently checking out.
@@ -240,7 +249,7 @@ export default class CheckoutButton extends Vue {
         this.$router.push('/');
       }
     } catch (error: any) {
-      this.$bvModal.show('modal-transaction-failed');
+      this.modalTransactionFailed = true;
     } finally {
       if (this.pointOfSaleState.pointOfSale.useAuthentication) {
         const sound = new Audio('./sounds/rct-cash.wav');

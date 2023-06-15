@@ -16,7 +16,7 @@
 <script lang="ts">
 import {
   Vue, Prop, Component,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import UserComponent from '@/components/maincontent/usersearch/User.vue';
 import { User } from '@/entities/User';
 

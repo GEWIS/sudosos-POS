@@ -20,7 +20,7 @@
 <script lang="ts">
 import {
   Vue, Prop, Component,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import {
   User, UserType,
 } from '@/entities/User';

@@ -24,8 +24,8 @@
 </template>
 <script lang="ts">
 import {
-  Vue, Component,
-} from 'vue-property-decorator';
+  Vue, Component, Ref,
+} from 'vue-facing-decorator';
 import SearchBar from '@/components/maincontent/common/SearchBar.vue';
 import Keyboard from '@/components/maincontent/common/Keyboard.vue';
 import ExitButton from '@/components/maincontent/common/ExitButton.vue';
@@ -60,9 +60,8 @@ export default class MainContentSearch extends Vue {
 
   private pointOfSaleState = getModule(PointOfSaleModule);
 
-  $refs!: {
-    searchBar: SearchBar;
-  }
+  @Ref
+  readonly searchBar!: SearchBar;
 
   private cartState = getModule(CartModule);
 
@@ -87,7 +86,7 @@ export default class MainContentSearch extends Vue {
    */
   updateSearchFromKeyboard(value: string): void {
     this.query = value;
-    this.$refs.searchBar.updateQuery(value);
+    this.searchBar.updateQuery(value);
   }
 
   /**

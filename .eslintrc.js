@@ -9,7 +9,7 @@ module.exports = {
     '@vue/typescript',
   ],
   rules: {
-    'no-console': [process.env.NODE_ENV === 'production' ? 'error' : 'off', { 'allow': ['warn', 'error'] }],
+    'no-console': [process.env.NODE_ENV === 'production' ? 'error' : 'off', { allow: ['warn', 'error'] }],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'linebreak-style': process.env.NODE_ENV === 'production' ? ['warn', 'unix'] : ['off', 'unix'],
     '@typescript-eslint/no-unused-expressions': 'off',
@@ -24,7 +24,7 @@ module.exports = {
     'class-methods-use-this': 'off',
     'no-restricted-syntax': 'warn',
     'no-await-in-loop': 'warn',
-    'import/prefer-default-export': 'off'
+    'import/prefer-default-export': 'off',
   },
   parserOptions: {
     parser: '@typescript-eslint/parser',

@@ -10,8 +10,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import { Component } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import APIHelper from '@/mixins/APIHelper';
 
 /**

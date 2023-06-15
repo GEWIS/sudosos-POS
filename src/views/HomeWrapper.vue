@@ -13,9 +13,8 @@
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import Home from '@/components/Home.vue';
-import Component from 'vue-class-component';
 import { getModule } from 'vuex-module-decorators';
 import PointOfSaleModule from '@/store/modules/point-of-sale';
 import SearchModule from '@/store/modules/search';

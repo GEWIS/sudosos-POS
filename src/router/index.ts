@@ -1,11 +1,9 @@
 import Vue from 'vue';
-import VueRouter, { RouteConfig } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import HomeWrapper from '@/views/HomeWrapper.vue';
 import Login from '../views/Login.vue';
 
-Vue.use(VueRouter);
-
-const routes: RouteConfig[] = [
+const routes: any[] = [
   {
     path: '/home',
     name: 'home',
@@ -18,8 +16,8 @@ const routes: RouteConfig[] = [
   },
 ];
 
-const router = new VueRouter({
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHashHistory(),
   routes,
 });
 

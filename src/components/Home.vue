@@ -4,13 +4,6 @@
       <TOSNotRequired :initially-open="user.acceptedToS === 'NOT_REQUIRED'"
         :logged-out="logout"/>
     </div>
-    <b-modal
-      id="modal-transaction-failed"
-      title="Saving transaction failed"
-      ok-only>
-      Saving the transaction failed. Please try again,
-      with or without restarting the SudoSOS POS and logging in again.
-    </b-modal>
     <div class="home">
       <div class="main-content-container box">
         <MainContentCategories
@@ -40,8 +33,8 @@
 </template>
 <script lang="ts">
 import {
-  Component, Vue,
-} from 'vue-property-decorator';
+  Component, Vue, Ref,
+} from 'vue-facing-decorator';
 import { getModule } from 'vuex-module-decorators';
 import CheckoutBar from '@/components/checkoutbar/CheckoutBar.vue';
 import SearchModule from '@/store/modules/search';
@@ -106,9 +99,8 @@ export default class Home extends Vue {
    */
   private autoRefresh: number;
 
-  $refs!: {
-    checkoutBar: CheckoutBar
-  }
+  @Ref
+  readonly checkoutBar!: CheckoutBar
 
   /**
    * Called when the component is mounted. It will 1) add a listener that checks
@@ -271,7 +263,7 @@ export default class Home extends Vue {
    */
   organMemberSelected(user: User): void {
     this.showOrganMembers = false;
-    this.$refs.checkoutBar.organMemberSelected(user);
+    this.checkoutBar.organMemberSelected(user);
   }
 
   /**

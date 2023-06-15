@@ -1,9 +1,6 @@
-import Vue from 'vue';
-import Component from 'vue-class-component';
 import dinero from 'dinero.js';
 
-@Component
-export default class Formatters extends Vue {
+export default class Formatters {
   /*
     Function to make dinero usable in the template
   */

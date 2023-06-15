@@ -15,8 +15,8 @@
 </template>
 <script lang="ts">
 import {
-  Component, Prop,
-} from 'vue-property-decorator';
+  Vue, Component, Prop,
+} from 'vue-facing-decorator';
 import { getModule } from 'vuex-module-decorators';
 import { SubTransactionRow } from '@/entities/SubTransactionRow';
 import Formatters from '@/mixins/Formatters';
@@ -28,7 +28,7 @@ import CartModule from '@/store/modules/cart';
 @Component({
   components: {},
   })
-export default class CartProduct extends Formatters {
+export default class CartProduct extends Vue {
   /**
    * The item that is currently in the shopping cart. This is a
    * SubTransactionRow and a required prop of this component.

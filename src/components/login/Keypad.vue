@@ -12,8 +12,8 @@
 </template>
 <script lang="ts">
 import {
-  Component, PropSync, Prop, Vue,
-} from 'vue-property-decorator';
+  Component, Prop, Vue,
+} from 'vue-facing-decorator';
 
 /**
  * Which external state is currently active.

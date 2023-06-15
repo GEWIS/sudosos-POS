@@ -11,8 +11,8 @@
 </template>
 <script lang="ts">
 import {
-  Vue, Component,
-} from 'vue-property-decorator';
+  Vue, Component, Ref,
+} from 'vue-facing-decorator';
 
 /**
  * Component for a scrollable div. This component is used to make all the
@@ -55,9 +55,8 @@ export default class Scrollable extends Vue {
    */
   private lastDelta: number = 0;
 
-  $refs: {
-    scrollbar: HTMLDivElement;
-  };
+  @Ref
+  readonly scrollbar!: HTMLDivElement;
 
   /**
    * Listens to when the user starts dragging. If the user starts dragging on
@@ -74,7 +73,7 @@ export default class Scrollable extends Vue {
 
     e.preventDefault();
     this.dragYStart = e.clientY;
-    this.dragScrollStart = this.$refs.scrollbar.scrollTop;
+    this.dragScrollStart = this.scrollbar.scrollTop;
     this.dragging = true;
     this.lastDelta = e.clientY - this.dragYStart;
   }
@@ -91,7 +90,7 @@ export default class Scrollable extends Vue {
     const delta = e.clientY - this.dragYStart;
     this.momentum = delta - this.lastDelta;
     this.lastDelta = delta;
-    this.$refs.scrollbar.scrollTop = this.dragScrollStart - delta;
+    this.scrollbar.scrollTop = this.dragScrollStart - delta;
     this.hasDragged = true;
   }
 
@@ -125,7 +124,7 @@ export default class Scrollable extends Vue {
    * it will call itself again after 10ms.
    */
   brake() {
-    this.$refs.scrollbar.scrollTop -= this.momentum;
+    this.scrollbar.scrollTop -= this.momentum;
     this.momentum *= 0.8;
 
     if (Math.abs(this.momentum) > 0.1) {

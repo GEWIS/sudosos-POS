@@ -6,8 +6,7 @@
     <div v-else class="background"></div>
 </template>
 <script lang="ts">
-import { Vue } from 'vue-property-decorator';
-import Component from 'vue-class-component';
+import { Vue, Component } from 'vue-facing-decorator';
 
 /**
  * Component for the background of the page. Currently, it only shows snowflakes

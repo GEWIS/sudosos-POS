@@ -6,9 +6,10 @@
 <script lang="ts">
 import {
   Component, Vue, Prop,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { getModule } from 'vuex-module-decorators';
 import SearchModule from '@/store/modules/search';
+import events from '@/events';
 
 /**
  * Component for a button that filters the search results by category.

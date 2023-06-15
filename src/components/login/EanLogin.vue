@@ -3,19 +3,14 @@
 </template>
 <script lang="ts">
 import {
-  Component, Prop, Vue,
-} from 'vue-property-decorator';
+  Component, Vue,
+} from 'vue-facing-decorator';
 
 /**
  * Component for scanning EAN codes.
  */
 @Component
 export default class EanLogin extends Vue {
-  /**
-   * The function to call when a EAN code is scanned.
-   */
-  @Prop() handleLogin: (eanCode: string) => void;
-
   /**
    * The captured key events.
    */
@@ -36,7 +31,7 @@ export default class EanLogin extends Vue {
   onInput(event: KeyboardEvent): void {
     if (event.code === 'Enter') {
       const code = this.captures.reduce((input, e) => input + e.key, '');
-      this.handleLogin(code);
+      this.$emit('login', code);
       this.captures = [];
     } else {
       this.captures.push(event);

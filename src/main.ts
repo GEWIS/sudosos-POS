@@ -1,6 +1,6 @@
-import Vue from 'vue';
-import VueI18n from 'vue-i18n';
-import BootstrapVue from 'bootstrap-vue';
+import { createApp } from 'vue';
+import { createI18n } from 'vue-i18n';
+import BootstrapVueNext from 'bootstrap-vue-next';
 import dinero, { Currency } from 'dinero.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome';
@@ -25,9 +25,9 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 
-import 'bootstrap';
-
 // Import the BootstrapVue style
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 import './styles/global/_main.scss';
 
 // Add all icons to the library
@@ -53,29 +53,27 @@ library.add(
 dinero.defaultCurrency = 'EUR' as Currency;
 dinero.defaultPrecision = 2;
 
-// Register components for the FontAwesome library
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-Vue.component('font-awesome-layers', FontAwesomeLayers);
-Vue.component('font-awesome-layers-text', FontAwesomeLayersText);
-
-// Register plugins
-Vue.use(VueI18n);
-Vue.use(BootstrapVue);
-
 // Create the i18n instance using the imported messages
 const messages = Object.assign(languages);
-const i18n = new VueI18n({
+const i18n = createI18n({
+  legacy: false,
   locale: 'nl',
   fallbackLocale: 'en',
   messages,
 });
 
-Vue.config.productionTip = false;
-
 // Create the Vue instance
-new Vue({
-  router,
-  store,
-  i18n,
-  render: (h) => h(App),
-}).$mount('#app');
+const app = createApp(App);
+
+// Use plugins
+app.use(i18n);
+app.use(BootstrapVueNext);
+app.use(router);
+app.use(store);
+
+// Register components for the FontAwesome library
+app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('font-awesome-layers', FontAwesomeLayers);
+app.component('font-awesome-layers-text', FontAwesomeLayersText);
+
+app.mount('#app');

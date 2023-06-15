@@ -37,8 +37,8 @@ import SearchModule from '@/store/modules/search';
 import UserModule from '@/store/modules/user';
 import Fuse from 'fuse.js';
 import {
-  Component, Vue,
-} from 'vue-property-decorator';
+  Component, Vue, Ref,
+} from 'vue-facing-decorator';
 import { getModule } from 'vuex-module-decorators';
 import SearchBar from '@/components/maincontent/common/SearchBar.vue';
 import Keyboard from '@/components/maincontent/common/Keyboard.vue';
@@ -71,9 +71,8 @@ export default class MainContentUserSearch extends Vue {
 
   private pointOfSaleState = getModule(PointOfSaleModule);
 
-  $refs!: {
-    searchBar: SearchBar;
-  }
+  @Ref
+  readonly searchBar!: SearchBar;
 
   /**
    * The point of sale.
@@ -157,7 +156,7 @@ export default class MainContentUserSearch extends Vue {
    */
   updateSearchFromKeyboard(value: string): void {
     this.query = value;
-    this.$refs.searchBar.updateQuery(value);
+    this.searchBar.updateQuery(value);
   }
 
   /**

@@ -5,7 +5,8 @@
     no-close-on-backdrop
     no-close-on-esc
     @cancel="handleCancel"
-    @close="handleCancel">
+    @close="handleCancel"
+    ref="modalTos">
     <div class="d-block text-center">
     By using SudoSOS, you agree to the terms of service as specified on sudosos.gewis.nl.
     </div>
@@ -13,8 +14,9 @@
 </template>
 <script lang="ts">
 import {
-  Component, Prop, Vue,
-} from 'vue-property-decorator';
+  Component, Prop, Vue, Ref,
+} from 'vue-facing-decorator';
+import { BModal } from 'bootstrap-vue-next';
 
 /**
  * The modal that is shown when the user has not accepted the terms of service.
@@ -31,13 +33,16 @@ export default class TransactionHistory extends Vue {
    */
   @Prop() loggedOut: () => void;
 
+  @Ref
+  readonly modalTos!: typeof BModal;
+
   /**
    * When the component is mounted the modal is shown if the initiallyOpen prop
    * is true.
    */
   mounted() {
     if (this.initiallyOpen) {
-      this.$bvModal.show('modal-tos-not-required');
+      this.modalTos.show = true;
     }
   }
 

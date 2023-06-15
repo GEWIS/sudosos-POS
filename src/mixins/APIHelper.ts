@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import eventBus from '@/eventbus';
+import eventBus from '@/events';
 import { ApiError } from '@/entities/ApiError';
 import { ResponseBody } from '@/entities/ResponseBody';
 import jwtDecode, { JwtPayload } from 'jwt-decode';

@@ -51,7 +51,7 @@
 <script lang="ts">
 import {
   Component, Prop, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 
 /**
  * Component for a keyboard that can be used to input text.

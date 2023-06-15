@@ -9,10 +9,9 @@
   </b-nav>
 </template>
 <script lang="ts">
-import Vue from 'vue';
 import {
-  Component, Prop,
-} from 'vue-property-decorator';
+  Vue, Component, Prop,
+} from 'vue-facing-decorator';
 import CategorieButton from '@/components/maincontent/categories/CategorieButton.vue';
 import { ProductCategory } from '@/entities/ProductCategory';
 

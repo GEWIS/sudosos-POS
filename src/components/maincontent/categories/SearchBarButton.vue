@@ -6,7 +6,7 @@
 <script lang="ts">
 import {
   Component, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 
 /**
  * Component for a button that opens the product search state. When clicked, the

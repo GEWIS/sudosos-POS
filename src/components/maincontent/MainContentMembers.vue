@@ -17,7 +17,7 @@
 <script lang="ts">
 import {
   Component, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import ExitButton from '@/components/maincontent/common/ExitButton.vue';
 import { getModule } from 'vuex-module-decorators';
 import PointOfSaleModule from '@/store/modules/point-of-sale';

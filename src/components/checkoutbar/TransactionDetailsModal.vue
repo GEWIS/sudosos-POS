@@ -15,7 +15,7 @@
     </div>
     <TransactionDetails v-else :transaction="transaction" />
 
-    <template v-slot:modal-footer="{ ok, cancel }">
+    <template v-slot:modal-footer="{ cancel }">
       <b-button
         variant="primary"
         id="details-cancel"
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-facing-decorator';
 import Formatters from '@/mixins/Formatters';
 import { Transaction } from '@/entities/Transaction';
 import TransactionDetails from '@/components/checkoutbar/TransactionDetails.vue';
@@ -41,7 +41,7 @@ import { getTransaction } from '@/api/transactions';
   TransactionDetails,
   },
   })
-export default class TransactionDetailsModal extends Formatters {
+export default class TransactionDetailsModal extends Vue {
   /**
    * The base information of transaction to display.
    */
@@ -75,7 +75,7 @@ export default class TransactionDetailsModal extends Formatters {
    * Shows the modal and loads the transaction.
    */
   async show() {
-    this.$bvModal.show(`details-modal-${this.baseTransaction.id}`);
+    // this.$bvModal.show(`details-modal-${this.baseTransaction.id}`);
     await this.getTrans();
   }
 

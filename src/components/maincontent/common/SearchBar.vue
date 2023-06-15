@@ -11,8 +11,8 @@
 </template>
 <script lang="ts">
 import {
-  Vue, Component,
-} from 'vue-property-decorator';
+  Vue, Component, Ref,
+} from 'vue-facing-decorator';
 
 /**
  * Component for a search bar. When the user types in the search bar, the
@@ -20,10 +20,11 @@ import {
  */
 @Component
 export default class SearchBar extends Vue {
-  $refs!: {
-    searchInput: HTMLInputElement
-    text: HTMLSpanElement
-  }
+  @Ref
+  readonly searchInput!: HTMLInputElement;
+
+  @Ref
+  readonly text!: HTMLSpanElement;
 
   /**
    * The current query.
@@ -36,7 +37,7 @@ export default class SearchBar extends Vue {
    */
   updateQuery(query: string) {
     this.query = query;
-    this.$refs.text.innerText = query;
+    this.text.innerText = query;
   }
 
   /**
@@ -52,7 +53,7 @@ export default class SearchBar extends Vue {
    * the update event.
    */
   onInput() {
-    this.updateQuery(this.$refs.searchInput.value);
+    this.updateQuery(this.searchInput.value);
     this.$emit('update', this.query);
   }
 
@@ -60,7 +61,7 @@ export default class SearchBar extends Vue {
    * Focus on the search bar if the user clicks on the search bar.
    */
   focusOnSearch() {
-    this.$refs.searchInput.focus();
+    this.searchInput.focus();
   }
 }
 </script>
