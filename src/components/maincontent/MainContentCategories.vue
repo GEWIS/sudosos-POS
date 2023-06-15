@@ -91,7 +91,7 @@ export default class MainContentCategories extends Vue {
    * The allowed categories that should be shown.
    */
   get categories(): ProductCategory[] {
-    return this.pointOfSaleState.categories;
+    return this.pointOfSaleState.usedCategories;
   }
 }
 </script>
