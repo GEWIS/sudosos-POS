@@ -126,17 +126,6 @@ export default class Home extends Vue {
       }
     });
 
-    this.$watch('timedOut', (value) => {
-      if (value && !this.checkingOut) {
-        if (!this.cartState.isEmpty) {
-          this.$refs.checkoutBar.$refs.checkoutButton.checkout();
-        } else {
-          this.logout();
-          this.activityTimerState.setTimedOut(false);
-        }
-      }
-    });
-
     document.addEventListener('contextmenu', (event) => {
       event.preventDefault();
     });
