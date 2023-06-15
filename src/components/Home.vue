@@ -127,9 +127,13 @@ export default class Home extends Vue {
     });
 
     this.$watch('timedOut', (value) => {
-      if (value) {
-        this.logout();
-        this.activityTimerState.setTimedOut(false);
+      if (value && !this.checkingOut) {
+        if (!this.cartState.isEmpty) {
+          this.$refs.checkoutBar.$refs.checkoutButton.checkout();
+        } else {
+          this.logout();
+          this.activityTimerState.setTimedOut(false);
+        }
       }
     });
 
