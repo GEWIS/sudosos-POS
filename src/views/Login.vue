@@ -51,6 +51,7 @@
         <img :src="banners[bannerIndex]" />
       </div>
     </div>
+    <p class="build"> {{buildHash}} </p>
     <Background />
   </div>
 </template>
@@ -100,10 +101,14 @@ export default class Login extends Vue {
 
   public external: String = 'GEWIS';
 
+  public buildHash: String;
+
   /**
    * When the page is mounted, get all active banners.
    */
   mounted() {
+    this.buildHash = `${process.env.VUE_APP_A_B}-${process.env.VUE_APP_BUILD_HASH}`;
+
     getAllActiveBanners().then((banners) => {
       this.banners = [];
       banners.forEach((b) => {
