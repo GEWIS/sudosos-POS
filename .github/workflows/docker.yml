@@ -138,7 +138,7 @@ jobs:
           context: .
           platforms: linux/amd64 #SudoSOS does not run on linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ab-develop
+          tags: ${{ steps.meta.outputs.tags }}-ab-develop
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
