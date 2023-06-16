@@ -14,10 +14,15 @@ jobs:
     container:
       image: docker:dind
     steps:
+      - name: upgrade git
+        run: |
+          apk add --update
+          apk add git
+          git --version  
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
           path: .
 
       - name: Set up environment - main
