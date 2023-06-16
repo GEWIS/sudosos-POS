@@ -27,14 +27,14 @@ jobs:
 
       - name: Set up environment - main
         env:
-          ENV_FILE: ${{ env.ENV_FILE_PRODUCTION }}
+          ENV_FILE: ${{ vars.ENV_FILE_PRODUCTION }}
         if: github.ref == 'refs/heads/main'
         run: |
           echo "${ENV_FILE}" > .env
 
       - name: Set up environment - develop
         env:
-          ENV_FILE: ${{ env.ENV_FILE_DEVELOPMENT }}
+          ENV_FILE: ${{ vars.ENV_FILE_DEVELOPMENT }}
         if: github.ref != 'refs/heads/main'
         run: |
           echo "${ENV_FILE}" > .env
@@ -97,7 +97,7 @@ jobs:
 
       - name: Set up environment - A/B testing
         env:
-          ENV_FILE: ${{ env.ENV_FILE_PRODUCTION }}
+          ENV_FILE: ${{ vars.ENV_FILE_PRODUCTION }}
         if: github.ref != 'refs/heads/main'
         run: |
           echo "${ENV_FILE}" > .env
