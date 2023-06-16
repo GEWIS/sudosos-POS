@@ -8,6 +8,11 @@
   flex-direction: column;
   overflow: hidden;
 
+  .build {
+    color: gray;
+    text-align: right;
+  }
+
   .background-logo {
     position: fixed;
     top: -20vh;
