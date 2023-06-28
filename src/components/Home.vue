@@ -136,7 +136,7 @@ export default class Home extends Vue {
         }
       }
     });
-    
+
     document.addEventListener('contextmenu', (event) => {
       event.preventDefault();
     });
