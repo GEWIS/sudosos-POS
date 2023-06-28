@@ -95,12 +95,15 @@ jobs:
         with:
           path: .
 
-      - name: Set up environment - A/B testing
+      - name: Set up environment
         env:
           ENV_FILE: ${{ vars.ENV_FILE_PRODUCTION }}
-        if: github.ref != 'refs/heads/main'
         run: |
           echo "${ENV_FILE}" > .env
+
+      - name: Set up environment - A/B Flag
+        if: github.ref != 'refs/heads/main'
+        run: |
           echo "VUE_APP_A_B='B'" >> .env
 
       - name: Get Docker meta (for tags)
