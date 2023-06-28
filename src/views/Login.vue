@@ -48,9 +48,10 @@
         </div>
       </div>
       <div class="wrap-container-child sponsor-container box">
-        <img :src="banners[bannerIndex]" />
+        <img :src="`${bannerImageBase}${this.banner?.picture}`" />
       </div>
     </div>
+    <p class="build"> {{buildHash}} </p>
     <Background />
   </div>
 </template>
@@ -66,6 +67,7 @@ import { LoginResponse } from '@/entities/APIResponses';
 import EanLogin from '@/components/login/EanLogin.vue';
 import { getAllActiveBanners } from '@/api/banners';
 import Background from '@/components/Background.vue';
+import { Banner } from '@/entities/Banner';
 
 /**
  * The login page.
@@ -80,9 +82,19 @@ import Background from '@/components/Background.vue';
 export default class Login extends Vue {
   private userState = getModule(UserModule);
 
-  public banners: string[] = [];
+  public banners: Banner[] = [];
 
-  public bannerIndex = 0;
+  public banner: Banner = {
+    name: '',
+    picture: '',
+    duration: 0,
+    active: false,
+    startDate: null,
+    endDate: null,
+    id: 0,
+    createdAt: undefined,
+    updatedAt: undefined,
+  };
 
   public userId = '';
 
@@ -100,16 +112,32 @@ export default class Login extends Vue {
 
   public external: String = 'GEWIS';
 
+  public buildHash: String = ''
+
+  public bannerImageBase: String = '';
+
   /**
    * When the page is mounted, get all active banners.
    */
   mounted() {
+    this.buildHash = `${process.env.VUE_APP_A_B}-${process.env.VUE_APP_BUILD_HASH}`;
+
     getAllActiveBanners().then((banners) => {
-      this.banners = [];
-      banners.forEach((b) => {
-        this.banners.push(`${process.env.VUE_APP_IMAGE_BASE}banners/${b.picture}`);
-      });
+      this.banners = banners;
+      this.selectBanner(0);
     });
+
+    this.bannerImageBase = `${process.env.VUE_APP_IMAGE_BASE}banners/`;
+  }
+
+  selectBanner(bannerIndex) {
+    this.banner = this.banners[bannerIndex];
+    // Schedule the next banner selection after the specified duration
+    setTimeout(() => {
+      // Increment the bannerIndex and wrap around to the beginning if necessary
+      const nextBannerIndex = (bannerIndex + 1) % this.banners.length;
+      this.selectBanner(nextBannerIndex);
+    }, this.banners[bannerIndex].duration);
   }
 
   /**

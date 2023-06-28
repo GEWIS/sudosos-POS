@@ -1,3 +1,5 @@
+const webpack = require('webpack');
+
 module.exports = {
   css: {
     loaderOptions: {
@@ -17,5 +19,17 @@ module.exports = {
         changeOrigin: true,
       },
     },
+  },
+  configureWebpack: {
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env': {
+          VUE_APP_BUILD_HASH: JSON.stringify(require('child_process')
+            .execSync('git rev-parse --short HEAD')
+            .toString()
+            .trim()),
+        },
+      }),
+    ],
   },
 };
