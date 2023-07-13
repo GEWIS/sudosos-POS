@@ -68,6 +68,12 @@ import EanLogin from '@/components/login/EanLogin.vue';
 import { getAllActiveBanners } from '@/api/banners';
 import Background from '@/components/Background.vue';
 import { Banner } from '@/entities/Banner';
+import ApiService from '@/api/ApiService';
+import {
+  AuthenticationPinRequest,
+  AuthenticationResponse,
+  GEWISAuthenticationPinRequest,
+} from 'sudosos-client';
 
 /**
  * The login page.
@@ -214,7 +220,7 @@ export default class Login extends Vue {
   async eanLogin(eanCode: string) {
     let loginResponse;
     try {
-      loginResponse = await APIHelper.postResource('authentication/ean', { eanCode });
+      loginResponse = ApiService.authenticate.eanAuthentication({ eanCode });
     } catch (error) {
       console.error(error);
     } finally {
@@ -226,24 +232,22 @@ export default class Login extends Vue {
    * Login using the user id and passcode.
    */
   async login() {
-    let loginResponse;
+    let loginResponse: AuthenticationResponse;
 
     try {
       // External login goes straight via SudoSOS
       if (this.external === 'EXTERNAL') {
-        const userDetails = {
+        const userDetails: AuthenticationPinRequest = {
           userId: parseInt(this.userId, 10),
           pin: this.passcode.toString(),
         };
-
-        loginResponse = await APIHelper.postResource('authentication/pin', userDetails);
+        loginResponse = (await ApiService.authenticate.pinAuthentication(userDetails)).data;
       } else {
-        const userDetails = {
+        const userDetails: GEWISAuthenticationPinRequest = {
           gewisId: parseInt(this.userId, 10),
           pin: this.passcode.toString(),
         };
-
-        loginResponse = await APIHelper.postResource('authentication/GEWIS/pin', userDetails);
+        loginResponse = (await ApiService.authenticate.gewisPinAuthentication(userDetails)).data;
       }
     } catch (error) {
       console.error(error);
@@ -262,12 +266,13 @@ export default class Login extends Vue {
    * home page. If the login was incorrect, show a toast.
    * @param {LoginResponse} loginResponse The login response.
    */
-  async handleLoginResponse(loginResponse?: LoginResponse | any) {
+  async handleLoginResponse(loginResponse?: AuthenticationResponse | any) {
     if (loginResponse && Object.keys(loginResponse).length > 0 && !('message' in loginResponse)) {
       if (loginResponse.user.acceptedTOS === 'NOT_ACCEPTED') {
         this.$bvToast.show('toast-tos-not-accepted');
       } else {
         APIHelper.setToken(loginResponse.token);
+        ApiService.setJwtToken(loginResponse.token);
         await this.userState.fetchUser(true);
         await this.userState.fetchAllUsers();
         await this.$router.push('/home');

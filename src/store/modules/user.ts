@@ -11,6 +11,7 @@ import UserTransformer from '@/transformers/UserTransformer';
 import { NFCDevice } from '@/entities/NFCDevice';
 import jwtDecode from 'jwt-decode';
 import { BasePointOfSale } from '@/entities/PointOfSale';
+import ApiService from '@/api/ApiService';
 
 /**
  * The module that controls the current user.
@@ -324,16 +325,14 @@ export default class UserModule extends VuexModule {
     if (this.user.id === undefined || force) {
       const token = jwtDecode(APIHelper.getToken().jwtToken as string) as any;
 
-      const userResponse = await APIHelper.getResource(`users/${token.user.id}`);
-      const user = UserTransformer.makeUser(userResponse);
+      const user = (await ApiService.user.getIndividualUser(token.user.id)).data;
 
       this.context.commit('setUser', user);
 
       await this.fetchBalance(user.id);
-      APIHelper.getResource(`users/${token.user.id}/pointsofsale`)
-        .then((pointOfSaleResponse) => {
-          this.context.commit('setUserPOSs', pointOfSaleResponse.records);
-        });
+      ApiService.user.getUsersPointsOfSale(token.user.id).then((res) => {
+        this.context.commit('setUserPOSs', (res).data.records);
+      });
     }
   }
 
